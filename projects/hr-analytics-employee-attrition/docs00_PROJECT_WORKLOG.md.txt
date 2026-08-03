@@ -443,3 +443,44 @@ Whenever a significant project component is completed:
 2. Update the README if needed.
 3. Verify document references.
 4. Use the new asset in future applications.
+---
+
+# TECHNICAL DEBT
+
+## TD-001
+
+Title
+
+Repository Path Refactoring
+
+Status
+
+Pending
+
+Priority
+
+Medium
+
+Description
+
+Some documentation still references the previous repository structure (`insights/`).
+
+The current project standard defines:
+
+- docs/
+- reports/
+
+All internal links must be updated after the repository structure is finalized.
+
+Reason
+
+Avoid broken references and keep documentation consistent with the official project structure.
+
+Affected Documents
+
+- Methodology.md
+- Any future document referencing `insights/`
+
+Resolution
+
+Perform a global review of internal document references before the repository reaches Version 1.0.
