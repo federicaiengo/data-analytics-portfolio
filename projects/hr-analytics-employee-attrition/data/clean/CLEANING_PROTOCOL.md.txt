@@ -1,0 +1,33 @@
+# Cleaning Protocol
+
+## Objective
+
+Produce a validated dataset suitable for business analysis while preserving the original source data.
+
+## Validation Checklist
+
+- Verify row count.
+- Verify column count.
+- Check missing values.
+- Check duplicate records.
+- Verify EmployeeNumber uniqueness.
+- Review categorical consistency.
+- Validate numeric ranges.
+- Identify constant columns.
+- Review logical inconsistencies.
+- Export cleaned dataset.
+
+## Documentation Rules
+
+Every modification must record:
+
+- Column
+- Issue found
+- Rule applied
+- Reason
+- Impact
+- Validation
+
+## Output
+
+employee_attrition_clean.csv
