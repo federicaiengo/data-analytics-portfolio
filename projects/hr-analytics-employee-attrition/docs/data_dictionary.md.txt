@@ -1,0 +1,150 @@
+# DATA DICTIONARY
+
+Project: HR Analytics – Employee Attrition & Workforce Insights
+
+---
+
+# Purpose
+
+This document describes every field contained in the project dataset.
+
+It serves as the reference for SQL analysis, documentation and business reporting.
+
+---
+
+## EmployeeNumber
+
+Description:
+Unique employee identifier.
+
+Type:
+Integer
+
+Business Purpose:
+Primary key used to uniquely identify each employee.
+
+---
+
+## Attrition
+
+Description:
+Employee attrition status.
+
+Values:
+Yes
+No
+
+Business Purpose:
+Primary business outcome analysed throughout the project.
+
+---
+
+## Department
+
+Description:
+Employee department.
+
+Business Purpose:
+Department-level turnover analysis.
+
+---
+
+## JobRole
+
+Description:
+Employee job role.
+
+Business Purpose:
+Role-based attrition comparison.
+
+---
+
+## MonthlyIncome
+
+Description:
+Monthly employee income.
+
+Business Purpose:
+Income distribution and relationship with attrition.
+
+---
+
+## OverTime
+
+Description:
+Whether overtime is performed.
+
+Values:
+Yes
+No
+
+Business Purpose:
+Evaluate the relationship between overtime and employee attrition.
+
+---
+
+## YearsAtCompany
+
+Description:
+Employee tenure.
+
+Business Purpose:
+Tenure distribution and retention analysis.
+
+---
+
+## JobSatisfaction
+
+Description:
+Reported employee job satisfaction.
+
+Values:
+1–4
+
+Business Purpose:
+Evaluate possible relationships between satisfaction and attrition.
+
+---
+
+## EnvironmentSatisfaction
+
+Description:
+Working environment satisfaction.
+
+Values:
+1–4
+
+Business Purpose:
+Supporting analysis.
+
+---
+
+## EducationField
+
+Description:
+Employee education area.
+
+Business Purpose:
+Exploratory analysis.
+
+---
+
+## BusinessTravel
+
+Description:
+Travel frequency.
+
+Business Purpose:
+Evaluate travel patterns against attrition.
+
+---
+
+## Notes
+
+Additional fields will be documented as the project progresses.
+
+Every documented field should include:
+
+- Description
+- Type
+- Business Purpose
