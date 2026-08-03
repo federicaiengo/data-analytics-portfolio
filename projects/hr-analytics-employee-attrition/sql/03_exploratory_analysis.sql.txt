@@ -1,0 +1,95 @@
+-- ==========================================================
+-- Project: HR Analytics - Employee Attrition & Workforce Insights
+-- Repository: data-analytics-portfolio
+-- File: 03_exploratory_analysis.sql
+-- Author: Federica Iengo
+-- Version: 1.0
+-- Status: In Progress
+-- Last Updated: 2026-08-02
+-- ==========================================================
+
+/*
+EXPLORATORY ANALYSIS
+
+Purpose
+
+Document exploratory analyses, rejected hypotheses and
+methodological checks that do not become Business Insights
+but remain part of the analytical process.
+
+Reference Codes
+
+EA = Exploratory Analysis
+RH = Rejected Hypothesis
+MC = Methodological Check
+*/
+
+-- ==========================================================
+-- EA-001
+-- Monthly Income vs Attrition
+-- ==========================================================
+
+SELECT
+    Attrition,
+    ROUND(AVG(MonthlyIncome),2) AS AverageMonthlyIncome,
+    MIN(MonthlyIncome) AS MinimumIncome,
+    MAX(MonthlyIncome) AS MaximumIncome
+FROM employee_attrition
+GROUP BY Attrition;
+
+-- Initial observation:
+-- Employees leaving the company appear to have
+-- lower average monthly income.
+
+
+-- ==========================================================
+-- MC-001
+-- Verify Monthly Income after controlling for Job Level
+-- ==========================================================
+
+SELECT
+    JobLevel,
+    Attrition,
+    ROUND(AVG(MonthlyIncome),2) AS AverageIncome,
+    COUNT(*) AS Employees
+FROM employee_attrition
+GROUP BY JobLevel, Attrition
+ORDER BY JobLevel, Attrition;
+
+-- Result:
+--
+-- The apparent salary difference is largely explained
+-- by Job Level.
+--
+-- Conclusion:
+--
+-- Monthly Income alone is insufficient to support
+-- a Business Insight.
+
+
+-- ==========================================================
+-- EA-002
+-- Performance Rating vs Attrition
+-- ==========================================================
+
+SELECT
+    PerformanceRating,
+    COUNT(*) AS Employees,
+    SUM(CASE WHEN Attrition='Yes' THEN 1 ELSE 0 END) AS AttritionCount,
+    ROUND(
+        100.0 * SUM(CASE WHEN Attrition='Yes' THEN 1 ELSE 0 END)/COUNT(*),
+        2
+    ) AS AttritionRate
+FROM employee_attrition
+GROUP BY PerformanceRating
+ORDER BY PerformanceRating;
+
+-- Result
+--
+-- Rating 3 -> 16.08%
+-- Rating 4 -> 16.37%
+--
+-- Conclusion
+--
+-- No meaningful association observed between
+-- Performance Rating and employee attrition.
