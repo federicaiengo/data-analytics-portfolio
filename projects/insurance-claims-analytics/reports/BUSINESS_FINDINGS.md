@@ -1,20 +1,22 @@
 # BUSINESS FINDINGS
 
-**Project:** Insurance Claims Analytics – Claims Performance & Fraud Detection  
-**Database:** PostgreSQL 18  
-**Status:** In Progress
+Project: Insurance Claims Analytics – Claims Performance & Fraud Detection
 
 ---
 
 # Purpose
 
-This document records validated business findings supported by reproducible SQL analysis.
+This document records validated business insights supported by reproducible SQL evidence.
 
-Only findings with sufficient evidence and a clear business implication are promoted here. Analyses that do not meet the acceptance criteria are preserved separately in `business_rejected_findings.md`.
+Only findings with sufficient business relevance and analytical support are included.
 
 ---
 
-# BF-001 — Claim Value Differs Materially by Insurance Type
+# BF-001
+
+## Title
+
+Claim Severity by Insurance Type
 
 ## Business Question
 
@@ -22,13 +24,15 @@ Which insurance types generate the highest financial impact?
 
 ## SQL Reference
 
-`BA-001`
+BA-001
 
 ## Finding
 
-Claim frequency is relatively balanced across insurance types, but average claim value differs substantially.
+Claim volume is relatively balanced across insurance types, but average claim value differs substantially.
 
-Life Insurance produces the highest average claim amount, followed by Property and Health insurance. Mobile Insurance has the lowest average claim value.
+Life Insurance generates the highest average claim amount, followed by Property and Health Insurance.
+
+Mobile Insurance generates the lowest average claim amount.
 
 ## Evidence
 
@@ -43,11 +47,13 @@ Life Insurance produces the highest average claim amount, followed by Property a
 
 ## Business Impact
 
-A single claim-review strategy would not reflect the materially different exposure profiles across insurance products.
+Insurance products have materially different financial-exposure profiles.
+
+A single claim-monitoring threshold would not adequately reflect the risk associated with each product.
 
 ## Recommendation
 
-Define insurance-type-specific review thresholds, monitoring rules and resource-allocation priorities.
+Implement insurance-type-specific claim-review thresholds and monitoring strategies.
 
 ## Priority
 
@@ -59,7 +65,11 @@ High
 
 ---
 
-# BF-002 — High-Value Claims Are Concentrated in Life Insurance
+# BF-002
+
+## Title
+
+High-Value Claims Concentration in Life Insurance
 
 ## Business Question
 
@@ -67,51 +77,25 @@ Which insurance products generate the highest-value claims?
 
 ## SQL References
 
-- `BA-007`
-- `BA-008`
-- `BA-009`
+- BA-007
+- BA-008
+- BA-009
 
 ## Finding
 
-All 103 claims with values greater than or equal to 95,000 belong to Life Insurance.
+All claims with values greater than or equal to 95,000 belong to Life Insurance.
 
-The average amount within this high-value group is 97,621.36.
-
-## Evidence
-
-| Insurance Type | High-Value Claims (>= 95,000) | Average Claim Amount |
-|---|---:|---:|
-| Life | 103 | 97,621.36 |
-
-Upper-end claim distribution:
-
-| Claim Amount | Occurrences |
-|---:|---:|
-| 100,000 | 18 |
-| 99,000 | 27 |
-| 98,000 | 11 |
-| 97,000 | 12 |
-| 96,000 | 15 |
-| 95,000 | 20 |
-
-## Interpretation
-
-The dataset supports a strong concentration of high-value exposure in the Life Insurance portfolio.
-
-The repeated upper-end amounts do not, by themselves, prove the existence of a contractual policy limit.
+The dataset contains 103 Life Insurance claims above this threshold, with an average claim value of 97,621.36.
 
 ## Business Impact
 
-Life Insurance represents the portfolio area with the greatest high-value claim exposure and therefore warrants enhanced financial controls and review capacity.
+Life Insurance represents the greatest high-value financial exposure within the portfolio.
+
+These claims may require enhanced monitoring, approval controls and fraud-review procedures.
 
 ## Recommendation
 
-Prioritize Life Insurance for:
-
-- high-value claim review;
-- exception monitoring;
-- fraud-screening rules;
-- reserve and exposure reporting.
+Prioritise Life Insurance claims for high-value review workflows and product-specific financial controls.
 
 ## Priority
 
@@ -123,31 +107,72 @@ High
 
 ---
 
-# Status Summary
-
-- Validated Business Findings: 2
-- Rejected Standalone Findings: 4
-- Exploratory Analyses Retained: 1
----
-
 # BF-003
 
 ## Title
 
-Agent Financial Exposure
+Agent Exposure Is Driven by Insurance Product Mix
 
 ## Business Question
 
-Which agents manage the highest financial exposure?
+Why do certain agents manage substantially greater total claim exposure than others?
 
-## SQL Reference
+## SQL References
 
-BA-010
+- BA-010
+- BA-011
 
-## Status
+## Finding
 
-UNDER REVIEW
+Agents with the highest total claim amounts are heavily exposed to Life Insurance claims.
 
-## Notes
+Their ranking is not explained only by the number of claims managed.
 
-Finding pending execution and validation.
+Examples:
+
+| Agent | Life Claim Amount | Total Claim Amount |
+|---|---:|---:|
+| AGENT00807 | 412,000.00 | 528,800.00 |
+| AGENT00679 | 347,000.00 | 489,000.00 |
+| AGENT00125 | 369,000.00 | 400,400.00 |
+| AGENT00789 | 331,000.00 | 392,900.00 |
+| AGENT00771 | 269,000.00 | 422,100.00 |
+
+The product portfolio assigned to each agent materially influences total financial exposure.
+
+## Business Impact
+
+Agent rankings based only on total claim amount may be misleading.
+
+Agents assigned to Life Insurance naturally manage higher-value claims than agents managing lower-value products.
+
+Performance reviews should separate:
+
+- claim volume;
+- claim value;
+- insurance product mix;
+- average claim severity.
+
+## Recommendation
+
+Use product-adjusted agent-performance metrics rather than raw total claim amount alone.
+
+Management dashboards should display exposure by both agent and insurance type.
+
+## Priority
+
+High
+
+## Confidence
+
+High
+
+---
+
+# STATUS
+
+Validated Findings: 3
+
+Rejected Findings: documented separately
+
+Supporting Analyses: documented through SQL and Business Questions
