@@ -183,6 +183,7 @@ SQL
 
 BA-012
 BA-013
+BA-016
 
 Outcome
 
@@ -210,11 +211,11 @@ Rejected Finding (RF-004)
 
 ## BQ-011
 
-Can a composite exposure index provide a more meaningful ranking of agents than claim count or total claim amount alone?
+Which agents generate the highest financial exposure within each insurance product?
 
 Status
 
-In Progress
+Completed
 
 SQL
 
@@ -222,7 +223,7 @@ BA-015
 
 Outcome
 
-Under Review
+Supporting Analysis (SA-002)
 
 ---
 
