@@ -8,86 +8,164 @@ Project: Insurance Claims Analytics – Claims Performance & Fraud Detection
 
 This report documents all data audits and technical validations completed during the project.
 
+Successful checks, failures, corrective actions and validation queries are retained to preserve complete analytical traceability.
+
 ---
 
 # DA-001 — Dataset Import Validation
 
-- insurance_data: 10,000
-- employee_data: 1,200
-- vendor_data: initially 0, then 600 after import correction
+## Expected Result
 
-Status: PASS
+- `insurance_data`: 10,000 records
+- `employee_data`: 1,200 records
+- `vendor_data`: 600 records
+
+## Actual Result
+
+- `insurance_data`: 10,000
+- `employee_data`: 1,200
+- `vendor_data`: initially 0, then 600 after import correction
+
+## Status
+
+PASS
 
 ---
 
 # DA-002 — Missing Relationship Identifiers
 
-- Missing agent_id: 0
-- Missing vendor_id: 3,245
+## Actual Result
 
-Interpretation: NULL vendor_id values are valid claims without an assigned vendor.
+- Missing `agent_id`: 0
+- Missing `vendor_id`: 3,245
 
-Status: PASS
+## Interpretation
+
+NULL `vendor_id` values are valid business conditions representing claims without an assigned vendor.
+
+## Status
+
+PASS
 
 ---
 
 # DA-003 — Primary Key Uniqueness
 
-No duplicate transaction_id, agent_id or vendor_id values were found.
+## Actual Result
 
-Status: PASS
+No duplicate values were found for:
+
+- `transaction_id`
+- `agent_id`
+- `vendor_id`
+
+## Status
+
+PASS
 
 ---
 
 # DA-004 — Referential Integrity
 
+## Actual Result
+
 - Orphan agent references: 0
 - Invalid non-null vendor references: 0
 
-The 3,245 initially unmatched vendor records all contained vendor_id = NULL.
+## Investigation
 
-Status: PASS
+The initial vendor query returned 3,245 unmatched records.
+
+Further analysis confirmed that all 3,245 records contained `vendor_id = NULL`.
+
+## Conclusion
+
+Vendor assignment is an optional relationship.
+
+## Status
+
+PASS
 
 ---
 
 # DA-005 — Domain Value Review
 
-Reviewed insurance_type, claim_status and incident_severity values.
+## Categories Reviewed
 
-Status: PASS
+- `insurance_type`
+- `claim_status`
+- `incident_severity`
+
+## Status
+
+PASS
 
 ---
 
 # DA-006 — PostgreSQL Analytics Views Validation
 
-## DA-006A — vw_claims_enriched
+## SQL Reference
+
+`03_analytics_views.sql`
+
+## DA-006A — Enriched Claims View
 
 Expected: 10,000 records.
 
 Actual: 10,000 records.
 
-Status: PASS
+Status: PASS.
 
-## DA-006B — vw_agent_exposure_summary
+## DA-006B — Agent Exposure View
 
 Expected: reproduce BA-010 ranking.
 
 Actual: ranking matches BA-010.
 
-Status: PASS
+Status: PASS.
 
-## DA-006C — vw_vendor_exposure_summary
+## DA-006C — Vendor Exposure View
 
 Expected: reproduce BA-012 ranking.
 
 Actual: ranking matches BA-012.
 
-Status: PASS
+Status: PASS.
 
-## DA-006D — vw_agent_product_ranking
+## DA-006D — Product-Adjusted Agent Ranking View
 
-Expected: reproduce BA-015 product-specific rankings.
+Expected: reproduce BA-015 rankings within each insurance type.
+
+Actual: rankings match BA-015 for Health, Life, Mobile, Motor, Property and Travel.
+
+Status: PASS.
+
+## DA-006E — Product-Adjusted Vendor Ranking View
+
+Expected: reproduce BA-016 rankings within each insurance type.
 
 Actual: pending execution.
 
-Status: PENDING
+Status: PENDING.
+
+---
+
+# Overall Status
+
+PASS WITH ONE PENDING VIEW VALIDATION
+
+All imported datasets, identifiers, relational links and four analytical views have been validated successfully.
+
+The product-adjusted vendor ranking view requires final execution.
+
+---
+
+# Revision History
+
+## Version 0.6
+
+- Consolidated dataset audit results.
+- Confirmed record preservation.
+- Validated agent and vendor summary views.
+- Validated product-adjusted agent ranking view.
+- Added pending validation for the product-adjusted vendor ranking view.
