@@ -98,3 +98,48 @@ Each supporting analysis must reference:
 - its SQL Analysis ID;
 - the Business Finding it supports;
 - its analytical contribution.
+
+---
+
+# SA-003
+
+## Title
+
+Product-Adjusted Vendor Exposure Ranking
+
+## SQL Reference
+
+BA-016
+
+## Business Question
+
+Which vendors generate the highest financial exposure within each insurance product?
+
+## Method
+
+The query uses:
+
+- Common Table Expression (`WITH`);
+- `ROW_NUMBER()` window function;
+- `PARTITION BY insurance_type`;
+- product-specific vendor rankings.
+
+## Result
+
+Vendor rankings differ substantially across insurance products.
+
+Life Insurance vendors dominate only within the Life portfolio, while different vendors lead Health, Property, Motor, Travel and Mobile Insurance.
+
+## Decision
+
+Supporting Analysis.
+
+## Supports
+
+BF-004 — Vendor Financial Exposure Is Driven by Insurance Product Mix
+
+## Business Impact
+
+Vendor performance should be evaluated within the same insurance product or through product-adjusted metrics.
+
+Cross-product rankings based only on total claim amount are not appropriate.
