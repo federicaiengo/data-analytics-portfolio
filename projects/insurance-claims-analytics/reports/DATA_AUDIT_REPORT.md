@@ -233,3 +233,44 @@ Updated the referential-integrity query to distinguish null identifiers from inv
 - Confirmed that all populated vendor identifiers are valid.
 - Reclassified null vendor assignments as a separate completeness condition.
 
+---
+
+# DA-005
+
+## Audit
+
+Analytics Views Validation
+
+## Business Question
+
+Do the reusable PostgreSQL views reproduce the validated analytical results?
+
+## SQL Reference
+
+03_analytics_views.sql
+
+## Views
+
+- `vw_claims_enriched`
+- `vw_agent_exposure_summary`
+- `vw_vendor_exposure_summary`
+
+## Vendor View Result
+
+`vw_vendor_exposure_summary` reproduces the vendor ranking previously obtained through BA-012.
+
+The view also calculates the number of high-value claims associated with each vendor.
+
+## Status
+
+PARTIAL PASS
+
+## Pending Validation
+
+- Confirm that `vw_claims_enriched` contains 10,000 records.
+- Confirm that `vw_agent_exposure_summary` reproduces the BA-010 ranking.
+
+## Business Impact
+
+Validated views provide reusable datasets for reporting and future Power BI development without duplicating analytical SQL.
+
