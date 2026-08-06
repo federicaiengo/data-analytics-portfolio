@@ -8,11 +8,16 @@ Project: Insurance Claims Analytics – Claims Performance & Fraud Detection
 
 This document defines the business questions the project aims to answer.
 
-Each question should lead to one or more SQL analyses.
+Each business question is linked to one or more SQL analyses.
 
-Only validated answers may become Business Findings.
+Every completed analysis must end as one of the following:
 
-Questions that do not produce actionable evidence remain documented as Rejected Findings.
+- Business Finding
+- Rejected Finding
+- Supporting Analysis
+- Under Review
+
+This ensures complete analytical traceability.
 
 ---
 
@@ -153,33 +158,77 @@ Which agents manage the highest financial exposure?
 
 Status
 
-Planned
+Completed
+
+SQL
+
+BA-010
+BA-011
+
+Outcome
+
+Validated (BF-003)
 
 ---
 
 ## BQ-009
 
-Which vendors are associated with the highest-value claims?
+Which vendors manage the highest financial exposure?
 
 Status
 
-Planned
+Completed
+
+SQL
+
+BA-012
+BA-013
+
+Outcome
+
+Validated (BF-004)
 
 ---
 
 ## BQ-010
 
-Which vendors process the largest claim volumes?
+Are Life Insurance claims operationally concentrated among a small number of agents?
 
 Status
 
-Planned
+Completed
+
+SQL
+
+BA-014
+
+Outcome
+
+Rejected Finding (RF-004)
+
+---
+
+## BQ-011
+
+Can a composite exposure index provide a more meaningful ranking of agents than claim count or total claim amount alone?
+
+Status
+
+In Progress
+
+SQL
+
+BA-015
+
+Outcome
+
+Under Review
 
 ---
 
 # Executive Reporting
 
-## BQ-011
+## BQ-012
 
 Which KPIs should management monitor regularly?
 
@@ -189,7 +238,7 @@ Planned
 
 ---
 
-## BQ-012
+## BQ-013
 
 Which business actions are supported by the analytical evidence?
 
@@ -201,6 +250,6 @@ Planned
 
 # Notes
 
-This roadmap evolves during the project.
+This roadmap evolves throughout the project.
 
-Business Questions define the analytical direction of the project and provide traceability between business requirements, SQL analyses and validated findings.
+Each Business Question is directly connected to SQL analyses and their documented outcomes, providing full traceability from business requirement to analytical conclusion.
