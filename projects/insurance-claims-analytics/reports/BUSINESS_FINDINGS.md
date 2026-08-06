@@ -128,3 +128,26 @@ High
 - Validated Business Findings: 2
 - Rejected Standalone Findings: 4
 - Exploratory Analyses Retained: 1
+---
+
+# BF-003
+
+## Title
+
+Agent Financial Exposure
+
+## Business Question
+
+Which agents manage the highest financial exposure?
+
+## SQL Reference
+
+BA-010
+
+## Status
+
+UNDER REVIEW
+
+## Notes
+
+Finding pending execution and validation.
