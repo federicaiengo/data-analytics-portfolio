@@ -214,3 +214,83 @@ FROM insurance_data
 WHERE claim_amount >= 95000
 GROUP BY insurance_type
 ORDER BY high_value_claims DESC;
+
+/* =========================================================
+   BA-010 — AGENT PERFORMANCE
+   ========================================================= */
+
+/*
+Business Question
+
+Which agents manage the highest financial exposure?
+*/
+
+SELECT
+    i.agent_id,
+    COUNT(*) AS total_claims,
+    ROUND(SUM(i.claim_amount),2) AS total_claim_amount,
+    ROUND(AVG(i.claim_amount),2) AS average_claim_amount
+FROM insurance_data i
+GROUP BY i.agent_id
+ORDER BY total_claim_amount DESC
+LIMIT 20;
+
+/* =========================================================
+   BA-011 — AGENT CLAIM PROFILE
+   ========================================================= */
+
+/*
+Business Question
+
+Which insurance products generate the highest financial exposure for the top-performing agents?
+*/
+
+SELECT
+    agent_id,
+    insurance_type,
+    COUNT(*) AS total_claims,
+    ROUND(SUM(claim_amount),2) AS total_claim_amount,
+    ROUND(AVG(claim_amount),2) AS average_claim_amount
+FROM insurance_data
+WHERE agent_id IN (
+    'AGENT00807',
+    'AGENT00679',
+    'AGENT00771',
+    'AGENT00125',
+    'AGENT00789'
+)
+GROUP BY agent_id, insurance_type
+ORDER BY agent_id, total_claim_amount DESC;
+
+/* =========================================================
+   BA-012 — VENDOR FINANCIAL EXPOSURE
+   ========================================================= */
+
+/*
+Business Question:
+Which vendors are associated with the highest financial exposure?
+
+Expected Result:
+Identify vendors linked to the highest total and average claim amounts.
+
+Actual Result:
+Pending execution.
+
+Status:
+PENDING
+*/
+
+SELECT
+    i.vendor_id,
+    v.vendor_name,
+    COUNT(*) AS total_claims,
+    ROUND(SUM(i.claim_amount), 2) AS total_claim_amount,
+    ROUND(AVG(i.claim_amount), 2) AS average_claim_amount
+FROM insurance_data i
+JOIN vendor_data v
+    ON i.vendor_id = v.vendor_id
+GROUP BY
+    i.vendor_id,
+    v.vendor_name
+ORDER BY total_claim_amount DESC
+LIMIT 20;
