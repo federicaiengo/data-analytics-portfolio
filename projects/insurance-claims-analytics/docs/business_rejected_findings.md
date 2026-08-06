@@ -186,3 +186,33 @@ Each record must contain:
 - decision;
 - reason;
 - possible future reuse.
+
+---
+
+# RF-005 — Life Insurance Claim Concentration by Agent
+
+## SQL Reference
+
+BA-014
+
+## Business Question
+
+Are Life Insurance claims operationally concentrated among a small number of agents?
+
+## Result
+
+Top-ranking agents manage between four and six Life Insurance claims.
+
+The distribution is relatively balanced across the leading agents.
+
+## Decision
+
+Rejected as a standalone business finding.
+
+## Reason
+
+The analysis does not demonstrate a meaningful operational concentration.
+
+## Future Value
+
+May be combined with geographical information, departments or workload metrics if additional data becomes available.
