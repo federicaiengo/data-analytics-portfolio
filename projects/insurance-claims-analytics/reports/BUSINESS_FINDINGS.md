@@ -171,8 +171,54 @@ High
 
 # STATUS
 
-Validated Findings: 3
+Validated Findings: 4
 
 Rejected Findings: documented separately
 
 Supporting Analyses: documented through SQL and Business Questions
+---
+
+# BF-004
+
+## Title
+
+Vendor Financial Exposure Is Driven by Insurance Product Mix
+
+## Business Question
+
+Why do certain vendors manage substantially greater financial exposure than others?
+
+## SQL References
+
+- BA-012
+- BA-013
+- BA-016
+
+## Finding
+
+Vendors with the highest financial exposure are strongly associated with Life Insurance claims.
+
+Higher rankings are primarily explained by the insurance products assigned to each vendor rather than by claim volume alone.
+
+## Business Impact
+
+Vendor comparisons based solely on total claim amount may produce misleading conclusions.
+
+Operational reporting should distinguish between:
+
+- claim volume;
+- average claim value;
+- insurance product mix;
+- total financial exposure.
+
+## Recommendation
+
+Evaluate vendor performance using product-adjusted KPIs instead of total claim amount alone.
+
+## Priority
+
+High
+
+## Confidence
+
+High
