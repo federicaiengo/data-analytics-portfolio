@@ -1,0 +1,7 @@
+"insurance_type","total_claims","total_claim_amount","exposure_share_pct","cumulative_exposure_pct"
+"Life",1682,91478000.00,55.23,55.23
+"Property",1692,41579000.00,25.10,80.33
+"Health",1690,18254000.00,11.02,91.35
+"Motor",1574,8663000.00,5.23,96.58
+"Travel",1670,4976000.00,3.00,99.58
+"Mobile",1692,688300.00,0.42,100.00
