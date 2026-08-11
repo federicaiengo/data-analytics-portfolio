@@ -143,3 +143,42 @@ BF-004 — Vendor Financial Exposure Is Driven by Insurance Product Mix
 Vendor performance should be evaluated within the same insurance product or through product-adjusted metrics.
 
 Cross-product rankings based only on total claim amount are not appropriate.
+
+
+## VIZ-002 — Financial Exposure by Insurance Type
+
+**Status:** PASS
+
+**Purpose:**  
+Provide a recruiter- and stakeholder-friendly visualization of financial exposure across insurance products.
+
+**Source dataset:**  
+`viz_002_product_exposure.csv`
+
+**Visualization:**  
+Horizontal bar chart ranked by total claim amount, with exposure share percentages displayed as data labels.
+
+**Key results:**
+- Life: 91,478,000 total exposure — 55.23%
+- Property: 41,579,000 — 25.10%
+- Health: 18,254,000 — 11.02%
+- Motor: 8,663,000 — 5.23%
+- Travel: 4,976,000 — 3.00%
+- Mobile: 688,300 — 0.42%
+
+**Business interpretation:**  
+Financial exposure is highly concentrated by insurance type. Life Insurance alone accounts for 55.23% of total claim exposure, while Life and Property together account for 80.33%.
+
+**Tableau implementation:**  
+- Horizontal bar chart
+- Descending exposure ranking
+- Financial exposure displayed in millions
+- Exposure-share labels formatted to two decimal places
+- Field headers removed for cleaner presentation
+- Mobile's 0.42% label is omitted from the visible chart because of the very short bar; the underlying value remains available in the data/tooltip.
+
+**Final chart title:**  
+`Financial Exposure by Insurance Type`
+
+**Final X-axis title:**  
+`Financial Exposure (M)`
