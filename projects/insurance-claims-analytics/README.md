@@ -1,12 +1,12 @@
-# Insurance Claims Analytics – Claims Performance & Fraud Detection
+# Insurance Claims Analytics – Risk, Exposure & Performance Analysis
 
 ## Project Overview
 
-This project analyzes a relational insurance claims dataset using PostgreSQL and SQL to evaluate claims performance, data quality, operational efficiency and potential fraud indicators.
+This project analyzes a relational insurance claims dataset using PostgreSQL, SQL and Tableau to evaluate financial exposure, claims performance, data quality and operational risk.
 
-The project demonstrates an end-to-end analytics workflow, transforming raw insurance data into reproducible business insights through data auditing, quality validation, business analysis and structured documentation.
+The project demonstrates an end-to-end analytics workflow: raw data is audited and validated before business analysis, analytical findings are tested against the available evidence, and validated results are translated into an executive Tableau dashboard and documented business recommendations.
 
-It has been developed as a client-ready portfolio project following professional documentation and repository standards.
+The repository is structured as a client-ready portfolio project with an emphasis on reproducibility, analytical traceability and decision-oriented reporting.
 
 ---
 
@@ -14,11 +14,22 @@ It has been developed as a client-ready portfolio project following professional
 
 The project uses three related datasets:
 
-- insurance_data.csv
-- employee_data.csv
-- vendor_data.csv
+- `insurance_data.csv`
+- `employee_data.csv`
+- `vendor_data.csv`
 
-The main dataset contains approximately 10,000 insurance claim records linked to employee and vendor reference tables.
+The primary dataset contains 10,000 insurance claims linked to employee and vendor reference data.
+
+The analysis covers:
+
+- claim volume;
+- financial exposure;
+- insurance product mix;
+- claim severity;
+- high-value claims;
+- agent exposure;
+- vendor exposure;
+- data quality and referential integrity.
 
 ---
 
@@ -27,13 +38,13 @@ The main dataset contains approximately 10,000 insurance claim records linked to
 - Assess insurance claims performance.
 - Validate data quality before business analysis.
 - Verify referential integrity across related datasets.
-- Identify high-value claims and financial exposure.
-- Detect potential fraud indicators.
-- Evaluate claim processing patterns.
-- Measure agent performance.
-- Evaluate vendor activity.
-- Produce evidence-based business findings.
-- Improve reporting quality through reproducible analysis.
+- Measure total and average financial exposure.
+- Identify high-value and high-severity claims.
+- Evaluate exposure concentration across insurance products.
+- Assess how product mix affects agent and vendor exposure.
+- Identify analytically defensible risk indicators.
+- Produce reproducible business findings.
+- Translate validated analysis into executive-level reporting.
 
 ---
 
@@ -42,12 +53,15 @@ The main dataset contains approximately 10,000 insurance claim records linked to
 - PostgreSQL
 - pgAdmin
 - SQL
+- Tableau
 - Relational Databases
 - Data Auditing
 - Data Quality
 - Referential Integrity
+- Exploratory Data Analysis
 - Business Analysis
 - KPI Design
+- Data Visualization
 - Business Reporting
 - Git
 - GitHub
@@ -65,6 +79,12 @@ The main dataset contains approximately 10,000 insurance claim records linked to
 6. Evidence Validation
 7. Business Findings
 8. Rejected Findings Documentation
+9. KPI Development
+10. Data Visualization
+11. Executive Dashboard Development
+12. Business Recommendations
+
+This workflow deliberately separates exploratory analysis from validated findings so that conclusions included in the final reporting layer remain supported by reproducible evidence.
 
 ---
 
@@ -84,56 +104,3 @@ insurance-claims-analytics/
 ├── reports/
 │
 └── assets/
-```
-
----
-
-## Current Status
-
-Completed:
-
-- PostgreSQL environment configured.
-- Three datasets imported.
-- Initial data audit completed.
-- Referential integrity validated.
-- Initial business analyses completed.
-- Validated business findings documented.
-- Rejected findings documented.
-
-In Progress:
-
-- Agent performance analysis.
-- Vendor performance analysis.
-- Executive business recommendations.
-- Dashboard planning.
-
----
-
-## Documentation
-
-Project documentation is organised into dedicated components:
-
-- README
-- Methodology
-- Data Audit Report
-- Business Findings
-- Business Rejected Findings
-
-This structure ensures traceability, reproducibility and maintainability throughout the project lifecycle.
-
----
-
-## Key Findings
-
-Current validated findings include:
-
-- Claim value varies substantially across insurance products, with Life Insurance generating the highest average claim amounts.
-- High-value claims (≥95,000) are concentrated within the Life Insurance portfolio, indicating significantly greater financial exposure than other insurance products.
-
-Additional analyses are documented as rejected findings whenever they do not provide sufficiently strong business evidence, ensuring that all analytical work remains traceable.
-
----
-
-## Disclaimer
-
-This repository is intended exclusively for portfolio and educational purposes.
