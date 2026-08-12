@@ -274,3 +274,49 @@ This suggests that aggregate exposure can arise from claim volume and claim seve
 
 **Final X-axis title:**  
 `Financial Exposure`
+
+## VIZ-005 — Top 10 Vendors by Financial Exposure
+
+**Status:** PASS
+
+**Purpose:**  
+Identify the vendors associated with the highest total claim financial exposure and provide claim-volume and severity context.
+
+**Source dataset:**  
+`viz_005_vendor_exposure.csv`
+
+**Visualization:**  
+Horizontal bar chart ranking the Top 10 vendors by total claim amount.
+
+**Key results:**
+- Bass, Garcia and Garcia — 661,000 total exposure — 23 claims — 0 high-value claims
+- Burton PLC — 635,000 — 18 claims — 2 high-value claims
+- Johnson Ltd — 608,700 — 25 claims — 0 high-value claims
+- Hoffman-Roberts — 598,000 — 21 claims — 0 high-value claims
+- Hayden Inc — 567,200 — 19 claims — 0 high-value claims
+- Bullock-Flores — 565,400 — 16 claims — 2 high-value claims
+- Sanders-Stark — 548,100 — 18 claims — 1 high-value claim
+- Hickman-Mendoza — 546,300 — 25 claims — 1 high-value claim
+- Nguyen-Hess — 542,500 — 24 claims — 0 high-value claims
+- Myers, Hayes and Jones — 526,600 — 24 claims — 1 high-value claim
+
+**Business interpretation:**  
+Vendor-level financial exposure is relatively distributed across the Top 10 rather than being dominated by a single vendor. High aggregate exposure also does not necessarily correspond to the presence of high-value individual claims.
+
+This indicates that vendor risk assessment should consider aggregate exposure, claim frequency and claim severity together rather than relying exclusively on extreme claims.
+
+**Tableau implementation:**
+- Horizontal bar chart
+- Descending ranking by total claim amount
+- Vendor names used instead of IDs for stakeholder readability
+- Total Claims, Average Claim Amount and High Value Claims retained in tooltip
+- Financial exposure displayed in thousands
+- Redundant Vendor Name field header removed
+- Business-oriented chart and axis titles
+
+**Final chart title:**  
+`Top 10 Vendors by Financial Exposure`
+
+**Final X-axis title:**  
+`Financial Exposure`
+
