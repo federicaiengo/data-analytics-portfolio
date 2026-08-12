@@ -182,3 +182,50 @@ Financial exposure is highly concentrated by insurance type. Life Insurance alon
 
 **Final X-axis title:**  
 `Financial Exposure (M)`
+
+## VIZ-003 — Financial Exposure by Claim Severity
+
+**Status:** PASS
+
+**Purpose:**  
+Show how total claim financial exposure is distributed across claim severity bands.
+
+**Source dataset:**  
+`viz_003_claim_severity_bands.csv`
+
+**Visualization:**  
+Horizontal bar chart displaying total financial exposure by claim severity band, with exposure-share percentages as data labels.
+
+**Severity bands:**
+- Low (<= 2,000)
+- Medium-Low (2,001–7,000)
+- Medium-High (7,001–21,000)
+- High (21,001–94,999)
+- Very High (>= 95,000)
+
+**Key results:**
+- Low: 2,861 claims — 2,441,300 total exposure — 1.47%
+- Medium-Low: 2,170 claims — 9,875,000 — 5.96%
+- Medium-High: 2,504 claims — 34,159,000 — 20.62%
+- High: 2,362 claims — 109,108,000 — 65.87%
+- Very High: 103 claims — 10,055,000 — 6.07%
+
+**Business interpretation:**  
+Financial exposure is strongly concentrated in the High severity band, which accounts for 65.87% of total exposure. This concentration is not driven simply by claim frequency: the High band contains fewer claims than the Low and Medium-High bands but generates substantially greater financial exposure.
+
+The Very High band represents only 103 claims, yet contributes 6.07% of total exposure, highlighting the disproportionate financial impact of extreme individual claims.
+
+**Tableau implementation:**
+- Horizontal bar chart
+- Custom semantic severity ordering
+- Calculated field `Severity Order` used to preserve Low → Very High progression
+- Financial exposure displayed in millions
+- Exposure-share labels formatted to two decimal places
+- Redundant field header removed
+- Business-oriented chart and axis titles
+
+**Final chart title:**  
+`Financial Exposure by Claim Severity`
+
+**Final X-axis title:**  
+`Financial Exposure (M)`
