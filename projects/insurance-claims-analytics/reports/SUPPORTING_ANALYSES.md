@@ -229,3 +229,48 @@ The Very High band represents only 103 claims, yet contributes 6.07% of total ex
 
 **Final X-axis title:**  
 `Financial Exposure (M)`
+
+## VIZ-004 — Top 10 Agents by Financial Exposure
+
+**Status:** PASS
+
+**Purpose:**  
+Identify the agents associated with the highest total claim financial exposure and provide additional claim-volume context.
+
+**Source dataset:**  
+`viz_004_agent_exposure.csv`
+
+**Visualization:**  
+Horizontal bar chart ranking the Top 10 agents by total claim amount.
+
+**Key results:**
+- AGENT00807 — 528,800 total exposure — 14 claims — 0 high-value claims
+- AGENT00679 — 489,000 — 13 claims — 2 high-value claims
+- AGENT00771 — 422,100 — 15 claims — 0 high-value claims
+- AGENT00125 — 400,400 — 10 claims — 0 high-value claims
+- AGENT00789 — 392,900 — 9 claims — 1 high-value claim
+- AGENT00525 — 385,900 — 15 claims — 0 high-value claims
+- AGENT00319 — 375,600 — 18 claims — 0 high-value claims
+- AGENT00388 — 373,800 — 17 claims — 2 high-value claims
+- AGENT00439 — 370,000 — 12 claims — 1 high-value claim
+- AGENT00482 — 368,000 — 11 claims — 0 high-value claims
+
+**Business interpretation:**  
+The agents with the highest aggregate financial exposure are not necessarily those associated with high-value individual claims. AGENT00807 has the highest total exposure despite having no high-value claims, while several lower-ranked agents have one or two.
+
+This suggests that aggregate exposure can arise from claim volume and claim severity patterns rather than from extreme claims alone. Agent-level exposure should therefore be evaluated using multiple measures rather than a single high-value-claim indicator.
+
+**Tableau implementation:**
+- Horizontal bar chart
+- Descending ranking by total claim amount
+- Uniform bar encoding to keep financial exposure as the primary visual measure
+- Total Claims and High Value Claims retained in tooltip for contextual analysis
+- Financial exposure displayed in thousands
+- Redundant Agent Id field header removed
+- Business-oriented chart and axis titles
+
+**Final chart title:**  
+`Top 10 Agents by Financial Exposure`
+
+**Final X-axis title:**  
+`Financial Exposure`
