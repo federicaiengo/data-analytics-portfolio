@@ -8,6 +8,10 @@ The project demonstrates an end-to-end analytics workflow: raw data is audited a
 
 The repository is structured as a client-ready portfolio project with an emphasis on reproducibility, analytical traceability and decision-oriented reporting.
 
+### Interactive Dashboard
+
+[View the Insurance Claims — Executive Risk & Exposure Dashboard on Tableau Public](https://public.tableau.com/app/profile/federica.iengo/viz/insurance_claims_dashboard/Dashboard1)
+
 ---
 
 ## Dataset
@@ -104,3 +108,4 @@ insurance-claims-analytics/
 ├── reports/
 │
 └── assets/
+```
