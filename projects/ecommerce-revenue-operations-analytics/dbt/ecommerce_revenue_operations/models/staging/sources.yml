@@ -1,0 +1,38 @@
+version: 2
+
+sources:
+  - name: olist_raw
+    description: >
+      Raw Olist e-commerce source tables loaded into Snowflake after
+      source-level Python auditing and row-count reconciliation.
+
+    database: ECOMMERCE_ANALYTICS
+    schema: RAW
+
+    tables:
+      - name: customers
+        identifier: OLIST_CUSTOMERS
+
+      - name: geolocation
+        identifier: OLIST_GEOLOCATION
+
+      - name: order_items
+        identifier: OLIST_ORDER_ITEMS
+
+      - name: order_payments
+        identifier: OLIST_ORDER_PAYMENTS
+
+      - name: order_reviews
+        identifier: OLIST_ORDER_REVIEWS
+
+      - name: orders
+        identifier: OLIST_ORDERS
+
+      - name: products
+        identifier: OLIST_PRODUCTS
+
+      - name: sellers
+        identifier: OLIST_SELLERS
+
+      - name: product_category_name_translation
+        identifier: PRODUCT_CATEGORY_NAME_TRANSLATION
