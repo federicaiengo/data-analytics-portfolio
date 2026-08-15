@@ -1,0 +1,18 @@
+check_name,result_type,value,details
+customers.customer_id,duplicate_key_rows,0,unique_values=99441; total_rows=99441
+orders.order_id,duplicate_key_rows,0,unique_values=99441; total_rows=99441
+products.product_id,duplicate_key_rows,0,unique_values=32951; total_rows=32951
+sellers.seller_id,duplicate_key_rows,0,unique_values=3095; total_rows=3095
+translations.product_category_name,duplicate_key_rows,0,unique_values=71; total_rows=71
+orders.customer_id -> customers.customer_id,orphan_rows,0,distinct_orphan_keys=0
+order_items.order_id -> orders.order_id,orphan_rows,0,distinct_orphan_keys=0
+order_items.product_id -> products.product_id,orphan_rows,0,distinct_orphan_keys=0
+order_items.seller_id -> sellers.seller_id,orphan_rows,0,distinct_orphan_keys=0
+payments.order_id -> orders.order_id,orphan_rows,0,distinct_orphan_keys=0
+reviews.order_id -> orders.order_id,orphan_rows,0,distinct_orphan_keys=0
+geolocation,exact_duplicate_rows,261831,rows_after_exact_dedup=738332
+geolocation_zip_code_prefix,unique_zip_codes,19015,total_rows=1000163
+products,all_core_metadata_missing_rows,610,
+products,any_core_metadata_missing_rows,610,
+product_category_translation,untranslated_categories,2,"pc_gamer, portateis_cozinha_e_preparadores_de_alimentos"
+product_category_translation,unused_translation_categories,0,
