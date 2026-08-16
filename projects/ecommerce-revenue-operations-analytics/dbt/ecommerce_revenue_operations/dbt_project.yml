@@ -1,13 +1,8 @@
-# Name your project! Project names should contain only lowercase characters
-# and underscores. A good package name should reflect your organization's
-# name or the intended use of these models
 name: 'ecommerce_revenue_operations'
 version: '1.0.0'
 
-# This setting configures which "profile" dbt uses for this project.
 profile: 'ecommerce_revenue_operations'
 
-# These configurations specify where dbt should look for different types of files.
 model-paths: ["models"]
 analysis-paths: ["analyses"]
 test-paths: ["tests"]
@@ -19,8 +14,10 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
-# Model configuration
 models:
   ecommerce_revenue_operations:
     staging:
+      +materialized: view
+
+    intermediate:
       +materialized: view
