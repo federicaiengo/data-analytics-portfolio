@@ -84,3 +84,30 @@ models:
       - name: item_plus_freight_value
         data_tests:
           - not_null
+
+
+  - name: int_order_payments_summary
+    description: >
+      Order-level payment aggregation used to preserve one-row-per-order grain
+      and prevent row multiplication in downstream joins.
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: payment_record_count
+        data_tests:
+          - not_null
+
+      - name: distinct_payment_type_count
+        data_tests:
+          - not_null
+
+      - name: max_payment_installments
+        data_tests:
+          - not_null
+
+      - name: payment_value
+        data_tests:
+          - not_null
