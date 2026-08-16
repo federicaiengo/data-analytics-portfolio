@@ -140,3 +140,31 @@ models:
       - name: missing_payment_summary
         data_tests:
           - not_null
+
+
+  - name: int_products_enriched
+    description: >
+      Product-level enrichment model preserving one row per product while
+      adding English category mapping, reporting-safe category labels and
+      explicit flags for missing source metadata and translation gaps.
+    columns:
+      - name: product_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: product_category_name_reporting
+        data_tests:
+          - not_null
+
+      - name: is_product_category_missing
+        data_tests:
+          - not_null
+
+      - name: is_category_translation_missing
+        data_tests:
+          - not_null
+
+      - name: is_core_descriptive_metadata_missing
+        data_tests:
+          - not_null
