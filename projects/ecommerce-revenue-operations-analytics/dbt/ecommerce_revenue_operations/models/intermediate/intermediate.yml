@@ -1,124 +1,8 @@
-version: 2
-
-models:
-
-  - name: int_geolocation_deduplicated
+  - name: int_orders_lifecycle
     description: >
-      Exact-deduplicated geolocation observations preserving the remaining
-      source-level geographic granularity.
-    columns:
-      - name: geolocation_zip_code_prefix
-        data_tests:
-          - not_null
-
-      - name: geolocation_lat
-        data_tests:
-          - not_null
-
-      - name: geolocation_lng
-        data_tests:
-          - not_null
-
-
-  - name: int_geolocation_zip
-    description: >
-      Controlled one-row-per-ZIP geographic representation used to prevent
-      row multiplication in downstream joins.
-    columns:
-      - name: geolocation_zip_code_prefix
-        data_tests:
-          - not_null
-          - unique
-
-      - name: geolocation_lat
-        data_tests:
-          - not_null
-
-      - name: geolocation_lng
-        data_tests:
-          - not_null
-
-      - name: geolocation_city
-        data_tests:
-          - not_null
-
-      - name: geolocation_state
-        data_tests:
-          - not_null
-
-      - name: geolocation_observation_count
-        data_tests:
-          - not_null
-
-
-  - name: int_order_items_summary
-    description: >
-      Order-level aggregation of item, product, seller and financial values,
-      preventing row multiplication in downstream order-level joins.
-    columns:
-      - name: order_id
-        data_tests:
-          - not_null
-          - unique
-
-      - name: order_item_count
-        data_tests:
-          - not_null
-
-      - name: distinct_product_count
-        data_tests:
-          - not_null
-
-      - name: distinct_seller_count
-        data_tests:
-          - not_null
-
-      - name: item_sales_value
-        data_tests:
-          - not_null
-
-      - name: freight_value
-        data_tests:
-          - not_null
-
-      - name: item_plus_freight_value
-        data_tests:
-          - not_null
-
-
-  - name: int_order_payments_summary
-    description: >
-      Order-level payment aggregation used to preserve one-row-per-order grain
-      and prevent row multiplication in downstream joins.
-    columns:
-      - name: order_id
-        data_tests:
-          - not_null
-          - unique
-
-      - name: payment_record_count
-        data_tests:
-          - not_null
-
-      - name: distinct_payment_type_count
-        data_tests:
-          - not_null
-
-      - name: max_payment_installments
-        data_tests:
-          - not_null
-
-      - name: payment_value
-        data_tests:
-          - not_null
-
-
-  - name: int_order_financial_reconciliation
-    description: >
-      Order-level reconciliation model preserving the complete order universe
-      while comparing aggregated payment value against aggregated item sales
-      plus freight. Missing transactional summaries and financial discrepancies
-      remain explicitly observable rather than being silently replaced.
+      Order-level lifecycle model preserving the complete order universe while
+      exposing missing lifecycle timestamps, temporal sequence anomalies and
+      duration metrics only where timestamp sequences are valid.
     columns:
       - name: order_id
         data_tests:
@@ -133,38 +17,54 @@ models:
         data_tests:
           - not_null
 
-      - name: missing_item_summary
+      - name: order_purchase_timestamp
         data_tests:
           - not_null
 
-      - name: missing_payment_summary
+      - name: is_approval_missing
         data_tests:
           - not_null
 
-
-  - name: int_products_enriched
-    description: >
-      Product-level enrichment model preserving one row per product while
-      adding English category mapping, reporting-safe category labels and
-      explicit flags for missing source metadata and translation gaps.
-    columns:
-      - name: product_id
-        data_tests:
-          - not_null
-          - unique
-
-      - name: product_category_name_reporting
+      - name: is_carrier_timestamp_missing
         data_tests:
           - not_null
 
-      - name: is_product_category_missing
+      - name: is_customer_delivery_timestamp_missing
         data_tests:
           - not_null
 
-      - name: is_category_translation_missing
+      - name: is_delivered_order_missing_approval
         data_tests:
           - not_null
 
-      - name: is_core_descriptive_metadata_missing
+      - name: is_delivered_order_missing_carrier_timestamp
+        data_tests:
+          - not_null
+
+      - name: is_delivered_order_missing_customer_delivery_timestamp
+        data_tests:
+          - not_null
+
+      - name: approval_before_purchase
+        data_tests:
+          - not_null
+
+      - name: carrier_before_approval
+        data_tests:
+          - not_null
+
+      - name: customer_delivery_before_carrier
+        data_tests:
+          - not_null
+
+      - name: customer_delivery_before_purchase
+        data_tests:
+          - not_null
+
+      - name: estimated_delivery_before_purchase
+        data_tests:
+          - not_null
+
+      - name: has_temporal_sequence_anomaly
         data_tests:
           - not_null
