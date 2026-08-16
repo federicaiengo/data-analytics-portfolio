@@ -21,3 +21,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.log
+# dbt generated artifacts
+dbt/ecommerce_revenue_operations/target/
+dbt/ecommerce_revenue_operations/logs/
+dbt/ecommerce_revenue_operations/dbt_packages/
