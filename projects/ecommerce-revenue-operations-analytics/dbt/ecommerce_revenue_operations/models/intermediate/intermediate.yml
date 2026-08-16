@@ -240,3 +240,42 @@ models:
       - name: has_temporal_sequence_anomaly
         data_tests:
           - not_null
+  - name: int_customers_geography
+    description: >
+      Customer-level geographic enrichment preserving one row per customer
+      while joining the controlled one-row-per-ZIP geolocation representation.
+      Missing geographic matches and city/state representation differences
+      remain explicitly observable.
+    columns:
+      - name: customer_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: customer_unique_id
+        data_tests:
+          - not_null
+
+      - name: customer_zip_code_prefix
+        data_tests:
+          - not_null
+
+      - name: customer_city
+        data_tests:
+          - not_null
+
+      - name: customer_state
+        data_tests:
+          - not_null
+
+      - name: is_geolocation_match_missing
+        data_tests:
+          - not_null
+
+      - name: is_customer_city_mismatch
+        data_tests:
+          - not_null
+
+      - name: is_customer_state_mismatch
+        data_tests:
+          - not_null
