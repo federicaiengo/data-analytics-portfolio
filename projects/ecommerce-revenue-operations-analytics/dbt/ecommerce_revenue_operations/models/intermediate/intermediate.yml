@@ -49,3 +49,37 @@ models:
       - name: geolocation_observation_count
         data_tests:
           - not_null
+
+            - name: int_order_items_summary
+    description: >
+      Order-level aggregation of item, product, seller and financial values,
+      preventing row multiplication in downstream order-level joins.
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: order_item_count
+        data_tests:
+          - not_null
+
+      - name: distinct_product_count
+        data_tests:
+          - not_null
+
+      - name: distinct_seller_count
+        data_tests:
+          - not_null
+
+      - name: item_sales_value
+        data_tests:
+          - not_null
+
+      - name: freight_value
+        data_tests:
+          - not_null
+
+      - name: item_plus_freight_value
+        data_tests:
+          - not_null
