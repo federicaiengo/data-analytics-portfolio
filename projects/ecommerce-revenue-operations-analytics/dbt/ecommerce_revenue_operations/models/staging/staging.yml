@@ -1,0 +1,151 @@
+version: 2
+
+models:
+
+  - name: stg_customers
+    description: Cleaned and typed customer records from the Olist raw source.
+    columns:
+      - name: customer_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: customer_unique_id
+        data_tests:
+          - not_null
+
+
+  - name: stg_orders
+    description: Cleaned and typed order lifecycle records.
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+
+
+  - name: stg_order_items
+    description: Cleaned and typed order item records.
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: product_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+
+      - name: seller_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_sellers')
+                field: seller_id
+
+      - name: price
+        data_tests:
+          - not_null
+
+      - name: freight_value
+        data_tests:
+          - not_null
+
+
+  - name: stg_order_payments
+    description: Cleaned and typed payment records.
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: payment_value
+        data_tests:
+          - not_null
+
+
+  - name: stg_order_reviews
+    description: Cleaned and typed customer review records.
+    columns:
+      - name: review_id
+        data_tests:
+          - not_null
+
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+
+      - name: review_score
+        data_tests:
+          - not_null
+
+
+  - name: stg_products
+    description: Cleaned and typed product catalogue records.
+    columns:
+      - name: product_id
+        data_tests:
+          - not_null
+          - unique
+
+
+  - name: stg_sellers
+    description: Cleaned seller records.
+    columns:
+      - name: seller_id
+        data_tests:
+          - not_null
+          - unique
+
+
+  - name: stg_product_category_name_translation
+    description: Portuguese-to-English product category translation reference.
+    columns:
+      - name: product_category_name
+        data_tests:
+          - not_null
+          - unique
+
+      - name: product_category_name_english
+        data_tests:
+          - not_null
+
+
+  - name: stg_geolocation
+    description: Typed geolocation observations preserving source-level granularity.
+    columns:
+      - name: geolocation_zip_code_prefix
+        data_tests:
+          - not_null
+
+      - name: geolocation_lat
+        data_tests:
+          - not_null
+
+      - name: geolocation_lng
+        data_tests:
+          - not_null
