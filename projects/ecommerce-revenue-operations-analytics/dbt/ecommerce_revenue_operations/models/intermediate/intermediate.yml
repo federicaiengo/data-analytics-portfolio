@@ -111,3 +111,32 @@ models:
       - name: payment_value
         data_tests:
           - not_null
+
+
+  - name: int_order_financial_reconciliation
+    description: >
+      Order-level reconciliation model preserving the complete order universe
+      while comparing aggregated payment value against aggregated item sales
+      plus freight. Missing transactional summaries and financial discrepancies
+      remain explicitly observable rather than being silently replaced.
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        data_tests:
+          - not_null
+
+      - name: order_status
+        data_tests:
+          - not_null
+
+      - name: missing_item_summary
+        data_tests:
+          - not_null
+
+      - name: missing_payment_summary
+        data_tests:
+          - not_null
