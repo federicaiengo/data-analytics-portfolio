@@ -240,6 +240,8 @@ models:
       - name: has_temporal_sequence_anomaly
         data_tests:
           - not_null
+
+
   - name: int_customers_geography
     description: >
       Customer-level geographic enrichment preserving one row per customer
@@ -277,5 +279,31 @@ models:
           - not_null
 
       - name: is_customer_state_mismatch
+        data_tests:
+          - not_null
+
+
+  - name: int_order_reviews_summary
+    description: >
+      Order-level review summary preserving all source review records through
+      aggregation to one row per order. Explicitly identifies orders with
+      multiple review records and orders containing multiple distinct review
+      scores without arbitrarily discarding source observations.
+    columns:
+      - name: order_id
+        description: Unique order identifier and grain of the model.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: review_record_count
+        description: Number of source review records associated with the order.
+        data_tests:
+          - not_null
+
+      - name: has_multiple_review_scores
+        description: >
+          Boolean flag indicating whether review records for the order contain
+          more than one distinct review score.
         data_tests:
           - not_null
