@@ -81,3 +81,43 @@ models:
           representative geolocation state.
         data_tests:
           - not_null
+
+
+  - name: dim_products
+    description: >
+      Product dimension preserving one row per product_id and exposing
+      reporting-ready product category attributes, descriptive metadata,
+      physical characteristics and explicit data-quality flags inherited
+      from the validated product enrichment layer.
+
+    columns:
+      - name: product_id
+        description: Unique product identifier and grain of the dimension.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: product_category_name_reporting
+        description: >
+          Reporting-safe product category label used for downstream analytics
+          and business intelligence.
+        data_tests:
+          - not_null
+
+      - name: is_product_category_missing
+        description: Flag identifying products with missing source category information.
+        data_tests:
+          - not_null
+
+      - name: is_category_translation_missing
+        description: >
+          Flag identifying products whose source category does not have
+          a corresponding English category translation.
+        data_tests:
+          - not_null
+
+      - name: is_core_descriptive_metadata_missing
+        description: >
+          Flag identifying products with missing core descriptive metadata.
+        data_tests:
+          - not_null
