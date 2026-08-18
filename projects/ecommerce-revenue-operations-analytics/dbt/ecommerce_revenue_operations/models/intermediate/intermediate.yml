@@ -285,25 +285,67 @@ models:
 
   - name: int_order_reviews_summary
     description: >
-      Order-level review summary preserving all source review records through
-      aggregation to one row per order. Explicitly identifies orders with
-      multiple review records and orders containing multiple distinct review
-      scores without arbitrarily discarding source observations.
+      Order-level review aggregation preserving one row per order while
+      retaining the measurable characteristics of multiple review records
+      instead of arbitrarily selecting or deduplicating a single review.
     columns:
       - name: order_id
-        description: Unique order identifier and grain of the model.
         data_tests:
           - not_null
           - unique
 
       - name: review_record_count
-        description: Number of source review records associated with the order.
         data_tests:
           - not_null
 
       - name: has_multiple_review_scores
+        data_tests:
+          - not_null
+
+
+  - name: int_sellers_geography
+    description: >
+      Seller-level geographic enrichment preserving one row per seller while
+      joining the controlled one-row-per-ZIP geolocation representation.
+      Missing geographic matches and city/state representation mismatches
+      remain explicitly observable instead of being silently corrected.
+    columns:
+      - name: seller_id
+        description: Unique seller identifier and grain of the model.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: seller_zip_code_prefix
+        description: Seller ZIP code prefix from the source seller record.
+        data_tests:
+          - not_null
+
+      - name: seller_city
+        description: Seller city from the source seller record.
+        data_tests:
+          - not_null
+
+      - name: seller_state
+        description: Seller state from the source seller record.
+        data_tests:
+          - not_null
+
+      - name: is_geolocation_match_missing
+        description: Flag identifying sellers without a matched geolocation ZIP record.
+        data_tests:
+          - not_null
+
+      - name: is_seller_city_mismatch
         description: >
-          Boolean flag indicating whether review records for the order contain
-          more than one distinct review score.
+          Flag identifying a difference between seller city and the
+          representative geolocation city.
+        data_tests:
+          - not_null
+
+      - name: is_seller_state_mismatch
+        description: >
+          Flag identifying a difference between seller state and the
+          representative geolocation state.
         data_tests:
           - not_null
