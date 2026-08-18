@@ -1,0 +1,83 @@
+version: 2
+
+models:
+
+  - name: dim_customers
+    description: >
+      Customer dimension preserving one row per customer_id and enriching
+      customer records with controlled ZIP-level geolocation attributes.
+      Geographic join gaps and city/state representation mismatches remain
+      explicitly observable instead of being silently corrected.
+
+    columns:
+      - name: customer_id
+        description: Unique technical customer identifier and grain of the dimension.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: customer_unique_id
+        description: >
+          Persistent customer identifier that can occur across multiple
+          customer_id records and orders.
+        data_tests:
+          - not_null
+
+      - name: customer_zip_code_prefix
+        description: Customer ZIP code prefix from the source customer record.
+        data_tests:
+          - not_null
+
+      - name: customer_city
+        description: Customer city from the source customer record.
+        data_tests:
+          - not_null
+
+      - name: customer_state
+        description: Customer state from the source customer record.
+        data_tests:
+          - not_null
+
+      - name: geolocation_lat
+        description: >
+          Latitude from the controlled one-row-per-ZIP geolocation representation.
+          May be null where no geolocation match exists.
+
+      - name: geolocation_lng
+        description: >
+          Longitude from the controlled one-row-per-ZIP geolocation representation.
+          May be null where no geolocation match exists.
+
+      - name: geolocation_city
+        description: >
+          City from the matched geolocation representation.
+          May be null where no geolocation match exists.
+
+      - name: geolocation_state
+        description: >
+          State from the matched geolocation representation.
+          May be null where no geolocation match exists.
+
+      - name: geolocation_observation_count
+        description: >
+          Number of source geolocation observations represented by the
+          controlled ZIP-level record.
+
+      - name: is_geolocation_match_missing
+        description: Flag identifying customers without a matched geolocation ZIP record.
+        data_tests:
+          - not_null
+
+      - name: is_customer_city_mismatch
+        description: >
+          Flag identifying a difference between customer city and the
+          representative geolocation city.
+        data_tests:
+          - not_null
+
+      - name: is_customer_state_mismatch
+        description: >
+          Flag identifying a difference between customer state and the
+          representative geolocation state.
+        data_tests:
+          - not_null
