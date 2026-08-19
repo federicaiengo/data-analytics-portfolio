@@ -236,3 +236,66 @@ models:
           Flag identifying orders without a corresponding payment summary.
         data_tests:
           - not_null
+
+
+  - name: fct_order_items
+    description: >
+      Order-item fact table preserving one row per order_id and order_item_id
+      combination. The fact exposes product and seller foreign keys together
+      with item sales, freight and combined item-plus-freight measures while
+      retaining the original shipping limit timestamp.
+
+    columns:
+      - name: order_id
+        description: Order identifier associated with the order item.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_orders')
+                field: order_id
+
+      - name: order_item_id
+        description: >
+          Sequential item identifier within an order. Together with order_id,
+          this defines the grain of the fact table.
+        data_tests:
+          - not_null
+
+      - name: product_id
+        description: Product identifier associated with the order item.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
+
+      - name: seller_id
+        description: Seller identifier associated with the order item.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_sellers')
+                field: seller_id
+
+      - name: shipping_limit_date
+        description: Shipping limit timestamp associated with the order item.
+
+      - name: price
+        description: Item sales value excluding freight.
+        data_tests:
+          - not_null
+
+      - name: freight_value
+        description: Freight value associated with the order item.
+        data_tests:
+          - not_null
+
+      - name: item_plus_freight_value
+        description: >
+          Derived monetary measure equal to price plus freight_value for the
+          individual order item.
+        data_tests:
+          - not_null
