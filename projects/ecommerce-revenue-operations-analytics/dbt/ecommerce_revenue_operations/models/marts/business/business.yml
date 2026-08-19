@@ -100,3 +100,156 @@ models:
       - name: maximum_absolute_mismatch_value
         description: >
           Maximum absolute financial mismatch observed in the month.
+
+
+  - name: mart_delivery_operations
+    description: >
+      Monthly operations and delivery performance mart built from the validated
+      order-level fact table. It separates delivery punctuality, operational
+      lead times and temporal data-quality anomalies so that performance metrics
+      are not silently contaminated by invalid timestamp sequences.
+
+    columns:
+      - name: month_start_date
+        description: First calendar day of the order purchase month and grain of the mart.
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+      - name: year_number
+        description: Calendar year associated with month_start_date.
+        data_tests:
+          - not_null
+
+      - name: month_number
+        description: Calendar month number from 1 through 12.
+        data_tests:
+          - not_null
+
+      - name: year_month
+        description: Reporting-ready month label in YYYY-MM format.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: order_count
+        description: Number of orders purchased during the month.
+        data_tests:
+          - not_null
+
+      - name: delivered_order_count
+        description: Number of orders with delivered status during the month.
+        data_tests:
+          - not_null
+
+      - name: punctuality_comparable_order_count
+        description: >
+          Delivered orders for which both actual customer delivery date and
+          estimated delivery date are available.
+        data_tests:
+          - not_null
+
+      - name: on_time_or_early_order_count
+        description: >
+          Delivered and punctuality-comparable orders delivered on or before
+          the estimated delivery date.
+        data_tests:
+          - not_null
+
+      - name: late_delivery_order_count
+        description: >
+          Delivered and punctuality-comparable orders delivered after the
+          estimated delivery date.
+        data_tests:
+          - not_null
+
+      - name: punctuality_not_comparable_order_count
+        description: >
+          Delivered orders that cannot be classified as late or on-time because
+          one or more required delivery timestamps are missing.
+        data_tests:
+          - not_null
+
+      - name: late_delivery_rate_pct
+        description: >
+          Percentage of punctuality-comparable delivered orders that arrived
+          after the estimated delivery date.
+
+      - name: on_time_or_early_rate_pct
+        description: >
+          Percentage of punctuality-comparable delivered orders that arrived
+          on or before the estimated delivery date.
+
+      - name: delivered_missing_approval_count
+        description: Delivered orders with a missing approval timestamp.
+        data_tests:
+          - not_null
+
+      - name: delivered_missing_carrier_timestamp_count
+        description: Delivered orders with a missing carrier handoff timestamp.
+        data_tests:
+          - not_null
+
+      - name: delivered_missing_customer_delivery_count
+        description: Delivered orders with a missing customer delivery timestamp.
+        data_tests:
+          - not_null
+
+      - name: temporal_anomaly_order_count
+        description: Orders containing at least one validated temporal sequence anomaly.
+        data_tests:
+          - not_null
+
+      - name: carrier_before_approval_order_count
+        description: Orders whose carrier timestamp occurs before order approval.
+        data_tests:
+          - not_null
+
+      - name: customer_delivery_before_carrier_order_count
+        description: Orders whose customer delivery timestamp occurs before carrier handoff.
+        data_tests:
+          - not_null
+
+      - name: valid_purchase_to_approval_order_count
+        description: >
+          Number of orders contributing a valid purchase-to-approval duration.
+        data_tests:
+          - not_null
+
+      - name: valid_approval_to_carrier_order_count
+        description: >
+          Number of orders contributing a valid approval-to-carrier duration.
+        data_tests:
+          - not_null
+
+      - name: valid_carrier_to_customer_order_count
+        description: >
+          Number of orders contributing a valid carrier-to-customer duration.
+        data_tests:
+          - not_null
+
+      - name: valid_purchase_to_customer_order_count
+        description: >
+          Number of orders contributing a valid purchase-to-customer duration.
+        data_tests:
+          - not_null
+
+      - name: average_purchase_to_approval_hours
+        description: >
+          Average valid elapsed hours from order purchase to approval.
+
+      - name: average_approval_to_carrier_hours
+        description: >
+          Average valid elapsed hours from approval to carrier handoff.
+
+      - name: average_carrier_to_customer_hours
+        description: >
+          Average valid elapsed hours from carrier handoff to customer delivery.
+
+      - name: average_purchase_to_customer_hours
+        description: >
+          Average valid elapsed hours from purchase to customer delivery.
