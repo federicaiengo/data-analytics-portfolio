@@ -1,0 +1,102 @@
+version: 2
+
+models:
+
+  - name: mart_revenue_financial_reconciliation
+    description: >
+      Monthly business mart for revenue and financial reconciliation analysis.
+      The mart aggregates order-level financial measures by purchase month while
+      preserving explicit data-quality indicators for missing summaries and
+      payment-versus-item-and-freight mismatches.
+
+    columns:
+      - name: month_start_date
+        description: First calendar day of the order purchase month and grain of the mart.
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+
+      - name: year_number
+        description: Calendar year associated with month_start_date.
+        data_tests:
+          - not_null
+
+      - name: month_number
+        description: Calendar month number from 1 through 12.
+        data_tests:
+          - not_null
+
+      - name: year_month
+        description: Reporting-ready month label in YYYY-MM format.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: order_count
+        description: Number of orders purchased during the month.
+        data_tests:
+          - not_null
+
+      - name: delivered_order_count
+        description: Number of orders with delivered status during the month.
+        data_tests:
+          - not_null
+
+      - name: item_sales_value
+        description: Total item sales value excluding freight for the month.
+
+      - name: freight_value
+        description: Total freight value for the month.
+
+      - name: item_plus_freight_value
+        description: Total item sales plus freight value for the month.
+
+      - name: payment_value
+        description: Total recorded payment value for the month.
+
+      - name: missing_item_summary_order_count
+        description: Number of orders without an item summary.
+        data_tests:
+          - not_null
+
+      - name: missing_payment_summary_order_count
+        description: Number of orders without a payment summary.
+        data_tests:
+          - not_null
+
+      - name: comparable_order_count
+        description: >
+          Number of orders for which financial reconciliation can be evaluated.
+        data_tests:
+          - not_null
+
+      - name: matching_order_count
+        description: Number of comparable orders whose financial values reconcile.
+        data_tests:
+          - not_null
+
+      - name: mismatching_order_count
+        description: Number of comparable orders whose financial values do not reconcile.
+        data_tests:
+          - not_null
+
+      - name: mismatch_rate_pct
+        description: >
+          Percentage of comparable orders with a financial mismatch.
+
+      - name: absolute_mismatch_value
+        description: >
+          Total absolute payment-versus-item-and-freight difference for
+          mismatching orders in the month.
+
+      - name: average_absolute_mismatch_value
+        description: >
+          Average absolute financial mismatch among mismatching orders in the month.
+
+      - name: maximum_absolute_mismatch_value
+        description: >
+          Maximum absolute financial mismatch observed in the month.
