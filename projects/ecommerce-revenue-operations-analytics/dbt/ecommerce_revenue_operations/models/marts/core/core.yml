@@ -195,3 +195,44 @@ models:
           representative geolocation state.
         data_tests:
           - not_null
+
+
+  - name: fct_orders
+    description: >
+      Central order-level fact table preserving one row per order_id and
+      integrating validated order lifecycle, financial reconciliation and
+      review summary metrics. Temporal and financial data-quality anomalies
+      remain explicitly observable instead of being silently corrected.
+
+    columns:
+      - name: order_id
+        description: Unique order identifier and grain of the fact table.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: customer_id
+        description: Customer identifier associated with the order.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+
+      - name: order_status
+        description: Current order status from the source order record.
+        data_tests:
+          - not_null
+
+      - name: missing_item_summary
+        description: >
+          Flag identifying orders without a corresponding order-item summary.
+        data_tests:
+          - not_null
+
+      - name: missing_payment_summary
+        description: >
+          Flag identifying orders without a corresponding payment summary.
+        data_tests:
+          - not_null
