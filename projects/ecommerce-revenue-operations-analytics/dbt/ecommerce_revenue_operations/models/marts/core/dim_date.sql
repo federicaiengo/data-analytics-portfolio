@@ -53,8 +53,8 @@ with recursive all_dates as (
 date_bounds as (
 
     select
-        min(date_value) as min_date,
-        max(date_value) as max_date
+        date_trunc('month', min(date_value))::date as min_date,
+        last_day(max(date_value), 'month')::date as max_date
     from all_dates
     where date_value is not null
 
