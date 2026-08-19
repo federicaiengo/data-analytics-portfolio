@@ -121,3 +121,77 @@ models:
           Flag identifying products with missing core descriptive metadata.
         data_tests:
           - not_null
+
+
+  - name: dim_sellers
+    description: >
+      Seller dimension preserving one row per seller_id and enriching
+      seller records with controlled ZIP-level geolocation attributes.
+      Missing geolocation matches and city/state representation mismatches
+      remain explicitly observable instead of being silently corrected.
+
+    columns:
+      - name: seller_id
+        description: Unique seller identifier and grain of the dimension.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: seller_zip_code_prefix
+        description: Seller ZIP code prefix from the source seller record.
+        data_tests:
+          - not_null
+
+      - name: seller_city
+        description: Seller city from the source seller record.
+        data_tests:
+          - not_null
+
+      - name: seller_state
+        description: Seller state from the source seller record.
+        data_tests:
+          - not_null
+
+      - name: geolocation_lat
+        description: >
+          Latitude from the controlled one-row-per-ZIP geolocation representation.
+          May be null where no geolocation match exists.
+
+      - name: geolocation_lng
+        description: >
+          Longitude from the controlled one-row-per-ZIP geolocation representation.
+          May be null where no geolocation match exists.
+
+      - name: geolocation_city
+        description: >
+          City from the matched geolocation representation.
+          May be null where no geolocation match exists.
+
+      - name: geolocation_state
+        description: >
+          State from the matched geolocation representation.
+          May be null where no geolocation match exists.
+
+      - name: geolocation_observation_count
+        description: >
+          Number of source geolocation observations represented by the
+          controlled ZIP-level record.
+
+      - name: is_geolocation_match_missing
+        description: Flag identifying sellers without a matched geolocation ZIP record.
+        data_tests:
+          - not_null
+
+      - name: is_seller_city_mismatch
+        description: >
+          Flag identifying a difference between seller city and the
+          representative geolocation city.
+        data_tests:
+          - not_null
+
+      - name: is_seller_state_mismatch
+        description: >
+          Flag identifying a difference between seller state and the
+          representative geolocation state.
+        data_tests:
+          - not_null
