@@ -71,14 +71,38 @@ PURGE = FALSE;
 -- ============================================================
 -- ORDERS
 -- ============================================================
-
-COPY INTO OLIST_ORDERS
-FROM @OLIST_RAW_STAGE
+COPY INTO OLIST_ORDERS (
+    order_id,
+    customer_id,
+    order_status,
+    order_purchase_timestamp,
+    order_approved_at,
+    order_delivered_carrier_date,
+    order_delivered_customer_date,
+    order_estimated_delivery_date,
+    _loaded_at,
+    _source_filename,
+    _source_row_number
+)
+FROM (
+    SELECT
+        t.$1,
+        t.$2,
+        t.$3,
+        t.$4,
+        t.$5,
+        t.$6,
+        t.$7,
+        t.$8,
+        CONVERT_TIMEZONE('UTC', METADATA$START_SCAN_TIME)::TIMESTAMP_NTZ,
+        METADATA$FILENAME,
+        METADATA$FILE_ROW_NUMBER
+    FROM @OLIST_RAW_STAGE t
+)
 FILES = ('olist_orders_dataset.csv')
 FILE_FORMAT = (FORMAT_NAME = CSV_OLIST_FORMAT)
 ON_ERROR = 'ABORT_STATEMENT'
 PURGE = FALSE;
-
 
 -- ============================================================
 -- PRODUCTS

@@ -1,7 +1,24 @@
+{{ config(
+    materialized='incremental',
+    unique_key='order_id',
+    incremental_strategy='merge',
+    on_schema_change='sync_all_columns'
+) }}
+
 with orders as (
 
     select *
     from {{ ref('stg_orders') }}
+
+    {% if is_incremental() %}
+    where _loaded_at >= (
+        select coalesce(
+            max(_loaded_at),
+            '1900-01-01'::timestamp_ntz
+        )
+        from {{ this }}
+    )
+    {% endif %}
 
 ),
 
@@ -17,6 +34,10 @@ final as (
         order_delivered_carrier_date,
         order_delivered_customer_date,
         order_estimated_delivery_date,
+
+        _loaded_at,
+        _source_filename,
+        _source_row_number,
 
         order_approved_at is null
             as is_approval_missing,

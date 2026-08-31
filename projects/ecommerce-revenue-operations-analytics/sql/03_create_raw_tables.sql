@@ -89,7 +89,10 @@ CREATE TABLE IF NOT EXISTS OLIST_ORDERS (
     order_approved_at VARCHAR,
     order_delivered_carrier_date VARCHAR,
     order_delivered_customer_date VARCHAR,
-    order_estimated_delivery_date VARCHAR
+    order_estimated_delivery_date VARCHAR,
+    _loaded_at TIMESTAMP_NTZ,
+    _source_filename VARCHAR,
+    _source_row_number NUMBER
 );
 
 

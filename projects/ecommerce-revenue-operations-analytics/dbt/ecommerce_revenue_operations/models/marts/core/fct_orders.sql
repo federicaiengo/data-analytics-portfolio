@@ -1,6 +1,36 @@
 with order_lifecycle as (
 
-    select *
+    select
+        order_id,
+        customer_id,
+        order_status,
+
+        order_purchase_timestamp,
+        order_approved_at,
+        order_delivered_carrier_date,
+        order_delivered_customer_date,
+        order_estimated_delivery_date,
+
+        is_approval_missing,
+        is_carrier_timestamp_missing,
+        is_customer_delivery_timestamp_missing,
+
+        is_delivered_order_missing_approval,
+        is_delivered_order_missing_carrier_timestamp,
+        is_delivered_order_missing_customer_delivery_timestamp,
+
+        approval_before_purchase,
+        carrier_before_approval,
+        customer_delivery_before_carrier,
+        customer_delivery_before_purchase,
+        estimated_delivery_before_purchase,
+        has_temporal_sequence_anomaly,
+
+        purchase_to_approval_hours,
+        approval_to_carrier_hours,
+        carrier_to_customer_hours,
+        purchase_to_customer_hours
+
     from {{ ref('int_orders_lifecycle') }}
 
 ),
