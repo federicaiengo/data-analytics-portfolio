@@ -4,7 +4,7 @@
 
 End-to-end e-commerce analytics project that transforms raw transactional data into a validated analytical layer and a business-facing Power BI report.
 
-The solution covers ingestion and preparation, dimensional modeling, automated data-quality testing, financial reconciliation, delivery-performance analysis, customer-experience analysis, and executive reporting.
+The solution covers ingestion and preparation, dimensional modeling, automated data-quality testing, financial reconciliation, delivery-performance analysis, customer-experience analysis, executive reporting, and a production-style incremental dbt workflow with ingestion metadata and idempotent reruns.
 
 ## Power BI Executive Overview
 
@@ -15,7 +15,7 @@ The solution covers ingestion and preparation, dimensional modeling, automated d
 ## Project Highlights
 
 - **28 dbt models** across staging, intermediate, dimensional/fact, and business-mart layers
-- **230/230 passing dbt regression tests**
+- **249/249 passing dbt regression tests** after the incremental-pipeline upgrade
 - **99,441 orders** modeled in the analytical core
 - **112,650 order items**
 - **98,665 financially comparable orders**
@@ -23,6 +23,9 @@ The solution covers ingestion and preparation, dimensional modeling, automated d
 - **1,382 temporal delivery anomalies**
 - **99.23% review coverage**
 - **202 orders with multiple distinct review scores**
+- **Incremental dbt order-lifecycle model** using `MERGE`, `unique_key='order_id'`, and `_loaded_at` watermarking
+- **Snowflake ingestion metadata** for load timestamp, source filename, and source row number
+- **Idempotent reruns verified** with stable row counts and no duplicate `order_id` values
 - **4-page Power BI report** covering executive, financial, operational, and customer-experience analysis
 
 ## Architecture
@@ -34,13 +37,14 @@ Raw E-Commerce Data
 Python / pandas
         |
         v
-Snowflake RAW
+Snowflake RAW + ingestion metadata
         |
         v
 dbt Staging
         |
         v
 dbt Intermediate
+(incremental order lifecycle)
         |
         v
 Dimensional / Fact Layer
@@ -73,6 +77,27 @@ Business marts:
 - `mart_revenue_financial_reconciliation`
 - `mart_delivery_operations`
 - `mart_customer_experience_reviews`
+
+## Incremental Loading & Data Provenance
+
+The order pipeline includes technical ingestion metadata in the Snowflake RAW and dbt staging/intermediate layers:
+
+- `_loaded_at`
+- `_source_filename`
+- `_source_row_number`
+
+The historical load timestamp for the existing order dataset was recovered from Snowflake `COPY_HISTORY` and backfilled without replacing it with a later scan timestamp.
+
+`int_orders_lifecycle` is materialized as a true incremental dbt model with:
+
+- `unique_key='order_id'`
+- `incremental_strategy='merge'`
+- `on_schema_change='sync_all_columns'`
+- `_loaded_at` as the ingestion watermark
+
+The incremental filter intentionally reprocesses the latest ingestion batch (`>= max(_loaded_at)`), while `MERGE` on `order_id` keeps reruns idempotent. A normal rerun was validated with **99,441 total rows, 99,441 distinct order IDs, 0 duplicates, and 0 null `_loaded_at` values**.
+
+Technical ingestion fields remain in the incremental layer rather than automatically propagating into the business fact table. `fct_orders` uses an explicit business-column projection so its schema remains stable if upstream technical metadata changes.
 
 ## Business Questions
 
@@ -151,14 +176,16 @@ All report pages include a year-level filter for focused analysis.
 
 The project uses dbt tests and reconciliation checks to validate both structural integrity and business logic.
 
-Final regression baseline:
+Current full regression baseline after the incremental-pipeline upgrade:
 
 ```text
-PASS=230
+PASS=249
 WARN=0
 ERROR=0
 SKIP=0
-TOTAL=230
+NO-OP=0
+REUSED=0
+TOTAL=249
 ```
 
 Validation includes:
@@ -171,12 +198,15 @@ Validation includes:
 - reconciliation logic
 - temporal anomaly detection
 - review-integrity checks
+- incremental-model integrity
+- rerun/idempotency validation
+- ingestion-metadata completeness
 
 ## Technology Stack
 
 - **SQL**
 - **Snowflake**
-- **dbt Core**
+- **dbt Core / dbt-snowflake**
 - **Power BI**
 - **DAX**
 - **Python**
@@ -202,6 +232,11 @@ ecommerce-revenue-operations-analytics/
 ## Skills Demonstrated
 
 - Analytics engineering
+- Incremental ELT modeling
+- dbt incremental models and `MERGE` upserts
+- Watermark-based incremental loading
+- Idempotent pipeline reruns
+- Snowflake ingestion metadata and data provenance
 - Dimensional modeling
 - Data warehousing
 - SQL transformation
