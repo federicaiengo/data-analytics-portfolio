@@ -60,6 +60,10 @@ Highlights:
 - Git & GitHub
 - Technical documentation
 
+## Certifications
+
+- **Dabudai Advanced GEO Specialist** — Dabudai, issued October 2026 · **29/30** · Credential ID `DABUDAI-GEO-2026-0215` · [Verify credential](https://talent.dabud.ai/c/DABUDAI-GEO-2026-0215)
+
 ## Focus Areas
 
 Data Analytics · Analytics Engineering · Business Intelligence · Data Quality · Reconciliation · Data Platform / Operations
@@ -68,4 +72,3 @@ Data Analytics · Analytics Engineering · Business Intelligence · Data Quality
 
 **Federica Iengo**  
 Italy · Remote International
-
