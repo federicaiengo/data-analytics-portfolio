@@ -6,6 +6,13 @@ This portfolio contains practical end-to-end projects covering source-data valid
 
 ## Featured Projects
 
+### AI Search Visibility Lab
+**Python · GEO/AEO · AI Search Measurement · Citation Analysis · Evidence Provenance**
+
+Reproducible framework for measuring brand mentions, citations, source diversity, retrieval consistency and competitor share of voice across AI-generated answers. Built around immutable evidence logging and a strict **correlation ≠ causation** interpretation rule, with a science/health-tech query set.
+
+[Open the AI Search Visibility Lab](projects/ai-search-visibility-lab/)
+
 ### E-Commerce Revenue & Operations Analytics
 **Snowflake · dbt · Power BI · Python/pandas · Data Quality**
 
@@ -66,7 +73,7 @@ Highlights:
 
 ## Focus Areas
 
-Data Analytics · Analytics Engineering · Business Intelligence · Data Quality · Reconciliation · Data Platform / Operations
+Data Analytics · Analytics Engineering · Business Intelligence · Data Quality · GEO / AEO · AI Search Visibility · Reconciliation · Data Platform / Operations
 
 ---
 
