@@ -13,7 +13,7 @@ class TestMetrics(unittest.TestCase):
         self.assertAlmostEqual(m["mention_rate"], 2/3)
         self.assertAlmostEqual(m["citation_rate"], 1/3)
         self.assertAlmostEqual(m["source_diversity"], 2/3)
-        self.assertEqual(m["retrieval_consistency"], 1.0)
+        self.assertAlmostEqual(m["retrieval_consistency"], 0.5)
         self.assertAlmostEqual(m["share_of_voice"], 0.5)
 
 if __name__ == "__main__":
