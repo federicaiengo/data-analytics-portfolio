@@ -1,0 +1,5 @@
+run_id,observed_at_utc,platform,model,query_id,query_text,target_brand,target_mentioned,target_cited,cited_urls,cited_domains,competitor_mentions,notes
+demo-001,2026-10-05T12:00:00Z,DemoEngine,demo-model,SCI-001,"What is metabolic MRI and what can it measure?",ExampleBrand,1,1,https://example.org/source-a,example.org,CompetitorA,Synthetic demonstration row
+demo-002,2026-10-05T12:05:00Z,DemoEngine,demo-model,SCI-001,"What is metabolic MRI and what can it measure?",ExampleBrand,1,0,,,CompetitorA,Synthetic demonstration row
+demo-003,2026-10-05T12:10:00Z,DemoEngine,demo-model,SCI-002,"How does hyperpolarization improve metabolic MRI signals?",ExampleBrand,0,0,,example.edu,CompetitorB,Synthetic demonstration row
+demo-004,2026-10-05T12:15:00Z,DemoEngine,demo-model,SCI-002,"How does hyperpolarization improve metabolic MRI signals?",ExampleBrand,1,1,https://example.edu/paper|https://example.org/source-b,example.edu|example.org,CompetitorB|CompetitorA,Synthetic demonstration row
