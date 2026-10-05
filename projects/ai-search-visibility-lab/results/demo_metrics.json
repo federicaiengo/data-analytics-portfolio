@@ -1,0 +1,15 @@
+{
+  "dataset": "sample_observations.csv",
+  "data_status": "synthetic demonstration data",
+  "interpretation_warning": "Correlation is not proof of causation.",
+  "observations": 4,
+  "mention_rate": 0.75,
+  "citation_rate": 0.5,
+  "source_diversity": 0.5,
+  "retrieval_consistency": 0.5,
+  "share_of_voice": 0.375,
+  "top_domains": [
+    ["example.org", 2],
+    ["example.edu", 2]
+  ]
+}
