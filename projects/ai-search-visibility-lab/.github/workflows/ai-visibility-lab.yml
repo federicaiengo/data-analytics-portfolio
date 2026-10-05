@@ -1,0 +1,28 @@
+name: AI Visibility Lab QA
+
+on:
+  push:
+    paths:
+      - "projects/ai-search-visibility-lab/**"
+      - ".github/workflows/ai-visibility-lab.yml"
+  pull_request:
+    paths:
+      - "projects/ai-search-visibility-lab/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/ai-search-visibility-lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run analyzer
+        run: python src/analyze_visibility.py data/sample_observations.csv
+      - name: Run unit tests
+        run: python -m unittest discover tests
+      - name: Regenerate demo metrics
+        run: python src/generate_report.py data/sample_observations.csv results/demo_metrics.json
