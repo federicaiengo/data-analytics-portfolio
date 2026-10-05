@@ -45,15 +45,14 @@ ai-search-visibility-lab/
 │   └── query_set.csv
 ├── tests/
 │   └── test_metrics.py
-├── requirements.txt
-└── README.md
+├── case_studies/\n│   └── scientific_healthtech.md\n├── results/\n│   └── demo_metrics.json\n├── requirements.txt\n└── README.md
 ```
 
 ## Quick start
 
 ```bash
 python src/analyze_visibility.py data/sample_observations.csv
-python -m unittest discover tests
+python -m unittest discover tests\npython src/generate_report.py data/sample_observations.csv results/demo_metrics.json
 ```
 
 The included dataset is **synthetic demonstration data**, clearly labelled so that portfolio results cannot be mistaken for live platform measurements.
@@ -62,6 +61,6 @@ The included dataset is **synthetic demonstration data**, clearly labelled so th
 
 The initial query set is designed around complex science/health-tech discovery patterns: definition, mechanism, comparison, evidence, limitations and vendor/category discovery. This makes the framework useful for technically demanding domains while remaining vendor-neutral and reusable.
 
-## Next milestone
+## Recruiter quick view\n\n- **Working code:** `src/analyze_visibility.py` and `src/generate_report.py`\n- **Measurement design:** `methodology/measurement_protocol.md`\n- **Scientific/health-tech reasoning:** `case_studies/scientific_healthtech.md`\n- **Machine-readable output:** `results/demo_metrics.json`\n- **QA:** unit tests plus GitHub Actions workflow\n\n## Next milestone
 
 Add a documented real-world observation set collected under a fixed protocol, then compare repeated runs without overstating causal conclusions.
