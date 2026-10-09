@@ -11,6 +11,8 @@ This portfolio contains practical end-to-end projects covering source-data valid
 
 Reproducible framework for measuring brand mentions, citations, source diversity, retrieval consistency and competitor share of voice across AI-generated answers. Built around immutable evidence logging and a strict **correlation ≠ causation** interpretation rule, with a science/health-tech query set.
 
+Its Python analyzer and regression tests were run locally on source verified against GitHub blob hashes: **6/6 passing unit tests** and a reproducible synthetic demo JSON. These are software-quality checks, **not real-world AI search visibility measurements**.
+
 [Open the AI Search Visibility Lab](projects/ai-search-visibility-lab/)
 
 ### E-Commerce Revenue & Operations Analytics
@@ -39,6 +41,9 @@ Highlights:
 - Quantified exposure concentration using Pareto analysis, Lorenz Curve and Gini coefficient
 - Published an executive Tableau dashboard
 
+- Independently recalculated selected portfolio and high-value claim aggregates from the **10,000-row source CSV**; [inspect the auditable source check](projects/insurance-claims-analytics/reports/RAW_SOURCE_KPI_SPOT_CHECK_2026-10-09.md)
+- Added a privacy-minimal Python KPI auditor and **8/8 locally passing unit tests** using obviously artificial fixture rows. Original raw-data licensing/identifier provenance remains under review.
+
 [Open the Insurance project](projects/insurance-claims-analytics/)
 
 ### HR Analytics
@@ -48,6 +53,9 @@ Highlights:
 - Audited and validated data quality
 - Analyzed attrition, overtime, role, department, tenure and satisfaction patterns
 - Documented methodology and business findings in Git/GitHub
+
+- Produced a [static Excel evidence workbook](projects/hr-analytics-employee-attrition/excel/HR_Attrition_Evidence_Dashboard.xlsx) and a [28-row grouped metrics CSV](projects/hr-analytics-employee-attrition/excel/hr_dashboard_group_metrics.csv) derived from the original source
+- Added deterministic privacy-minimal aggregate reconstruction code and **9/9 passing local unit tests**; [reproducibility limits and methods](projects/hr-analytics-employee-attrition/reports/DASHBOARD_REPRODUCIBILITY_2026-10-09.md). Excel application QA, workbook regeneration and cleaned-dataset completion are still pending.
 
 [Open the HR project](projects/hr-analytics-employee-attrition/)
 
