@@ -12,8 +12,9 @@
 --     every time the analytical query is executed.
 --
 --   OPTIMIZED:
---     Reuses the project's already-materialized intermediate
---     reconciliation model, avoiding repeated aggregation work.
+--     Reads a deliberately materialized session TEMPORARY TABLE,
+--     created from the dbt intermediate VIEW. This explicitly measures
+--     read-side materialization; the build has a separate, real cost.
 --
 -- IMPORTANT
 -- Do not publish performance claims until this script has been run
@@ -21,8 +22,10 @@
 -- reports/snowflake_performance_results.md.
 --
 -- Run both queries in the SAME session and warehouse.
--- The session disables persisted result reuse to prevent a previous
--- identical result from masking execution work.
+-- The dbt project config materializes intermediate models as VIEWS,
+-- so comparing the view alone would NOT be a table-vs-reaggregation
+-- benchmark. A temporary table is created explicitly below.
+-- Persisted result reuse is disabled. Warehouse cache can still matter.
 -- ============================================================
 
 
@@ -43,6 +46,25 @@ select
     current_database() as database_name,
     current_schema() as schema_name,
     current_timestamp() as benchmark_started_at;
+
+
+-- ------------------------------------------------------------
+-- A. ONE-TIME SESSION MATERIALIZATION (COST MUST BE RECORDED)
+-- ------------------------------------------------------------
+-- This is a session TEMPORARY TABLE, not a permanent production model.
+-- Its creation scans/aggregates the dbt VIEW and has time/compute cost.
+-- Only read-side queries benefit until the table needs rebuilding.
+-- Comparing this against one baseline query WITHOUT accounting for
+-- build cost would be misleading.
+--
+alter session set query_tag = 'portfolio_perf_build_temp_reconciliation';
+
+create or replace temporary table BENCHMARK_ORDER_FINANCIAL_RECONCILIATION as
+select
+    order_id,
+    financial_values_match,
+    payment_minus_item_freight_value
+from BENCHMARK_ORDER_FINANCIAL_RECONCILIATION;
 
 
 -- ------------------------------------------------------------
@@ -130,8 +152,8 @@ from reconciliation;
 -- ------------------------------------------------------------
 -- 2. OPTIMIZED QUERY
 -- ------------------------------------------------------------
--- Reuses the materialized intermediate model where the expensive
--- order-level aggregation/reconciliation work is already performed.
+-- Reads the explicitly created TEMPORARY TABLE, not the dbt VIEW.
+-- Record the separate temporary-table build cost, not just read time.
 
 alter session set query_tag = 'portfolio_perf_optimized_financial_reconciliation';
 
@@ -154,7 +176,7 @@ select
         ),
         2
     ) as avg_abs_mismatch
-from INT_ORDER_FINANCIAL_RECONCILIATION;
+from BENCHMARK_ORDER_FINANCIAL_RECONCILIATION;
 
 
 -- ------------------------------------------------------------
@@ -209,7 +231,7 @@ optimized as (
         order_id,
         payment_minus_item_freight_value,
         financial_values_match
-    from INT_ORDER_FINANCIAL_RECONCILIATION
+    from BENCHMARK_ORDER_FINANCIAL_RECONCILIATION
 
 )
 
@@ -257,7 +279,8 @@ from table(
 )
 where query_tag in (
     'portfolio_perf_baseline_financial_reconciliation',
-    'portfolio_perf_optimized_financial_reconciliation'
+    'portfolio_perf_optimized_financial_reconciliation',
+    'portfolio_perf_build_temp_reconciliation'
 )
 order by start_time;
 
@@ -270,7 +293,8 @@ order by start_time;
 -- report the median, and preserve warehouse size/configuration.
 --
 -- Do not present a single warm/cold run as a universal Snowflake
--- performance claim.
+-- performance claim. Include the one-time table-build cost and
+-- refresh frequency when discussing break-even across repeated reads.
 -- ------------------------------------------------------------
 
 alter session unset query_tag;
