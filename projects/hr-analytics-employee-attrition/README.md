@@ -75,14 +75,22 @@ insights/
 
 ---
 
-## Expected Deliverables
+## Evidence and dashboard — current status
 
-- Cleaned dataset
-- SQL queries
-- Business KPI analysis
-- Excel dashboard
-- Business recommendations
-- Project documentation
+The [Excel evidence dashboard](excel/HR_Attrition_Evidence_Dashboard.xlsx) now exists in the repository as a **static workbook** built from the original public CSV. It contains a summary and descriptive group comparisons for overtime, job role, department, satisfaction and company tenure. The workbook's existence and Git blob were confirmed, but compatibility in desktop Excel has **not yet been independently verified**.
+
+Observed counts verified directly against the source CSV: **1,470 employee rows**, **237 attritions (16.12%)**; **127/416 (30.53%)** with overtime versus **110/1,054 (10.44%)** without overtime. These are associations, not causal effects or evidence from a live employer.
+
+The cleaned dataset in `data/clean/` remains unfinished. Work is still in progress until the cleaning record, analytical QA and reproducible dashboard-refresh procedure are complete.
+
+## Deliverable inventory
+
+- Original public dataset: **available** in `data/raw/`
+- SQL audit and analysis queries: **available** in `sql/`
+- Business findings: **available** in [`reports/business_findings.md`](reports/business_findings.md)
+- Excel comparison/dashboard workbook: **created**, Excel application QA and regeneration steps pending
+- Cleaned dataset: **not available yet**; do not present the original file as cleaned
+- Final validated recommendations and project closure: **pending**
 
 ---
 
