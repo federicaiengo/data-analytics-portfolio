@@ -81,6 +81,8 @@ The [Excel evidence dashboard](excel/HR_Attrition_Evidence_Dashboard.xlsx) now e
 
 Observed counts verified directly against the source CSV: **1,470 employee rows**, **237 attritions (16.12%)**; **127/416 (30.53%)** with overtime versus **110/1,054 (10.44%)** without overtime. These are associations, not causal effects or evidence from a live employer.
 
+A separate [28-row aggregate CSV](excel/hr_dashboard_group_metrics.csv) contains privacy-minimal grouped metrics, and [`python/build_dashboard_source.py`](python/build_dashboard_source.py) supplies the deterministic rebuild logic for that **CSV**. The [reproducibility report](reports/DASHBOARD_REPRODUCIBILITY_2026-10-09.md) documents **9 locally passing unit tests** and the remaining end-to-end QA limitations. This does not yet provide automatic XLSX regeneration.
+
 The cleaned dataset in `data/clean/` remains unfinished. Work is still in progress until the cleaning record, analytical QA and reproducible dashboard-refresh procedure are complete.
 
 ## Deliverable inventory
@@ -88,7 +90,8 @@ The cleaned dataset in `data/clean/` remains unfinished. Work is still in progre
 - Original public dataset: **available** in `data/raw/`
 - SQL audit and analysis queries: **available** in `sql/`
 - Business findings: **available** in [`reports/business_findings.md`](reports/business_findings.md)
-- Excel comparison/dashboard workbook: **created**, Excel application QA and regeneration steps pending
+- Excel comparison/dashboard workbook: **created**, Excel application QA and full XLSX regeneration steps pending
+- Privacy-minimal 28-row aggregate CSV, deterministic generation script and nine passing unit tests: **available**
 - Cleaned dataset: **not available yet**; do not present the original file as cleaned
 - Final validated recommendations and project closure: **pending**
 
