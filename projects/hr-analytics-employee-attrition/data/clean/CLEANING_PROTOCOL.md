@@ -35,7 +35,7 @@ python -m unittest discover tests -v
 
 The script writes `data/clean/employee_attrition_clean.csv` and `data/clean/source_quality_report.json` after full validation. It never changes `data/raw/`. The JSON report is **not yet part of the repository** because that Python run still needs independent runtime verification.
 
-The cleaned CSV was separately produced by a full-source programmatic projection applying the documented rules, committed to GitHub, and read back byte for byte. **13 new unit tests are committed but not yet run**; they cannot be reported as passing.
+The cleaned CSV was separately produced by a full-source programmatic projection applying the documented rules, committed to GitHub, and read back byte for byte. **13/13 cleaning unit tests passed locally** in Python 3.13.5 with exact matching Git blob hashes for source and tests. The full-data Python run is still pending.
 
 ## Constraints
 - Exact 35-column original schema is required; unexpected source changes block rather than silently change the cohort.
