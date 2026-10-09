@@ -15,7 +15,7 @@ Answer defined business questions using SQL and connect each
 analysis directly to its documented business insight.
 
 Related document:
-insights/business_findings.md
+reports/business_findings.md
 
 Reference system:
 BQ-XXX = Business Question
@@ -56,7 +56,7 @@ ORDER BY OverTime, Attrition;
 -- not work overtime.
 --
 -- Full interpretation:
--- See BI-001 in insights/business_findings.md.
+-- See BI-001 in reports/business_findings.md.
 
 
 -- ==========================================================
@@ -107,7 +107,7 @@ ORDER BY AttritionRate DESC;
 -- attrition rate.
 --
 -- Full interpretation:
--- See BI-002 in insights/business_findings.md.
+-- See BI-002 in reports/business_findings.md.
 
 
 -- ==========================================================
@@ -153,7 +153,7 @@ ORDER BY AttritionRate DESC;
 -- smaller sample requires greater interpretive caution.
 --
 -- Full interpretation:
--- See BI-003 in insights/business_findings.md.
+-- See BI-003 in reports/business_findings.md.
 -- ==========================================================
 -- BQ-004
 -- Business Question:
@@ -191,7 +191,7 @@ ORDER BY JobSatisfaction, Attrition;
 -- higher employee attrition.
 --
 -- Full interpretation:
--- See BI-004 in insights/business_findings.md.
+-- See BI-004 in reports/business_findings.md.
 
 
 -- ==========================================================
@@ -231,7 +231,7 @@ ORDER BY WorkLifeBalance, Attrition;
 -- exhibit substantially higher attrition.
 --
 -- Full interpretation:
--- See BI-005 in insights/business_findings.md.
+-- See BI-005 in reports/business_findings.md.
 -- ==========================================================
 -- BQ-006
 -- Business Question:
@@ -297,7 +297,7 @@ ORDER BY YearsInCurrentRole;
 -- also exhibit substantially higher attrition.
 --
 -- Full interpretation:
--- See BI-006 in insights/business_findings.md.
+-- See BI-006 in reports/business_findings.md.
 -- ==========================================================
 -- BQ-007
 -- Business Question:
@@ -347,7 +347,7 @@ ORDER BY JobInvolvement;
 -- Promoted to Business Insight.
 --
 -- Full interpretation:
--- See BI-007 in insights/business_findings.md.
+-- See BI-007 in reports/business_findings.md.
 
 
 -- ==========================================================
@@ -401,7 +401,7 @@ ORDER BY EnvironmentSatisfaction;
 -- Promoted to Business Insight.
 --
 -- Full interpretation:
--- See BI-008 in insights/business_findings.md.
+-- See BI-008 in reports/business_findings.md.
 
 
 -- ==========================================================
