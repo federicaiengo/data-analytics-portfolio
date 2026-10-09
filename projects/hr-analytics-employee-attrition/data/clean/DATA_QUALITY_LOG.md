@@ -49,7 +49,7 @@ Sample observed ranges: `Age=18..60`; `MonthlyIncome=1,009..19,999`; `YearsAtCom
 
 - The source-cleaning implementation validates complete schema, expected category sets, constants, numeric/range constraints, uniqueness and four tenure inequalities; it writes CSV plus a JSON source-profile report when executed.
 - The **cleaned 32-column CSV is actually committed** and has been read back from GitHub. It was independently projected from the same full source with the above checks, not silently substituted with hypothetical output.
-- The Python cleaning file and **13 regression tests** are committed. **These new tests have not yet been executed in this checkpoint**, so their pass status is pending; do not include them in the previously reported 38/38 passing suites.
+- The Python cleaning file and its **13 regression tests were executed locally in Python 3.13.5: 13/13 PASS**. Before execution, both local files were byte-for-byte verified against GitHub blob hashes `9619ec51f29e0030fdda97bce8f81935a90b3def` (script) and `f1240d97c0f9c748ef5926b3c48de025199758eb` (tests). The full 1,470-row dataset was independently audited in-session; the Python cleaner has **not yet been run end-to-end on that full source file**.
 - The script-generated `source_quality_report.json` is **not yet committed**; its creation requires a verified Python run. This log records the separate actual in-session full-source audit.
 - These validation rules do not establish representativeness, data-source licensing, non-discrimination, causal inference or future HR decisions. This dataset is for educational analysis.
 
