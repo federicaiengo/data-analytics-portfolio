@@ -4,9 +4,9 @@ from src.analyze_visibility import calculate_metrics
 class TestMetrics(unittest.TestCase):
     def test_metrics(self):
         rows = [
-            {"query_id":"q1","target_mentioned":"1","target_cited":"1","cited_domains":"a.com|b.com","competitor_mentions":"C1"},
-            {"query_id":"q1","target_mentioned":"1","target_cited":"0","cited_domains":"a.com","competitor_mentions":""},
-            {"query_id":"q2","target_mentioned":"0","target_cited":"0","cited_domains":"","competitor_mentions":"C2"},
+            {"platform":"Demo","model":"v1","target_brand":"Brand","query_text":"Question one","query_id":"q1","target_mentioned":"1","target_cited":"1","cited_domains":"a.com|b.com","competitor_mentions":"C1"},
+            {"platform":"Demo","model":"v1","target_brand":"Brand","query_text":"Question one","query_id":"q1","target_mentioned":"1","target_cited":"0","cited_domains":"a.com","competitor_mentions":""},
+            {"platform":"Demo","model":"v1","target_brand":"Brand","query_text":"Question two","query_id":"q2","target_mentioned":"0","target_cited":"0","cited_domains":"","competitor_mentions":"C2"},
         ]
         m = calculate_metrics(rows)
         self.assertEqual(m["observations"], 3)
