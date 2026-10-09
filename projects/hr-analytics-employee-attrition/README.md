@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project analyzes employee data to identify the key factors influencing workforce attrition, employee satisfaction and overall HR performance.
+This project analyzes employee data to explore observed associations with employee attrition, satisfaction and selected workforce indicators.
 
 The objective is to transform raw HR data into actionable business insights through data cleaning, SQL analysis, KPI reporting and business-oriented recommendations.
 
@@ -10,9 +10,9 @@ The objective is to transform raw HR data into actionable business insights thro
 
 ## Business Objectives
 
-- Understand the main drivers of employee attrition.
+- Describe how observed attrition rates vary across employee groups.
 - Identify departments and roles with higher turnover.
-- Evaluate the impact of overtime, salary, education and job satisfaction.
+- Explore associations involving overtime, salary, education and job satisfaction without assuming causation.
 - Measure workforce performance through HR KPIs.
 - Improve reporting quality for management decision-making.
 - Detect data quality issues before analysis.
@@ -23,11 +23,11 @@ The objective is to transform raw HR data into actionable business insights thro
 
 - Which departments experience the highest attrition?
 - Which employee characteristics are associated with higher turnover?
-- Does overtime significantly affect employee retention?
+- How does observed attrition differ between employees reporting overtime and those who do not?
 - Is salary correlated with employee attrition?
 - Which HR KPIs should management monitor?
 - Which data quality issues can affect reporting accuracy?
-- What business actions could reduce employee turnover?
+- Which hypotheses and follow-up analyses could inform retention decisions?
 
 ---
 
@@ -94,6 +94,10 @@ Public dataset used for educational and portfolio purposes.
 
 ---
 
+## Interpretation and limitations
+
+This is an observational analysis of a public educational dataset, not a randomized experiment or a live employer study. Differences between groups do not establish that overtime, salary or job characteristics cause attrition. Group sizes, missingness, confounding and the dataset's scope must be considered before generalizing findings or proposing interventions.
+
 ## Project Status
 
-🚧 In Progress
+🚧 In Progress — the Excel dashboard is not yet complete. Listed deliverables are targets, not all completed outputs.
