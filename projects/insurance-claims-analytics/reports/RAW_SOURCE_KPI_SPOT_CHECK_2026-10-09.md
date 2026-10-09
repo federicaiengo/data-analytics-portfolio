@@ -26,3 +26,19 @@ The source CSV includes columns with names resembling personally identifying/fin
 - This checks a defined subset of KPI claims, not every join, view, underlying SQL query, fraud hypothesis, external dashboard screenshot or data-subject consent.
 - It is not evidence of deployed production quality, economic causality or future risk prediction.
 - Data privacy/distribution question remains OPEN until source rights and synthetic provenance are verified.
+
+## Independent executable QA — continued
+Added `tests/test_verify_public_kpis.py` with **eight regression tests** for the aggregate script: claim-value sum and 95,000 threshold boundary, protection against returning identifier values, duplicate/missing transaction IDs, invalid/nonfinite amounts, missing source fields and UTF-8 BOM support.
+
+**Local verification:** Python 3.13.5 `python -m unittest discover tests -v` from the Insurance project directory, **8/8 PASS**. The test script and production script used in the isolated local run matched their actual GitHub **blob hashes**, respectively `4f813a554cd2f73612a7e209d03b5cc01fce8471` and `1bfbfeb8893b5b14af67fc836979cf7c3962cfbe`.
+
+All test rows use obviously invented placeholders, not copied claimant identifiers. These tests establish defined behavior on synthetic edge-case fixtures; they do **not** establish dataset licensing/synthetic provenance or a fresh PostgreSQL/Tableau execution.
+
+Run from `projects/insurance-claims-analytics/`:
+
+```bash
+python -m unittest discover tests -v
+python python/verify_public_kpis.py
+```
+
+The second command requires the original raw CSV and was **not re-executed in the local Python runtime** in this block; source-based aggregate cross-check is separately documented above.
