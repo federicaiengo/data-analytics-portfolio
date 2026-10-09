@@ -28,7 +28,8 @@ One platform/model response to one frozen query at one timestamp.
 4. Preserve source URLs/domains when the platform exposes them.
 5. Store observations append-only.
 6. Calculate metrics from raw observations; never edit raw rows to improve results.
-7. Repeat the **same query text** on the **same platform/model** and for the **same target** before estimating retrieval consistency. A single response is **not** a repeatability estimate. Report the count of eligible repeated groups and use `not measured` (null), not 0%, when none qualify.\n8. Keep planned comparisons of different models, prompts or targets in separate strata unless using an explicitly justified pooled design.
+7. Repeat the **same query text** on the **same platform/model** and for the **same target** before estimating retrieval consistency. A single response is **not** a repeatability estimate. Report the count of eligible repeated groups and use `not measured` (null), not 0%, when none qualify.
+8. Keep planned comparisons of different models, prompts or targets in separate strata unless using an explicitly justified pooled design.
 9. Report missing citations and unavailable metadata explicitly.
 
 ## Interpretation
