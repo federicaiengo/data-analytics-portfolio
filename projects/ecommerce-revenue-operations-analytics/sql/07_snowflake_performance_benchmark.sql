@@ -184,6 +184,10 @@ from BENCHMARK_ORDER_FINANCIAL_RECONCILIATION;
 -- ------------------------------------------------------------
 -- Both approaches must return the same business result before
 -- runtime differences are interpreted as an optimization.
+-- A SEPARATE tag avoids accidentally attributing the equivalence
+-- verification query's runtime to the optimized benchmark SELECT.
+
+alter session set query_tag = 'portfolio_perf_verify_logical_equivalence';
 
 with baseline as (
 
@@ -243,12 +247,16 @@ full outer join optimized o
 where
        b.order_id is null
     or o.order_id is null
-    or coalesce(b.financial_values_match::varchar, 'NULL')
-       <> coalesce(o.financial_values_match::varchar, 'NULL')
-    or abs(
-        coalesce(b.payment_minus_item_freight_value, 0)
-        - coalesce(o.payment_minus_item_freight_value, 0)
-    ) > 0.0001;
+    or b.financial_values_match is distinct from o.financial_values_match
+    -- Compare nullability separately: NULL must not be mistaken for 0.
+    or ((b.payment_minus_item_freight_value is null)
+        <> (o.payment_minus_item_freight_value is null))
+    or (
+        b.payment_minus_item_freight_value is not null
+        and o.payment_minus_item_freight_value is not null
+        and abs(b.payment_minus_item_freight_value
+                - o.payment_minus_item_freight_value) > 0.0001
+    );
 
 
 -- ------------------------------------------------------------
