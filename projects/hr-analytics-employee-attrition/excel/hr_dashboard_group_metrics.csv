@@ -1,0 +1,29 @@
+dimension,group,employee_count,attrition_count,attrition_rate_pct
+Overall,All employees,1470,237,16.1224
+OverTime,No,1054,110,10.4364
+OverTime,Yes,416,127,30.5288
+JobRole,Healthcare Representative,131,9,6.8702
+JobRole,Human Resources,52,12,23.0769
+JobRole,Laboratory Technician,259,62,23.9382
+JobRole,Manager,102,5,4.9020
+JobRole,Manufacturing Director,145,10,6.8966
+JobRole,Research Director,80,2,2.5000
+JobRole,Research Scientist,292,47,16.0959
+JobRole,Sales Executive,326,57,17.4847
+JobRole,Sales Representative,83,33,39.7590
+Department,Human Resources,63,12,19.0476
+Department,Research & Development,961,133,13.8398
+Department,Sales,446,92,20.6278
+JobSatisfaction,1,289,66,22.8374
+JobSatisfaction,2,280,46,16.4286
+JobSatisfaction,3,442,73,16.5158
+JobSatisfaction,4,459,52,11.3290
+WorkLifeBalance,1,80,25,31.2500
+WorkLifeBalance,2,344,58,16.8605
+WorkLifeBalance,3,893,127,14.2217
+WorkLifeBalance,4,153,27,17.6471
+YearsAtCompanyBand,0-1 years,215,75,34.8837
+YearsAtCompanyBand,2-3 years,255,47,18.4314
+YearsAtCompanyBand,4-5 years,306,40,13.0719
+YearsAtCompanyBand,6-10 years,448,55,12.2768
+YearsAtCompanyBand,11+ years,246,20,8.1301
