@@ -23,7 +23,7 @@ The goal is not to claim a secret "AI ranking factor". The lab treats AI visibil
 | Mention rate | Share of observations containing the target brand |
 | Citation rate | Share containing at least one target citation/source |
 | Source diversity | Unique cited domains / total cited domains |
-| Retrieval consistency | Share of repeated runs with the same target outcome |
+| Retrieval consistency | Share of comparable query/model/target groups with at least two observations that agree; `null` if none qualify |
 | Share of voice | Target mentions / mentions across tracked brands |
 
 ## Reproducibility rules
@@ -60,6 +60,8 @@ python src/analyze_visibility.py data/sample_observations.csv
 python -m unittest discover tests
 python src/generate_report.py data/sample_observations.csv results/demo_metrics.json
 ```
+
+The output also includes the count of eligible `repeated_query_groups` so the denominator is auditable. A single response is never evidence of consistency.
 
 The included dataset is **synthetic demonstration data**, clearly labelled so that portfolio results cannot be mistaken for live platform measurements.
 
