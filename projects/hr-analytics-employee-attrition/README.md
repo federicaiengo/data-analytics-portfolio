@@ -83,7 +83,7 @@ Observed counts verified directly against the source CSV: **1,470 employee rows*
 
 A separate [28-row aggregate CSV](excel/hr_dashboard_group_metrics.csv) contains privacy-minimal grouped metrics, and [`python/build_dashboard_source.py`](python/build_dashboard_source.py) supplies the deterministic rebuild logic for that **CSV**. The [reproducibility report](reports/DASHBOARD_REPRODUCIBILITY_2026-10-09.md) documents **9 locally passing unit tests** and the remaining end-to-end QA limitations. This does not yet provide automatic XLSX regeneration.
 
-The cleaned dataset in `data/clean/` remains unfinished. Work is still in progress until the cleaning record, analytical QA and reproducible dashboard-refresh procedure are complete.
+A [cleaned 1,470-row, 32-column working dataset](data/clean/employee_attrition_clean.csv) is now available. Full-source checks found zero blanks/duplicates and identified precisely three constant columns, removed from the cleaned copy without deleting or modifying any employee record. The [quality log](data/clean/DATA_QUALITY_LOG.md) and [transformations](data/clean/CLEANING_PROTOCOL.md) document the evidence. Python source and **13 new tests are committed; those 13 tests have not yet been executed**. The final Excel reproducibility and compatibility steps remain in progress.
 
 ## Deliverable inventory
 
@@ -92,7 +92,7 @@ The cleaned dataset in `data/clean/` remains unfinished. Work is still in progre
 - Business findings: **available** in [`reports/business_findings.md`](reports/business_findings.md)
 - Excel comparison/dashboard workbook: **created**, Excel application QA and full XLSX regeneration steps pending
 - Privacy-minimal 28-row aggregate CSV, deterministic generation script and nine passing unit tests: **available**
-- Cleaned dataset: **not available yet**; do not present the original file as cleaned
+- Cleaned 1,470 × 32 dataset: **created and readback-verified**, with full-source quality audit, transformation rules and unexecuted new cleaning unit tests
 - Final validated recommendations and project closure: **pending**
 
 ---
@@ -111,4 +111,4 @@ This is an observational analysis of a public educational dataset, not a randomi
 
 ## Project Status
 
-🚧 In Progress — the Excel dashboard is not yet complete. Listed deliverables are targets, not all completed outputs.
+🚧 In Progress — cleaned CSV and static Excel workbook exist. Remaining: run new cleaning tests and end-to-end Python rebuild, validate workbook compatibility, automate workbook regeneration, complete final analytical review.
