@@ -57,6 +57,9 @@ Highlights:
 - Produced a [static Excel evidence workbook](projects/hr-analytics-employee-attrition/excel/HR_Attrition_Evidence_Dashboard.xlsx) and a [28-row grouped metrics CSV](projects/hr-analytics-employee-attrition/excel/hr_dashboard_group_metrics.csv) derived from the original source
 - Added deterministic privacy-minimal aggregate reconstruction code and **9/9 passing local unit tests**; [reproducibility limits and methods](projects/hr-analytics-employee-attrition/reports/DASHBOARD_REPRODUCIBILITY_2026-10-09.md). Excel application QA, workbook regeneration and cleaned-dataset completion are still pending.
 
+- Audited and published an actual [1,470 × 32 cleaned dataset](projects/hr-analytics-employee-attrition/data/clean/employee_attrition_clean.csv), preserving all source employee records and 237 observed attritions while removing only three constant fields
+- Added a [non-destructive Python cleaning pipeline](projects/hr-analytics-employee-attrition/python/clean_employee_attrition.py), an [executed quality log](projects/hr-analytics-employee-attrition/data/clean/DATA_QUALITY_LOG.md) and **13/13 locally passing cleaning tests**; end-to-end full-source Python regeneration is still pending verification
+
 [Open the HR project](projects/hr-analytics-employee-attrition/)
 
 ## Core Technical Skills
