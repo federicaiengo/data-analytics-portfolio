@@ -36,7 +36,7 @@ Each analysis follows the same workflow.
 6. Decide the analytical outcome.
 7. Document the result.
 
-No analysis is discarded.
+Keep accepted, exploratory and rejected findings traceable. Do not represent files listed as planned as already published.
 
 ---
 
@@ -55,7 +55,7 @@ An analysis that:
 Business Insights are documented in:
 
 ```
-insights/business_findings.md
+reports/business_findings.md
 ```
 
 ---
@@ -67,7 +67,7 @@ Useful analyses that improve understanding of the dataset but do not satisfy all
 Document:
 
 ```
-insights/exploratory_analysis.md
+insights/exploratory_analysis.md (planned; not yet present in this repository)
 ```
 
 ---
