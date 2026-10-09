@@ -83,7 +83,7 @@ Observed counts verified directly against the source CSV: **1,470 employee rows*
 
 A separate [28-row aggregate CSV](excel/hr_dashboard_group_metrics.csv) contains privacy-minimal grouped metrics, and [`python/build_dashboard_source.py`](python/build_dashboard_source.py) supplies the deterministic rebuild logic for that **CSV**. The [reproducibility report](reports/DASHBOARD_REPRODUCIBILITY_2026-10-09.md) documents **9 locally passing unit tests** and the remaining end-to-end QA limitations. This does not yet provide automatic XLSX regeneration.
 
-A [cleaned 1,470-row, 32-column working dataset](data/clean/employee_attrition_clean.csv) is now available. Full-source checks found zero blanks/duplicates and identified precisely three constant columns, removed from the cleaned copy without deleting or modifying any employee record. The [quality log](data/clean/DATA_QUALITY_LOG.md) and [transformations](data/clean/CLEANING_PROTOCOL.md) document the evidence. Python source and **13 new tests are committed; those 13 tests have not yet been executed**. The final Excel reproducibility and compatibility steps remain in progress.
+A [cleaned 1,470-row, 32-column working dataset](data/clean/employee_attrition_clean.csv) is now available. Full-source checks found zero blanks/duplicates and identified precisely three constant columns, removed from the cleaned copy without deleting or modifying any employee record. The [quality log](data/clean/DATA_QUALITY_LOG.md) and [transformations](data/clean/CLEANING_PROTOCOL.md) document the evidence. Python source and **13/13 locally passing cleaning tests** were verified against Git blob hashes. The end-to-end 1,470-record Python rerun remains to be verified. The final Excel reproducibility and compatibility steps remain in progress.
 
 ## Deliverable inventory
 
@@ -111,4 +111,4 @@ This is an observational analysis of a public educational dataset, not a randomi
 
 ## Project Status
 
-🚧 In Progress — cleaned CSV and static Excel workbook exist. Remaining: run new cleaning tests and end-to-end Python rebuild, validate workbook compatibility, automate workbook regeneration, complete final analytical review.
+🚧 In Progress — cleaned CSV and static Excel workbook exist. Remaining: verify end-to-end full-data Python rebuild, validate workbook compatibility, automate workbook regeneration, complete final analytical review.
