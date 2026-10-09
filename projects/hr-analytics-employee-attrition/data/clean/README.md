@@ -13,7 +13,7 @@ All **1,470 rows**, `EmployeeNumber` keys, `Attrition` outcomes and the remainin
 - [`CLEANING_PROTOCOL.md`](CLEANING_PROTOCOL.md): rationale, transformations and exact rebuild command.
 - [`DATA_QUALITY_LOG.md`](DATA_QUALITY_LOG.md): source-wide checks, evidence and remaining limitations.
 - [`python/clean_employee_attrition.py`](../../python/clean_employee_attrition.py): Python standard-library implementation.
-- [`tests/test_clean_employee_attrition.py`](../../tests/test_clean_employee_attrition.py): 13 new regression tests, **not yet executed** in the current checkpoint.
+- [`tests/test_clean_employee_attrition.py`](../../tests/test_clean_employee_attrition.py): 13 regression tests, **13/13 PASS locally** against Git-blob-verified source; the full 1,470-row Python regeneration remains unverified.
 
 The script optionally generates `source_quality_report.json`; that file is not yet committed. Do not confuse the independently performed source audit with a verified Python end-to-end regeneration.
 
