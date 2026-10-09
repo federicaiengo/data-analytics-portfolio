@@ -7,6 +7,7 @@
   "citation_rate": 0.5,
   "source_diversity": 0.5,
   "retrieval_consistency": 0.5,
+  "repeated_query_groups": 2,
   "share_of_voice": 0.375,
   "top_domains": [
     ["example.org", 2],
