@@ -1,0 +1,30 @@
+name: AI Visibility Lab — opt-in QA
+
+# Deliberately manual-only: avoid consuming Actions minutes on each commit.
+# The earlier workflow placed under projects/.../.github/workflows is not a
+# repository-root GitHub Actions workflow and cannot provide normal CI coverage.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/ai-search-visibility-lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify AI visibility unit tests
+        run: python -m unittest discover tests -v
+      - name: Analyze explicitly synthetic demo observations
+        run: python src/analyze_visibility.py data/sample_observations.csv
+      - name: Verify checked-in synthetic result remains reproducible
+        run: |
+          python src/generate_report.py data/sample_observations.csv /tmp/ai_visibility_demo.json
+          python -c "import json; from pathlib import Path; assert json.loads(Path('/tmp/ai_visibility_demo.json').read_text()) == json.loads(Path('results/demo_metrics.json').read_text()), 'Demo metrics changed'"
