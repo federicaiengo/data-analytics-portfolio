@@ -51,6 +51,29 @@ python python/verify_workbook_parity.py
 python -m unittest discover -s tests -v
 ```
 
+## Optional template-based workbook rebuild (experimental)
+
+A standalone [artifact_tool-based refresher](../python/refresh_workbook_snapshot.py)
+imports the committed workbook as a *template*, computes 28 group aggregates
+from the tracked raw CSV in memory, refuses inconsistent aggregate CSV inputs,
+updates all group tables plus their Dashboard mirrors and provenance metadata,
+and exports to a **new XLSX path**. The original workbook and CSV sources are
+never overwritten. The output is checked again by the read-only parity gate.
+
+From the HR project root, **in an environment with `artifact_tool` installed**:
+
+```bash
+python python/refresh_workbook_snapshot.py --output /tmp/HR_Attrition_Rebuilt.xlsx
+```
+
+**Verification status:** importing, editing, and exporting a seven-sheet
+synthetic workbook was smoke-tested with `artifact_tool`. The whole refresher
+has **NOT** yet been run on the real committed XLSX; therefore an actual
+regenerated XLSX is not yet a verified deliverable. Template-based import/export
+may alter workbook styling or Excel-specific features, so a visual and
+desktop-Excel check is required before replacing the original. This tool is
+optional; it is not invoked by the manual CI workflow.
+
 ## Limits and next work
 
 This comparison examines the committed **static workbook**, not the result
