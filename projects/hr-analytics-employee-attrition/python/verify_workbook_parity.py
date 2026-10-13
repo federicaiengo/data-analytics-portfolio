@@ -37,6 +37,9 @@ def tag(uri: str, local: str) -> str:
 
 
 def normalize_label(value: object) -> str:
+    # Workbook stores 1-4 satisfaction categories as numeric cells, CSV as text.
+    if isinstance(value, float) and value.is_integer():
+        value = int(value)
     # Workbook typography uses Unicode en dashes in tenure bands; CSV uses hyphens.
     return str(value).strip().replace("–", "-").replace("—", "-").replace("−", "-")
 
