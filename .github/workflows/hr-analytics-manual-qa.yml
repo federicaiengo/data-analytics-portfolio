@@ -31,3 +31,5 @@ jobs:
           python python/build_dashboard_source.py \
             --output "$RUNNER_TEMP/hr_dashboard_group_metrics.csv"
           cmp "$RUNNER_TEMP/hr_dashboard_group_metrics.csv" excel/hr_dashboard_group_metrics.csv
+      - name: Read-only XLSX package and worksheet integrity QA
+        run: python python/verify_workbook_structure.py
