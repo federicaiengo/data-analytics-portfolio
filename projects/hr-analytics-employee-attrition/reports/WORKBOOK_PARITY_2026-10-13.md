@@ -1,6 +1,6 @@
 # HR Analytics — static workbook-to-aggregate reconciliation (2026-10-13)
 
-## Independent source-data inspection: PASS (not yet a Python CI result)
+## Workbook parity: independent inspection + Python CI PASS
 
 A read-only in-memory comparison inspected the actual committed XLSX Git blob
 `2db1b794d86792fb2b12bac1d72b394eb6807d7b` and the 28-row aggregate
@@ -40,9 +40,8 @@ cleaning/aggregation Python tests, and both regenerated CSV checks.
 - `tests/test_workbook_parity.py` adds eight tests, including deliberately
   corrupted in-memory count, rate, repeated KPI and SHA scenarios.
 - The existing **manual-only** GitHub Actions HR QA workflow now includes
-  these checks. **The new parity script and its tests were not executed by
-  run 38406517149**, which predates their addition. A later manual run is
-  needed before documenting a Python CI PASS.
+  these checks. The [subsequent run 38411506600](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38411506600), at commit `960ac8063592c65f129974b861b19859110bddac`, **completed SUCCESS**: **32/32 Python tests PASS** (including eight parity tests); the standalone XLSX parity gate reports **28/28 distinct groups, seven Dashboard mirrors and matching source Git SHA/shape/counts/rates**. Both CSV regeneration/`cmp` steps and the seven-sheet XLSX structural gate also PASS.
+  The older run 38406517149 predates the parity implementation and must not be confused with this result.
 
 From the project root:
 
