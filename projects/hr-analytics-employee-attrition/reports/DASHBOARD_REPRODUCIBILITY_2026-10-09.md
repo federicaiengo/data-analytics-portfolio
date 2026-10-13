@@ -3,6 +3,12 @@
 Status update (2026-10-13): GitHub Actions run 38336050248 has now passed 24/24 Python tests, including both full-source CSV comparison checks. Earlier mentions of pending Python regeneration in this dated report are historical. XLSX compatibility and XLSX regeneration remain pending.
 
 
+## Latest XLSX parity CI status — 2026-10-13
+
+The later [manual HR workflow run 38411506600](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38411506600) **completed SUCCESS** at commit `960ac8063592c65f129974b861b19859110bddac`: **32/32 Python tests PASS**, including eight read-only XLSX-to-CSV regression tests. Its standalone parity gate also **PASSed all 28/28 unique group rows**, all seven repeated Dashboard comparisons and source Git-SHA/row/column provenance checks. The CSV cleaner and 28-row aggregate regenerations both matched the committed files, and the seven-sheet XLSX package integrity gate also passed.
+
+The section below is the **earlier structural-only run**. Its former cell-parity-pending status is historical and superseded by this later run. **Still pending:** actual regeneration of the project XLSX with design-preservation verification, independent Microsoft Excel desktop rendering/compatibility testing, and final business-analysis review. The workbook itself remains unchanged.
+
 ## Verified XLSX package QA — 2026-10-13
 
 The [opt-in HR GitHub Actions run 38406517149](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38406517149) completed successfully on 2026-10-13, at commit `57048a3ea25b281595cfa05b7c065ed261bf3b10` (job `115327435736`). Logs explicitly confirm:
