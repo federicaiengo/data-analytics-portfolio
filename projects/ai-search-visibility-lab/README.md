@@ -77,6 +77,10 @@ The initial query set is designed around complex science/health-tech discovery p
 - **Machine-readable output:** `results/demo_metrics.json`
 - **QA:** unit tests plus GitHub Actions workflow
 
+## Input validation
+
+Mention and citation labels must be explicit yes/no flags; missing or ambiguous values are rejected instead of silently counted as negatives. Platform, model and query identity must be specified for repeatability analysis. New negative-case unit tests have been added, but their latest execution is still pending. The included observations remain synthetic.
+
 ## Next milestone
 
 Add a documented real-world observation set collected under a fixed protocol, then compare repeated runs without overstating causal conclusions.
