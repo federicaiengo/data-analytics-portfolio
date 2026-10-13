@@ -1,0 +1,33 @@
+name: HR Analytics — opt-in full-source QA
+
+# Manual-only. No automatic Actions minutes and no publishing.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-full-source:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/hr-analytics-employee-attrition
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run fixture-based and full-source regression tests
+        run: python -m unittest discover -s tests -v
+      - name: Regenerate clean HR CSV outside the repository
+        run: |
+          python python/clean_employee_attrition.py \
+            --output "$RUNNER_TEMP/employee_attrition_clean.csv" \
+            --report "$RUNNER_TEMP/source_quality_report.json"
+          cmp "$RUNNER_TEMP/employee_attrition_clean.csv" data/clean/employee_attrition_clean.csv
+      - name: Regenerate grouped HR source outside the repository
+        run: |
+          python python/build_dashboard_source.py \
+            --output "$RUNNER_TEMP/hr_dashboard_group_metrics.csv"
+          cmp "$RUNNER_TEMP/hr_dashboard_group_metrics.csv" excel/hr_dashboard_group_metrics.csv
