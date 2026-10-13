@@ -2,7 +2,7 @@
 
 ## Scope and status
 
-**PASS — independent source-to-artifact reconciliation.** This audit read the complete tracked CSV files from GitHub and independently reproduced the transformation and grouped calculations in an isolated JavaScript validation. It **did not execute** the repository's two Python pipeline scripts. It **did not** regenerate or inspect the Excel XLSX workbook in Microsoft Excel.
+**PASS — independent source-to-artifact reconciliation and subsequent Python end-to-end validation.** First, an isolated JavaScript audit compared the tracked CSV files against independently reproduced transformations and aggregate calculations. Subsequently, the two production Python pipelines passed [GitHub Actions full-source QA run 38336050248](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38336050248), including all 24 unit/integration tests and byte-for-byte comparisons of generated CSV files. Neither audit validates the Excel XLSX workbook in desktop Microsoft Excel.
 
 This project uses the public IBM HR educational dataset; it is **not real employer data**. Comparisons are descriptive, **not causal**.
 
@@ -24,7 +24,7 @@ This project uses the public IBM HR educational dataset; it is **not real employ
 
 These outcomes confirm the published artifacts agree with an independently reconstructed set of calculations on the recorded source snapshot. They are **not a guarantee** that the Python implementation is correct under all inputs or that a spreadsheet workbook works in desktop Excel.
 
-## Python pipeline regression gates — added, not yet executed
+## Python pipeline regression gates — executed and PASS
 
 - `tests/test_clean_employee_attrition.py::test_full_source_rebuild_matches_committed_clean_dataset`: run the production Python cleaner against the full tracked input, write temporary outputs, compare the generated cleaned CSV **byte for byte** with the committed reference, and assert source immutability and 1,470 / 237 invariants.
 - `tests/test_dashboard_source.py::test_full_source_aggregate_rebuild_matches_committed_csv`: run the Python aggregator against all tracked records in a temporary location, compare with the committed 28-row CSV, and check category denominators.
@@ -35,11 +35,10 @@ Run from the HR project directory when a Python environment is available:
 python -m unittest discover -s tests -v
 ```
 
-Do not report these new tests as **PASS** until their execution result is captured. Earlier fixture-based tests were reported as 13 cleaning tests and 9 aggregation tests passing on 2026-10-09; these are distinct from full-source Python execution.
+**Actual execution evidence (2026-10-13):** Python 3.12.15 on GitHub Actions run [38336050248](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38336050248) reported **24 tests run, OK**, including the two full-source integration tests. The cleaner reported **1,470 rows / 32 columns**, and the dashboard aggregator generated **28 group rows**. Both regenerated files were compared to their committed reference CSVs using `cmp` and passed. The workflows generated output under the runner's temporary directory, leaving the source CSV unchanged. Earlier fixture tests (13 + 9 on 2026-10-09) are historical evidence, superseded for current regression status by this 24-test run.
 
 ## Still pending
 
-- Execute the full-source Python integration tests and record their actual outcome.
 - Validate the static seven-sheet XLSX in a compatible spreadsheet application against the tracked aggregate source.
 - Automate XLSX regeneration separately if the project requires it.
 - Interpret observed differences with suitable confounding and generalizability caveats, without claiming proven retention interventions.
