@@ -133,5 +133,27 @@ class HrCleaningTests(unittest.TestCase):
             validate_and_clean(self.write([employee()]), expected_attritions=237)
 
 
+    def test_full_source_rebuild_matches_committed_clean_dataset(self):
+        """Execute the cleaner on all tracked raw records, without overwriting artifacts."""
+        source = PROJECT / "data/raw/WA_Fn-UseC_-HR-Employee-Attrition.csv"
+        committed = PROJECT / "data/clean/employee_attrition_clean.csv"
+        source_before = source.read_bytes()
+        self.assertTrue(committed.is_file(), "Committed 32-column reference missing")
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "employee_attrition_clean.csv"
+            report_file = Path(tmp) / "source_quality_report.json"
+            report = write_outputs(
+                source, output, report_file, expected_rows=1470, expected_attritions=237,
+            )
+            self.assertEqual(source.read_bytes(), source_before)
+            self.assertEqual(output.read_bytes(), committed.read_bytes())
+            self.assertEqual((report["source_rows"], report["clean_rows"]), (1470, 1470))
+            self.assertEqual((report["source_columns"], report["clean_columns"]), (35, 32))
+            self.assertEqual(report["recorded_attritions"], 237)
+            self.assertEqual(report["validation_status"], "PASS")
+            self.assertTrue(report_file.is_file())
+
+
+
 if __name__ == "__main__":
     unittest.main()
