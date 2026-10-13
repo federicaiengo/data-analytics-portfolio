@@ -202,6 +202,8 @@ Validation includes:
 - rerun/idempotency validation
 - ingestion-metadata completeness
 
+Benchmark plan (not executed): [Snowflake performance protocol](reports/SNOWFLAKE_PERFORMANCE_BENCHMARK_PROTOCOL.md). No timing or speedup claims are available yet.
+
 ## Technology Stack
 
 - **SQL**
