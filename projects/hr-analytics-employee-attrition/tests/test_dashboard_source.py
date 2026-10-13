@@ -94,5 +94,32 @@ class HrDashboardAggregationTests(unittest.TestCase):
             self.assertNotIn("456", contents)
 
 
+    def test_full_source_aggregate_rebuild_matches_committed_csv(self):
+        """Rebuild all 28 groups on the tracked raw source without altering it."""
+        source = PROJECT / "data/raw/WA_Fn-UseC_-HR-Employee-Attrition.csv"
+        committed = PROJECT / "excel/hr_dashboard_group_metrics.csv"
+        source_before = source.read_bytes()
+        self.assertTrue(committed.is_file(), "Committed aggregate reference missing")
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "hr_dashboard_group_metrics.csv"
+            generated_rows = write_summary(source, output)
+            self.assertEqual(source.read_bytes(), source_before)
+            self.assertEqual(len(generated_rows), 28)
+            self.assertEqual(output.read_bytes(), committed.read_bytes())
+            overall = next(r for r in generated_rows if r["dimension"] == "Overall")
+            self.assertEqual((overall["employee_count"], overall["attrition_count"]),
+                             (1470, 237))
+            for dimension in DIMENSIONS:
+                self.assertEqual(
+                    sum(r["employee_count"] for r in generated_rows
+                        if r["dimension"] == dimension), 1470,
+                )
+                self.assertEqual(
+                    sum(r["attrition_count"] for r in generated_rows
+                        if r["dimension"] == dimension), 237,
+                )
+
+
+
 if __name__ == "__main__":
     unittest.main()
