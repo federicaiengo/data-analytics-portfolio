@@ -87,7 +87,7 @@ A [cleaned 1,470-row, 32-column working dataset](data/clean/employee_attrition_c
 
 The [manual HR QA run on 2026-10-13](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38406517149) additionally **passed read-only structural checks on the committed seven-sheet XLSX** (ZIP/XML, worksheet relationships, no cached error cells). The file stores no formulas. This is **not** a cell-by-cell comparison against the aggregate CSV and **does not** verify rendering in desktop Excel. See the [reproducibility report](reports/DASHBOARD_REPRODUCIBILITY_2026-10-09.md).
 
-[Static workbook 28/28 reconciliation](reports/WORKBOOK_PARITY_2026-10-13.md): an independent read-only check found all 28 source group counts, attritions and displayed rates consistent with the XLSX, with rounding tolerance and recorded provenance. A dedicated Python parity gate and eight mutation-oriented tests have been added to the **manually triggered** CI workflow, but **have not yet been run there**. An [optional template-based XLSX refresher](python/refresh_workbook_snapshot.py) is now available for separate output paths; its full real-workbook execution and visual fidelity remain unverified.
+[Static workbook 28/28 reconciliation](reports/WORKBOOK_PARITY_2026-10-13.md): an independent read-only check found all 28 source group counts, attritions and displayed rates consistent with the XLSX, with rounding tolerance and recorded provenance. The new Python parity gate and eight mutation-oriented tests **passed in the manually triggered [GitHub Actions run 38411506600](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38411506600)**: **32/32 Python tests PASS**, with **28/28 XLSX groups and seven Dashboard mirrors reconciled**, plus source-provenance checks. An [optional template-based XLSX refresher](python/refresh_workbook_snapshot.py) is now available for separate output paths; its full real-workbook execution and visual fidelity remain unverified.
 
 ## Deliverable inventory
 
@@ -117,4 +117,4 @@ This is an observational analysis of a public educational dataset, not a randomi
 
 ## Project Status
 
-🚧 In Progress — source cleaning and aggregate CSV regeneration are now verified end-to-end (24/24 tests PASS). Remaining: validate desktop Excel workbook compatibility, automate XLSX regeneration and complete the final analytical review.
+🚧 In Progress — source cleaning, aggregate CSV regeneration and read-only XLSX-to-source parity are verified in GitHub Actions (**32/32 Python tests PASS**, 28/28 aggregate groups matched). Remaining: validate desktop Excel workbook compatibility, verify real-workbook XLSX regeneration without design regressions, and complete the final analytical review.
