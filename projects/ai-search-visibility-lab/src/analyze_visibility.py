@@ -6,7 +6,13 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 def as_bool(value: str) -> bool:
-    return str(value).strip().lower() in {"1", "true", "yes", "y"}
+    """Reject missing/ambiguous labels instead of silently treating them as No."""
+    normalized = str(value).strip().lower()
+    if normalized in {"1", "true", "yes", "y"}:
+        return True
+    if normalized in {"0", "false", "no", "n"}:
+        return False
+    raise ValueError(f"Invalid observation flag: {value!r}; expected an explicit Yes/No label")
 
 def split_pipe(value: str):
     return [x.strip() for x in (value or "").split("|") if x.strip()]
@@ -38,8 +44,8 @@ def calculate_metrics(rows):
         # can turn a change in experimental conditions into "instability".
         dimensions = ("platform", "model", "query_id", "query_text", "target_brand")
         key = tuple(r.get(field, "") for field in dimensions)
-        if not r.get("query_id") or not r.get("target_brand") or not r.get("query_text"):
-            raise ValueError("Each observation needs query_id, query_text and target_brand")
+        if not all(str(r.get(field) or "").strip() for field in dimensions):
+            raise ValueError("Each observation needs platform, model, query_id, query_text and target_brand")
         by_query[key].append(as_bool(r.get("target_mentioned", "")))
         domains.extend(normalize_domain(d) for d in split_pipe(r.get("cited_domains", "")) if normalize_domain(d))
         competitor_mentions += len(set(split_pipe(r.get("competitor_mentions", ""))))
