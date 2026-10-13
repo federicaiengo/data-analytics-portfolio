@@ -83,7 +83,7 @@ Observed counts verified directly against the source CSV: **1,470 employee rows*
 
 A separate [28-row aggregate CSV](excel/hr_dashboard_group_metrics.csv) contains privacy-minimal grouped metrics, and [`python/build_dashboard_source.py`](python/build_dashboard_source.py) supplies the deterministic rebuild logic for that **CSV**. The [reproducibility report](reports/DASHBOARD_REPRODUCIBILITY_2026-10-09.md) documents **9 locally passing unit tests** and the remaining end-to-end QA limitations. This does not yet provide automatic XLSX regeneration.
 
-A [cleaned 1,470-row, 32-column working dataset](data/clean/employee_attrition_clean.csv) is now available. Full-source checks found zero blanks/duplicates and identified precisely three constant columns, removed from the cleaned copy without deleting or modifying any employee record. The [quality log](data/clean/DATA_QUALITY_LOG.md) and [transformations](data/clean/CLEANING_PROTOCOL.md) document the evidence. Python source and **13/13 locally passing cleaning tests** were verified against Git blob hashes. The end-to-end 1,470-record Python rerun remains to be verified. The final Excel reproducibility and compatibility steps remain in progress.
+A [cleaned 1,470-row, 32-column working dataset](data/clean/employee_attrition_clean.csv) is now available. Full-source checks found zero blanks/duplicates and identified precisely three constant columns, removed from the cleaned copy without deleting or modifying any employee record. The [quality log](data/clean/DATA_QUALITY_LOG.md) and [transformations](data/clean/CLEANING_PROTOCOL.md) document the evidence. Python source and **13/13 locally passing cleaning tests** were verified against Git blob hashes. An [independent full-source reconciliation (2026-10-13)](reports/FULL_SOURCE_RECONCILIATION_2026-10-13.md) matched the 1,470-row cleaned dataset **byte for byte**, and separately matched all 28 grouped metrics across seven dimensions. Two additional end-to-end Python regression tests are now committed for the cleaner and aggregate generator, but **their full-source execution remains pending**. The Excel workbook is still static: application compatibility and automatic XLSX regeneration are not yet verified.
 
 ## Deliverable inventory
 
@@ -93,6 +93,8 @@ A [cleaned 1,470-row, 32-column working dataset](data/clean/employee_attrition_c
 - Excel comparison/dashboard workbook: **created**, Excel application QA and full XLSX regeneration steps pending
 - Privacy-minimal 28-row aggregate CSV, deterministic generation script and nine passing unit tests: **available**
 - Cleaned 1,470 × 32 dataset: **created and readback-verified**, with full-source quality audit, transformation rules and unexecuted new cleaning unit tests
+- Independent full-source artifact reconciliation: **PASS** (JavaScript-based audit of tracked CSVs, not Python pipeline execution)
+- Full-source Python cleaner and aggregate-generator regression gates: **implemented, execution pending**
 - Final validated recommendations and project closure: **pending**
 
 ---
