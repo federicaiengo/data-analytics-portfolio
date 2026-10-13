@@ -4,8 +4,8 @@
 **Repository:** data-analytics-portfolio  
 **Document:** Business Findings  
 **Author:** Federica Iengo  
-**Status:** In Progress  
-**Last Updated:** 2026-08-02  
+**Status:** Descriptive analytical review complete (spreadsheet desktop QA pending)  
+**Last Updated:** 2026-10-13  
 
 This document records the business insights identified during the analysis of the IBM HR Analytics Employee Attrition & Performance dataset.
 
@@ -24,7 +24,7 @@ Reference system:
 - `BQ-XXX` = Business Question
 - `BI-XXX` = Business Insight
 
-The findings describe associations observed in the dataset and must not be interpreted as proof of causality unless explicitly stated.
+The findings describe associations in a static public educational dataset, not real-employer outcomes, and must not be interpreted as proof of causality. The labels **Strong** and **Moderate** below refer only to how clear the descriptive contrast is *within this sample*; they are not causal evidence, statistical confidence grades, or recommendations proven to improve retention. For the final interpretation and independent stratification check, see [Final analytical review](FINAL_ANALYTICAL_REVIEW_2026-10-13.md).
 
 ---
 
@@ -381,9 +381,13 @@ Possible actions include:
 
 ## Reasoning
 
-Two independent analyses support the same conclusion:
+Two related descriptive breakdowns show higher observed attrition proportions at shorter tenure:
 
-- Years
+- Employees with **0–1 years at the company** have 75 attritions among 215 records (34.88%).
+- Employees with **0 years in their current role** have 73 attritions among 244 records (29.92%).
+
+The two measures may overlap and **are not independent evidence**. This cross-sectional snapshot does not track employment duration prospectively; survivorship and population composition can affect tenure comparisons. It cannot establish when people are most likely to leave or prove that onboarding interventions will improve retention.
+
 ---
 
 # BI-007 — Job Involvement and Employee Attrition
