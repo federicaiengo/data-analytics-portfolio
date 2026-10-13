@@ -33,9 +33,9 @@ python python/clean_employee_attrition.py
 python -m unittest discover tests -v
 ```
 
-The script writes `data/clean/employee_attrition_clean.csv` and `data/clean/source_quality_report.json` after full validation. It never changes `data/raw/`. The JSON report is **not yet part of the repository** because that Python run still needs independent runtime verification.
+The script writes `data/clean/employee_attrition_clean.csv` and `data/clean/source_quality_report.json` after full validation. It never changes `data/raw/`. The JSON report is **not yet part of the repository** because the workflow writes the generated report to a temporary runner directory rather than adding an unreviewed artifact to the repository.
 
-The cleaned CSV was separately produced by a full-source programmatic projection applying the documented rules, committed to GitHub, and read back byte for byte. **13/13 cleaning unit tests passed locally** in Python 3.13.5 with exact matching Git blob hashes for source and tests. The full-data Python run is still pending.
+The cleaned CSV was separately produced by a full-source programmatic projection applying the documented rules, committed to GitHub, and read back byte for byte. **13/13 cleaning unit tests passed locally** in Python 3.13.5 with exact matching Git blob hashes for source and tests. The full-data Python run has since **passed** in [manual GitHub Actions QA run 38336050248](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38336050248): the cleaner and aggregate builder passed **24/24 tests** (including their full-source integration tests), and generated CSVs matched the tracked reference files byte for byte.
 
 ## Constraints
 - Exact 35-column original schema is required; unexpected source changes block rather than silently change the cohort.
