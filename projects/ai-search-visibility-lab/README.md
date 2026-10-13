@@ -75,11 +75,11 @@ The initial query set is designed around complex science/health-tech discovery p
 - **Measurement design:** `methodology/measurement_protocol.md`
 - **Scientific/health-tech reasoning:** `case_studies/scientific_healthtech.md`
 - **Machine-readable output:** `results/demo_metrics.json`
-- **QA:** unit tests plus GitHub Actions workflow
+- **QA:** [manual GitHub Actions validation — 9/9 tests PASS](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38336992176); synthetic demo metrics regenerated and compared with the tracked JSON
 
 ## Input validation
 
-Mention and citation labels must be explicit yes/no flags; missing or ambiguous values are rejected instead of silently counted as negatives. Platform, model and query identity must be specified for repeatability analysis. New negative-case unit tests have been added, but their latest execution is still pending. The included observations remain synthetic.
+Mention and citation labels must be explicit yes/no flags; missing or ambiguous values are rejected instead of silently counted as negatives. Platform, model and query identity must be specified for repeatability analysis. Negative-case and reproducibility tests **passed (9/9)** in [manual QA run 38336992176](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38336992176) on Python 3.12. This validates the code and synthetic fixture, **not AI-platform outcomes**. The included observations remain synthetic.
 
 ## Next milestone
 
