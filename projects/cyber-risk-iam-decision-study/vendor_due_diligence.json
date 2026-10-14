@@ -1,0 +1,114 @@
+{
+  "status": "SYNTHETIC_TEMPLATE_ONLY",
+  "real_vendor_contacted": false,
+  "items": [
+    {
+      "question_id": "V01",
+      "domain": "Governance",
+      "question": "Who is accountable for handling shared documents and approving access?",
+      "evidence_request": "Named service owner and RACI; approved security policy",
+      "review_owner_hypothetical": "Governance owner",
+      "evidence_received": "NOT_REQUESTED",
+      "review_decision": "NOT_ASSESSED"
+    },
+    {
+      "question_id": "V02",
+      "domain": "Data inventory",
+      "question": "Exactly which categories of synthetic documents would the vendor process?",
+      "evidence_request": "Data flow diagram; classification and allowlist",
+      "review_owner_hypothetical": "Data owner",
+      "evidence_received": "NOT_REQUESTED",
+      "review_decision": "NOT_ASSESSED"
+    },
+    {
+      "question_id": "V03",
+      "domain": "Authorization",
+      "question": "How are vendor access scopes issued, reviewed and revoked?",
+      "evidence_request": "Permission matrix; identity lifecycle process",
+      "review_owner_hypothetical": "Identity owner",
+      "evidence_received": "NOT_REQUESTED",
+      "review_decision": "NOT_ASSESSED"
+    },
+    {
+      "question_id": "V04",
+      "domain": "Authentication",
+      "question": "How are machine and human identities authenticated and protected?",
+      "evidence_request": "Configuration summary and access evidence from a sanctioned review",
+      "review_owner_hypothetical": "Identity owner",
+      "evidence_received": "NOT_REQUESTED",
+      "review_decision": "NOT_ASSESSED"
+    },
+    {
+      "question_id": "V05",
+      "domain": "Subprocessors",
+      "question": "Which subcontractors or subservices would handle customer content?",
+      "evidence_request": "Current subprocessor registry and change-notice terms",
+      "review_owner_hypothetical": "Vendor management",
+      "evidence_received": "NOT_REQUESTED",
+      "review_decision": "NOT_ASSESSED"
+    },
+    {
+      "question_id": "V06",
+      "domain": "Location and transfer",
+      "question": "Where is data processed and stored, including support and backup access?",
+      "evidence_request": "Data location statement and verified processing flow",
+      "review_owner_hypothetical": "Legal and privacy owner",
+      "evidence_received": "NOT_REQUESTED",
+      "review_decision": "NOT_ASSESSED"
+    },
+    {
+      "question_id": "V07",
+      "domain": "Retention",
+      "question": "How are retention and deletion requests fulfilled and evidenced?",
+      "evidence_request": "Data lifecycle specification and deletion report template",
+      "review_owner_hypothetical": "Data owner",
+      "evidence_received": "NOT_REQUESTED",
+      "review_decision": "NOT_ASSESSED"
+    },
+    {
+      "question_id": "V08",
+      "domain": "Logging",
+      "question": "Which access events are captured and available for independent review?",
+      "evidence_request": "Event schema; audit retention description; sample synthetic trace",
+      "review_owner_hypothetical": "Security operations",
+      "evidence_received": "NOT_REQUESTED",
+      "review_decision": "NOT_ASSESSED"
+    },
+    {
+      "question_id": "V09",
+      "domain": "Incident response",
+      "question": "How quickly and by whom are suspected incidents reported and contained?",
+      "evidence_request": "Incident response playbook; escalation and notification contract",
+      "review_owner_hypothetical": "Security operations",
+      "evidence_received": "NOT_REQUESTED",
+      "review_decision": "NOT_ASSESSED"
+    },
+    {
+      "question_id": "V10",
+      "domain": "Resilience",
+      "question": "How are availability commitments and restoration objectives demonstrated?",
+      "evidence_request": "Recovery plan; previous exercise reports if eligible to share",
+      "review_owner_hypothetical": "Service owner",
+      "evidence_received": "NOT_REQUESTED",
+      "review_decision": "NOT_ASSESSED"
+    },
+    {
+      "question_id": "V11",
+      "domain": "Output quality",
+      "question": "How are incorrectly extracted records identified and corrected?",
+      "evidence_request": "Data validation rules; reconciliation and exception-handling procedure",
+      "review_owner_hypothetical": "Data platform",
+      "evidence_received": "NOT_REQUESTED",
+      "review_decision": "NOT_ASSESSED"
+    },
+    {
+      "question_id": "V12",
+      "domain": "Assurance",
+      "question": "What independent security reports or test results support key vendor claims?",
+      "evidence_request": "Relevant audit scope/date; remediations and exceptions register",
+      "review_owner_hypothetical": "Risk reviewer",
+      "evidence_received": "NOT_REQUESTED",
+      "review_decision": "NOT_ASSESSED"
+    }
+  ]
+}
