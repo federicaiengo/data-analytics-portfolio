@@ -1,0 +1,154 @@
+{
+  "description": "Synthetic IAM principals; no real people or authentication data",
+  "as_of": "2026-10-14",
+  "status": "EDUCATIONAL_NOT_DEPLOYED",
+  "roles": [
+    "data_analyst",
+    "customer_operator",
+    "integration_admin",
+    "security_reviewer",
+    "vendor_processor"
+  ],
+  "identities": [
+    {
+      "id": "U01",
+      "role": "data_analyst",
+      "kind": "human",
+      "status": "active",
+      "expires_on": "2027-01-01"
+    },
+    {
+      "id": "U02",
+      "role": "data_analyst",
+      "kind": "human",
+      "status": "active",
+      "expires_on": "2027-01-01"
+    },
+    {
+      "id": "U03",
+      "role": "data_analyst",
+      "kind": "human",
+      "status": "active",
+      "expires_on": "2027-01-01"
+    },
+    {
+      "id": "U04",
+      "role": "customer_operator",
+      "kind": "human",
+      "status": "active",
+      "expires_on": "2027-01-01"
+    },
+    {
+      "id": "U05",
+      "role": "customer_operator",
+      "kind": "human",
+      "status": "active",
+      "expires_on": "2027-01-01"
+    },
+    {
+      "id": "U06",
+      "role": "customer_operator",
+      "kind": "human",
+      "status": "active",
+      "expires_on": "2027-01-01"
+    },
+    {
+      "id": "U07",
+      "role": "integration_admin",
+      "kind": "human",
+      "status": "active",
+      "expires_on": "2027-01-01"
+    },
+    {
+      "id": "U08",
+      "role": "integration_admin",
+      "kind": "human",
+      "status": "active",
+      "expires_on": "2027-01-01"
+    },
+    {
+      "id": "U09",
+      "role": "security_reviewer",
+      "kind": "human",
+      "status": "active",
+      "expires_on": "2027-01-01"
+    },
+    {
+      "id": "U10",
+      "role": "security_reviewer",
+      "kind": "human",
+      "status": "active",
+      "expires_on": "2027-01-01"
+    },
+    {
+      "id": "U11",
+      "role": "vendor_processor",
+      "kind": "human",
+      "status": "active",
+      "expires_on": "2026-11-01"
+    },
+    {
+      "id": "U12",
+      "role": "vendor_processor",
+      "kind": "human",
+      "status": "active",
+      "expires_on": "2026-11-01"
+    },
+    {
+      "id": "U13",
+      "role": "vendor_processor",
+      "kind": "human",
+      "status": "active",
+      "expires_on": "2026-11-01"
+    },
+    {
+      "id": "U14",
+      "role": "data_analyst",
+      "kind": "human",
+      "status": "disabled",
+      "expires_on": "2026-11-01"
+    },
+    {
+      "id": "U15",
+      "role": "customer_operator",
+      "kind": "human",
+      "status": "departed",
+      "expires_on": "2026-10-01"
+    },
+    {
+      "id": "U16",
+      "role": "security_reviewer",
+      "kind": "human",
+      "status": "active",
+      "expires_on": "2026-11-01"
+    },
+    {
+      "id": "S01",
+      "role": "vendor_processor",
+      "kind": "service",
+      "status": "active",
+      "expires_on": "2026-11-01"
+    },
+    {
+      "id": "S02",
+      "role": "vendor_processor",
+      "kind": "service",
+      "status": "expired",
+      "expires_on": "2026-10-01"
+    },
+    {
+      "id": "S03",
+      "role": "integration_admin",
+      "kind": "service",
+      "status": "active",
+      "expires_on": "2027-01-01"
+    },
+    {
+      "id": "S04",
+      "role": "data_analyst",
+      "kind": "service",
+      "status": "active",
+      "expires_on": "2027-01-01"
+    }
+  ]
+}
