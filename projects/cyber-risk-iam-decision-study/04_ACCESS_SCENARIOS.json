@@ -1,0 +1,438 @@
+{
+  "note": "All inputs are synthetic. Explicit per-case flags are required; evaluator defaults to deny when required assurances are absent.",
+  "as_of": "2026-10-14",
+  "cases": [
+    {
+      "id": "T01",
+      "principal": "U01",
+      "resource": "analytics_summary",
+      "action": "read",
+      "expected": "ALLOW",
+      "reason": "baseline",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T02",
+      "principal": "U01",
+      "resource": "production_database",
+      "action": "read",
+      "expected": "DENY",
+      "reason": "role cannot read DB",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T03",
+      "principal": "S01",
+      "resource": "staging_selected",
+      "action": "read",
+      "expected": "ALLOW",
+      "reason": "authorized vendor service",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T04",
+      "principal": "S01",
+      "resource": "production_database",
+      "action": "read",
+      "expected": "DENY",
+      "reason": "vendor not entitled",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T05",
+      "principal": "S01",
+      "resource": "staging_selected",
+      "action": "read",
+      "expected": "ESCALATE",
+      "reason": "unverified source",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": false,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T06",
+      "principal": "S02",
+      "resource": "staging_selected",
+      "action": "read",
+      "expected": "DENY",
+      "reason": "expired identity",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T07",
+      "principal": "S01",
+      "resource": "staging_selected",
+      "action": "read",
+      "expected": "DENY",
+      "reason": "inactive contract",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": false,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T08",
+      "principal": "S01",
+      "resource": "staging_selected",
+      "action": "read",
+      "expected": "DENY",
+      "reason": "outside scope",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": false,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T09",
+      "principal": "S01",
+      "resource": "staging_selected",
+      "action": "read",
+      "expected": "DENY",
+      "reason": "not authenticated",
+      "flags": {
+        "authenticated": false,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T10",
+      "principal": "U04",
+      "resource": "approved_document",
+      "action": "read",
+      "expected": "DENY",
+      "reason": "human MFA absent",
+      "flags": {
+        "authenticated": true,
+        "mfa": false,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T11",
+      "principal": "U15",
+      "resource": "approved_document",
+      "action": "read",
+      "expected": "DENY",
+      "reason": "departed staff member",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T12",
+      "principal": "U09",
+      "resource": "vendor_access_request",
+      "action": "approve",
+      "expected": "ALLOW",
+      "reason": "independent reviewer",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T13",
+      "principal": "U09",
+      "resource": "vendor_access_request",
+      "action": "approve",
+      "expected": "DENY",
+      "reason": "self approval prohibited",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U09"
+      }
+    },
+    {
+      "id": "T14",
+      "principal": "U09",
+      "resource": "integration_event_logs",
+      "action": "read",
+      "expected": "ALLOW",
+      "reason": "security review",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T15",
+      "principal": "U99",
+      "resource": "analytics_summary",
+      "action": "read",
+      "expected": "DENY",
+      "reason": "unknown identity",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T16",
+      "principal": "U11",
+      "resource": "processing_endpoint",
+      "action": "call",
+      "expected": "DENY",
+      "reason": "vendor human cannot use machine endpoint",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T17",
+      "principal": "U04",
+      "resource": "staging_selected",
+      "action": "write",
+      "expected": "ALLOW",
+      "reason": "approved operator request",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T18",
+      "principal": "S01",
+      "resource": "staging_selected",
+      "action": "read",
+      "expected": "DENY",
+      "reason": "no recorded approval",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": false,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T19",
+      "principal": "S01",
+      "resource": "staging_selected",
+      "action": "read",
+      "expected": "DENY",
+      "reason": "service identity not verified",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": false,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T20",
+      "principal": "U14",
+      "resource": "analytics_summary",
+      "action": "read",
+      "expected": "DENY",
+      "reason": "disabled identity",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T21",
+      "principal": "S03",
+      "resource": "integration_config",
+      "action": "manage",
+      "expected": "ALLOW",
+      "reason": "verified internal service",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T22",
+      "principal": "S04",
+      "resource": "analytics_summary",
+      "action": "read",
+      "expected": "ALLOW",
+      "reason": "verified analytical service",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T23",
+      "principal": "S01",
+      "resource": "processing_endpoint",
+      "action": "call",
+      "expected": "ESCALATE",
+      "reason": "source status unknown",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": true,
+        "scope_approved": true,
+        "source_verified": false,
+        "requester": "U07"
+      }
+    },
+    {
+      "id": "T24",
+      "principal": "U04",
+      "resource": "staging_selected",
+      "action": "write",
+      "expected": "DENY",
+      "reason": "ticket not approved",
+      "flags": {
+        "authenticated": true,
+        "mfa": true,
+        "service_verified": true,
+        "contract_active": true,
+        "ticket_approved": false,
+        "scope_approved": true,
+        "source_verified": true,
+        "requester": "U07"
+      }
+    }
+  ]
+}
