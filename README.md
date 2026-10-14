@@ -62,6 +62,17 @@ Highlights:
 
 [Open the HR project](projects/hr-analytics-employee-attrition/)
 
+## Independent Cybersecurity / IT Risk Case Study
+
+### A Valid Login Is Not a Trust Decision
+**Cyber Risk Assessment · Vendor Risk · IAM Governance · Python · Evidence-First Review**
+
+A fictional supplier-access scenario connects 12 hypothetical risks, 12 due-diligence questions, 20 synthetic identities, 24 IAM decisions and tenant/document-scoped authorization examples. After discovering that an initial toy approval rule could accept an unrelated identifier, I added a simulated approval registry and negative regression tests.
+
+**51/51 locally executed Python unittest methods passed.** They check a *fictional model and synthetic fixtures*, not real supplier security, ISO/NIST conformity, a professional audit or production access-control effectiveness.
+
+[Read the independently documented case study, Python source and tests](projects/cyber-risk-iam-decision-study/)
+
 ## Core Technical Skills
 
 - SQL & PostgreSQL
