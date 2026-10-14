@@ -1,0 +1,260 @@
+{
+  "scenario": "FICTIONAL_SAAS_VENDOR_CASE",
+  "source": "Independent educational exercise, no real assessment",
+  "assets": [
+    {
+      "id": "A01",
+      "description": "Customer documents (synthetic)"
+    },
+    {
+      "id": "A02",
+      "description": "Document metadata"
+    },
+    {
+      "id": "A03",
+      "description": "Staging object storage"
+    },
+    {
+      "id": "A04",
+      "description": "Production database"
+    },
+    {
+      "id": "A05",
+      "description": "Analytics warehouse"
+    },
+    {
+      "id": "A06",
+      "description": "Identity provider"
+    },
+    {
+      "id": "A07",
+      "description": "Vendor integration identity"
+    },
+    {
+      "id": "A08",
+      "description": "Processing API gateway"
+    },
+    {
+      "id": "A09",
+      "description": "Secrets store"
+    },
+    {
+      "id": "A10",
+      "description": "Audit logs"
+    },
+    {
+      "id": "A11",
+      "description": "Deployment system"
+    },
+    {
+      "id": "A12",
+      "description": "Backup configuration"
+    }
+  ],
+  "risks": [
+    {
+      "risk_id": "R01",
+      "asset_id": "A07",
+      "scenario": "Unexpected use of vendor integration identity",
+      "likelihood": 4,
+      "impact": 5,
+      "inherent_score": 20,
+      "local_band": "high",
+      "proposed_control": "Scoped time-limited access and review",
+      "evidence_required": "Permission inventory and revocation exercise",
+      "csf_2_functions": [
+        "PROTECT",
+        "DETECT"
+      ],
+      "control_status": "PROPOSED_NOT_VERIFIED",
+      "residual_risk": "NOT_ASSESSED"
+    },
+    {
+      "risk_id": "R02",
+      "asset_id": "A03",
+      "scenario": "Over-permissive document staging access",
+      "likelihood": 3,
+      "impact": 5,
+      "inherent_score": 15,
+      "local_band": "high",
+      "proposed_control": "Restricted staging permissions",
+      "evidence_required": "Documented access policy and negative authorization test",
+      "csf_2_functions": [
+        "IDENTIFY",
+        "PROTECT"
+      ],
+      "control_status": "PROPOSED_NOT_VERIFIED",
+      "residual_risk": "NOT_ASSESSED"
+    },
+    {
+      "risk_id": "R03",
+      "asset_id": "A04",
+      "scenario": "Unnecessary database privileges available to external integration",
+      "likelihood": 3,
+      "impact": 5,
+      "inherent_score": 15,
+      "local_band": "high",
+      "proposed_control": "Separate integration environment with least privilege",
+      "evidence_required": "Effective-access review and rejected DB-access fixture",
+      "csf_2_functions": [
+        "GOVERN",
+        "PROTECT"
+      ],
+      "control_status": "PROPOSED_NOT_VERIFIED",
+      "residual_risk": "NOT_ASSESSED"
+    },
+    {
+      "risk_id": "R04",
+      "asset_id": "A01",
+      "scenario": "Documents outside approved categories included in processing",
+      "likelihood": 4,
+      "impact": 4,
+      "inherent_score": 16,
+      "local_band": "high",
+      "proposed_control": "Allowlist and pre-transfer review",
+      "evidence_required": "Synthetic classification acceptance and rejection cases",
+      "csf_2_functions": [
+        "GOVERN",
+        "PROTECT"
+      ],
+      "control_status": "PROPOSED_NOT_VERIFIED",
+      "residual_risk": "NOT_ASSESSED"
+    },
+    {
+      "risk_id": "R05",
+      "asset_id": "A10",
+      "scenario": "Missing traceability during investigation",
+      "likelihood": 4,
+      "impact": 4,
+      "inherent_score": 16,
+      "local_band": "high",
+      "proposed_control": "Structured correlation IDs and retention controls",
+      "evidence_required": "Synthetic event chain and missing-event notification",
+      "csf_2_functions": [
+        "DETECT",
+        "RESPOND"
+      ],
+      "control_status": "PROPOSED_NOT_VERIFIED",
+      "residual_risk": "NOT_ASSESSED"
+    },
+    {
+      "risk_id": "R06",
+      "asset_id": "A06",
+      "scenario": "External-party identity remains active after authorization ends",
+      "likelihood": 4,
+      "impact": 4,
+      "inherent_score": 16,
+      "local_band": "high",
+      "proposed_control": "Expiry and periodic access recertification",
+      "evidence_required": "Revoke/review test case and documented owner sign-off",
+      "csf_2_functions": [
+        "GOVERN",
+        "PROTECT"
+      ],
+      "control_status": "PROPOSED_NOT_VERIFIED",
+      "residual_risk": "NOT_ASSESSED"
+    },
+    {
+      "risk_id": "R07",
+      "asset_id": "A08",
+      "scenario": "Unexpected vendor output influences automated decisions",
+      "likelihood": 3,
+      "impact": 4,
+      "inherent_score": 12,
+      "local_band": "elevated",
+      "proposed_control": "Strict data validation and downstream constraints",
+      "evidence_required": "Fictional malformed and valid response cases",
+      "csf_2_functions": [
+        "PROTECT",
+        "DETECT"
+      ],
+      "control_status": "PROPOSED_NOT_VERIFIED",
+      "residual_risk": "NOT_ASSESSED"
+    },
+    {
+      "risk_id": "R08",
+      "asset_id": "A12",
+      "scenario": "Backup procedure insufficient for restoration",
+      "likelihood": 3,
+      "impact": 4,
+      "inherent_score": 12,
+      "local_band": "elevated",
+      "proposed_control": "Restore exercises and recorded recovery objectives",
+      "evidence_required": "Synthetic restore log and objective comparison",
+      "csf_2_functions": [
+        "RESPOND",
+        "RECOVER"
+      ],
+      "control_status": "PROPOSED_NOT_VERIFIED",
+      "residual_risk": "NOT_ASSESSED"
+    },
+    {
+      "risk_id": "R09",
+      "asset_id": "A01",
+      "scenario": "Document copies handled by an unreviewed subcontractor",
+      "likelihood": 3,
+      "impact": 5,
+      "inherent_score": 15,
+      "local_band": "high",
+      "proposed_control": "Subprocessor review and contract approval gate",
+      "evidence_required": "Vendor subprocessor register and review sign-off",
+      "csf_2_functions": [
+        "GOVERN",
+        "IDENTIFY"
+      ],
+      "control_status": "PROPOSED_NOT_VERIFIED",
+      "residual_risk": "NOT_ASSESSED"
+    },
+    {
+      "risk_id": "R10",
+      "asset_id": "A02",
+      "scenario": "Incorrect structured metadata impacts analytic conclusions",
+      "likelihood": 4,
+      "impact": 3,
+      "inherent_score": 12,
+      "local_band": "elevated",
+      "proposed_control": "Output reconciliation and exception review",
+      "evidence_required": "Synthetic quality checks and reconciliation report",
+      "csf_2_functions": [
+        "IDENTIFY",
+        "DETECT"
+      ],
+      "control_status": "PROPOSED_NOT_VERIFIED",
+      "residual_risk": "NOT_ASSESSED"
+    },
+    {
+      "risk_id": "R11",
+      "asset_id": "A09",
+      "scenario": "Confidential integration secret exposed in deployment material",
+      "likelihood": 3,
+      "impact": 5,
+      "inherent_score": 15,
+      "local_band": "high",
+      "proposed_control": "Protected configuration and release review",
+      "evidence_required": "Dummy secret-sentinel detection and access review",
+      "csf_2_functions": [
+        "PROTECT",
+        "DETECT"
+      ],
+      "control_status": "PROPOSED_NOT_VERIFIED",
+      "residual_risk": "NOT_ASSESSED"
+    },
+    {
+      "risk_id": "R12",
+      "asset_id": "A01",
+      "scenario": "Vendor retains files beyond agreed retention",
+      "likelihood": 3,
+      "impact": 4,
+      "inherent_score": 12,
+      "local_band": "elevated",
+      "proposed_control": "Time-bounded retention and evidenced deletion process",
+      "evidence_required": "Simulated retention schedule and deletion confirmation",
+      "csf_2_functions": [
+        "GOVERN",
+        "PROTECT"
+      ],
+      "control_status": "PROPOSED_NOT_VERIFIED",
+      "residual_risk": "NOT_ASSESSED"
+    }
+  ]
+}
