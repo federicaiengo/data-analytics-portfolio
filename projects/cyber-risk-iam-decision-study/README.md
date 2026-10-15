@@ -6,6 +6,8 @@ A fictional B2B SaaS company wants a supplier to process a limited set of custom
 
 All suppliers, documents, principals, approvals, evidence assumptions and risk ratings here are **synthetic**. No client work, live systems, genuine vendor assessment, penetration testing or operational controls are claimed.
 
+**Prefer the business decision to the code?** [Start with the plain-English vendor decision brief](DECISION_BRIEF.md). It explains why the fictional recommendation remains HOLD, what evidence would be needed, and who would be responsible for deciding. No real supplier was assessed.
+
 ## What I built
 
 - A structured register of **12 hypothetical risks**, with explicit ordinal likelihood/impact assumptions and candidate controls.
