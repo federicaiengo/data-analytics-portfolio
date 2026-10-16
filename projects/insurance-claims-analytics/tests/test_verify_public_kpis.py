@@ -1,14 +1,16 @@
 """Independent fixture tests; intentionally no real customer identifiers."""
 import csv
+import io
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
 from decimal import Decimal
 from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT / "python"))
-from verify_public_kpis import summarize, baseline_matches
+from verify_public_kpis import summarize, baseline_matches, main
 
 FIELDS = ("TRANSACTION_ID", "INSURANCE_TYPE", "CLAIM_AMOUNT",
           "SSN", "ROUTING_NUMBER", "ACCT_NUMBER", "CUSTOMER_NAME",
@@ -89,6 +91,36 @@ class InsuranceRawKpiTests(unittest.TestCase):
                 writer.writerow(claim("T1", amount="100"))
             self.assertEqual(summarize(path)["claim_value"], Decimal("100"))
 
+
+    def test_cli_synthetic_fixture_succeeds_without_claiming_historical_validation(self):
+        fixture = PROJECT / "tests" / "fixtures" / "synthetic_insurance_claims.csv"
+        out = io.StringIO()
+        with redirect_stdout(out):
+            status = main(["--input", str(fixture)])
+        self.assertEqual(status, 0)
+        self.assertIn("Records: 3", out.getvalue())
+        self.assertIn("190399.99", out.getvalue())
+        self.assertIn("NOT_RUN", out.getvalue())
+        self.assertNotIn("PASS", out.getvalue())
+
+    def test_cli_historical_baseline_is_explicit_and_rejects_fixture(self):
+        fixture = PROJECT / "tests" / "fixtures" / "synthetic_insurance_claims.csv"
+        out = io.StringIO()
+        with redirect_stdout(out):
+            status = main(["--input", str(fixture), "--check-historical-baseline"])
+        self.assertEqual(status, 1)
+        self.assertIn("Historical baseline cross-check: FAIL", out.getvalue())
+
+    def test_cli_missing_source_explained_without_traceback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            absent = Path(tmp) / "not-shipped.csv"
+            err = io.StringIO()
+            with redirect_stderr(err):
+                status = main(["--input", str(absent)])
+        self.assertEqual(status, 2)
+        self.assertIn("SOURCE UNAVAILABLE", err.getvalue())
+        self.assertIn("--input", err.getvalue())
+        self.assertNotIn("Traceback", err.getvalue())
 
 if __name__ == "__main__":
     unittest.main()
