@@ -6,8 +6,10 @@ from pathlib import Path
 
 try:
     from .analyze_visibility import calculate_metrics, load_csv
+    from .validate_observation_evidence import validate_observations
 except ImportError:  # Direct CLI execution from the src/ directory.
     from analyze_visibility import calculate_metrics, load_csv
+    from validate_observation_evidence import validate_observations
 
 DEMO_SOURCE = Path(__file__).resolve().parents[1] / "data" / "sample_observations.csv"
 KINDS = {
@@ -28,7 +30,10 @@ def build_report(input_csv: str, output_json: str, *, input_kind: str | None = N
     if input_kind not in KINDS:
         raise ValueError("input_kind must be 'synthetic' or 'observational'")
 
-    metrics = calculate_metrics(load_csv(input_csv))
+    rows = load_csv(input_csv)
+    if input_kind == "observational":
+        validate_observations(rows)
+    metrics = calculate_metrics(rows)
     payload = {
         "dataset": Path(input_csv).name,
         "data_status": KINDS[input_kind],
