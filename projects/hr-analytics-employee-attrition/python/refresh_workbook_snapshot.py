@@ -17,6 +17,7 @@ from artifact_tool import Blob, SpreadsheetFile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_dashboard_source import aggregate_rows
+from workbook_template_guard import require_approved_template
 from verify_workbook_parity import (
     BLOCKS, compare_parity, git_blob_hash, load_aggregates, normalize_label, read_cells,
 )
@@ -38,6 +39,9 @@ def rebuild(template: Path, aggregate: Path, raw: Path, output: Path) -> int:
         raise ValueError("Output must not overwrite source or original XLSX")
     if output.exists():
         raise ValueError("Output already exists: " + str(output))
+
+    # Reject an unknown template before importing or exporting any workbook.
+    require_approved_template(template)
 
     raw_bytes = raw.read_bytes()
     records = list(csv.DictReader(raw_bytes.decode("utf-8-sig").splitlines()))
