@@ -12,7 +12,6 @@ import csv
 import sys
 from pathlib import Path
 
-from artifact_tool import Blob, SpreadsheetFile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -56,6 +55,10 @@ def rebuild(template: Path, aggregate: Path, raw: Path, output: Path) -> int:
     if recalculated != reference:
         raise ValueError("Aggregate CSV differs from the deterministic source rebuild")
 
+    try:
+        from artifact_tool import Blob, SpreadsheetFile
+    except ImportError as exc:
+        raise RuntimeError('Optional workbook renderer is not installed') from exc
     workbook = SpreadsheetFile.import_xlsx(Blob.load(str(template)))
     for dim, (sheet_name, row_numbers) in BLOCKS.items():
         sheet = workbook.worksheets.get_item(sheet_name)
