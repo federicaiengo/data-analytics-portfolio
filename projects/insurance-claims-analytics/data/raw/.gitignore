@@ -1,0 +1,4 @@
+# Keep Insurance source CSVs local until provenance, licensing and redistribution rights are verified.
+# This affects future untracked files only; it does not erase Git history or already tracked files.
+*.csv
+!.gitignore
