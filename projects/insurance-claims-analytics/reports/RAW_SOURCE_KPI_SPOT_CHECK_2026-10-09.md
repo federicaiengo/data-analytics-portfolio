@@ -17,7 +17,7 @@ Using an RFC-compatible CSV parser on the raw `data/raw/insurance_data.csv`, ins
 
 Other category counts and values were also recomputed; they agree with `reports/KPI_REPORT.md`: Health 1,690 / 18,254,000; Property 1,692 / 41,579,000; Travel 1,670 / 4,976,000; Motor 1,574 / 8,663,000; Mobile 1,692 / 688,300.
 
-**Provenance:** original CSV is tracked in this repository. A reproducible Python standard-library cross-check is included at `python/verify_public_kpis.py`. This verification was performed by programmatically reading the original CSV through the GitHub connection and independently aggregating it; it was **not** a new PostgreSQL or Tableau execution. Monetary units are unspecified by the source; do not assume a currency or call the sum an insured loss.
+**Historical evidence (9 October 2026):** the original CSV was tracked in this repository when the historical audit was performed, but is no longer distributed on the current public branch as of 16 October 2026 while provenance and redistribution rights remain unverified. A reproducible Python standard-library cross-check is included at `python/verify_public_kpis.py`. This verification was performed by programmatically reading the original CSV through the GitHub connection and independently aggregating it; it was **not** a new PostgreSQL or Tableau execution. Monetary units are unspecified by the source; do not assume a currency or call the sum an insured loss.
 
 ## Data-minimization caution — review required
 The source CSV includes columns with names resembling personally identifying/financial information, including **CUSTOMER_NAME**, addresses, **SSN**, **ROUTING_NUMBER** and **ACCT_NUMBER**. The dataset's fictitious/synthetic nature and permission status were **not independently established in this audit**. Do not reproduce these values in dashboards, screenshots, public examples, exports or logs. If the underlying data are not demonstrably safe to redistribute, replacing tracked raw input requires a dedicated consent/provenance review and repository-history analysis; deleting from the latest commit alone may leave prior history visible.
@@ -38,7 +38,13 @@ Run from `projects/insurance-claims-analytics/`:
 
 ```bash
 python -m unittest discover tests -v
-python python/verify_public_kpis.py
+python python/verify_public_kpis.py --input tests/fixtures/synthetic_insurance_claims.csv
 ```
 
 The second command requires the original raw CSV and was **not re-executed in the local Python runtime** in this block; source-based aggregate cross-check is separately documented above.
+
+## Current execution scope — 16 October 2026
+
+The three raw source CSVs used for the historical analysis have been removed from the current public branch pending provenance/redistribution review. Their historical aggregate findings above are **not newly rerun or revalidated**. Old Git objects and third-party exports may still retain copies; the removal is not a history purge.
+
+The Python auditor now supports `--input` for authorized data and an explicit `--check-historical-baseline` opt-in. A clearly **synthetic three-row fixture** is available for safe reproducible QA, without customer identifiers; it must not be interpreted as new evidence for the 10,000-row dashboard. **Local test verification on exact committed source bytes: 11/11 Python unittest methods PASS** on 16 October 2026. No fresh PostgreSQL, Tableau or source-license verification was performed.
