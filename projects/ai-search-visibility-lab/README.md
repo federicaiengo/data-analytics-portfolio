@@ -61,6 +61,18 @@ python -m unittest discover tests
 python src/generate_report.py data/sample_observations.csv results/demo_metrics.json
 ```
 
+## Provenance-safe reports (16 October 2026)
+
+The original demonstration command above still produces the **same checked-in demo JSON**. Its data status is synthetic because it uses this project's specific, packaged demonstration CSV. For any other input path, report generation now requires an explicit source category:
+
+```bash
+python src/generate_report.py path/to/authorized_observations.csv output.json --input-kind observational
+```
+
+The generated JSON labels such input as **operator-supplied observations; not independently verified**. The alternative `--input-kind synthetic` is only for demonstrably invented data. Merely selecting a flag does **not** verify an observation, consent, source ownership, AI model answer or associated citation. Raw answers or potentially identifying evidence should be stored privately, not committed to this public portfolio.
+
+The four new provenance checks were executed locally against the exact GitHub source blobs on 16 October 2026 (**4/4 PASS**). They cover refusal to guess unknown input status, preservation of the existing demo report, explicitly unverified observational data and rejection of unsupported status. The earlier 9/9 CI baseline applies to its recorded release; a new full-suite CI result for these additions is not yet claimed.
+
 The output also includes the count of eligible `repeated_query_groups` so the denominator is auditable. A single response is never evidence of consistency.
 
 The included dataset is **synthetic demonstration data**, clearly labelled so that portfolio results cannot be mistaken for live platform measurements.
