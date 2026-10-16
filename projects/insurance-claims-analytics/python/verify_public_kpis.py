@@ -1,4 +1,4 @@
-"""Read-only independent KPI cross-check for the raw public insurance dataset.
+"""Read-only independent insurance KPI cross-check on an authorized input CSV.
 
 Outputs aggregate summaries only. In particular, this script must never print
 customer names, addresses, account, routing or SSN values.
@@ -6,7 +6,9 @@ No SQL/DB connection or additional packages are required.
 """
 from __future__ import annotations
 
+import argparse
 import csv
+import sys
 from collections import defaultdict
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -77,14 +79,43 @@ def baseline_matches(summary: dict) -> bool:
     )
 
 
-if __name__ == "__main__":
-    summary = summarize(SOURCE)
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--input", type=Path, default=SOURCE,
+        help="Path to an authorized CSV. The historical raw source is not distributed.",
+    )
+    parser.add_argument(
+        "--check-historical-baseline", action="store_true",
+        help="Require the previously documented 10,000-row historical KPI baseline.",
+    )
+    args = parser.parse_args(argv)
+    if not args.input.is_file():
+        print(
+            "SOURCE UNAVAILABLE: the historical raw dataset is not distributed "
+            "while provenance and redistribution rights are unverified. "
+            "Supply an authorized CSV using --input, or run the synthetic fixture.",
+            file=sys.stderr,
+        )
+        return 2
+    try:
+        summary = summarize(args.input)
+    except (ValueError, OSError) as exc:
+        print(f"CHECK FAILED: {exc}", file=sys.stderr)
+        return 1
     print("Records:", summary["records"])
     print("Total recorded claim value (dataset units):", summary["claim_value"])
     print("High-value claims:", summary["high_value_claims"])
     for category, values in summary["insurance_types"].items():
         print(category, values["claims"], values["total"], values["high"])
     print("Personal-identifier-like source columns detected:", len(summary["personal_looking_fields"]))
-    print("Baseline cross-check:", "PASS" if baseline_matches(summary) else "FAIL")
-    if not baseline_matches(summary):
-        raise SystemExit(1)
+    if args.check_historical_baseline:
+        matched = baseline_matches(summary)
+        print("Historical baseline cross-check:", "PASS" if matched else "FAIL")
+        return 0 if matched else 1
+    print("Historical baseline cross-check: NOT_RUN (opt in with --check-historical-baseline)")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
