@@ -36,6 +36,8 @@ def rebuild(template: Path, aggregate: Path, raw: Path, output: Path) -> int:
             raise ValueError("Missing input: " + str(filename))
     if output.resolve() in {f.resolve() for f in (template, aggregate, raw)}:
         raise ValueError("Output must not overwrite source or original XLSX")
+    if output.is_symlink():
+        raise ValueError("Output cannot be a symbolic link: " + str(output))
     if output.exists():
         raise ValueError("Output already exists: " + str(output))
 
