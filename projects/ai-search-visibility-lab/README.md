@@ -75,6 +75,8 @@ The four provenance regression tests reject unknown data status and unsupported 
 
 On 16 October 2026, the complete local Python unittest suite was executed on byte-for-byte verified GitHub source blobs: **20/20 PASS** (nine original metrics tests, four provenance tests and seven metadata tests). The synthetic demo JSON also matched the tracked baseline, while invalid observational input was correctly rejected without an output file. This is an **executed local software QA result**, not a newly completed GitHub Actions CI run, real AI answer collection, SEO performance result or independently verified citation. The [earlier CI result](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38336992176) still covers only its historical 9/9-test snapshot.
 
+**17 October 2026:** The latest locally executed suite passed **21/21 Python tests** on byte-identical GitHub source files. The new regression ensures invalid Yes/No labels do not expose their untrusted content in error messages. This is not a new CI run or a live AI visibility measurement.
+
 The output also includes the count of eligible `repeated_query_groups` so the denominator is auditable. A single response is never evidence of consistency.
 
 The included dataset is **synthetic demonstration data**, clearly labelled so that portfolio results cannot be mistaken for live platform measurements.
