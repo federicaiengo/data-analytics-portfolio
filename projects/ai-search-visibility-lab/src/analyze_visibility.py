@@ -12,7 +12,7 @@ def as_bool(value: str) -> bool:
         return True
     if normalized in {"0", "false", "no", "n"}:
         return False
-    raise ValueError(f"Invalid observation flag: {value!r}; expected an explicit Yes/No label")
+    raise ValueError("Invalid observation flag; expected an explicit Yes/No label")
 
 def split_pipe(value: str):
     return [x.strip() for x in (value or "").split("|") if x.strip()]
