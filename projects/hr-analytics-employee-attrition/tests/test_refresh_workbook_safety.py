@@ -44,6 +44,16 @@ class WorkbookRefreshSafetyTests(unittest.TestCase):
             rebuild(self.template, self.aggregates, self.raw, self.output)
         self.assertEqual(self.output.read_bytes(), b"retain existing output")
 
+    def test_dangling_symlink_output_is_rejected(self):
+        redirected = self.root / "uncreated.xlsx"
+        try:
+            self.output.symlink_to(redirected)
+        except (OSError, NotImplementedError):
+            self.skipTest("Symlinks unavailable")
+        with self.assertRaisesRegex(ValueError, "symbolic link"):
+            rebuild(self.template, self.aggregates, self.raw, self.output)
+        self.assertFalse(redirected.exists())
+
     def test_missing_input_is_reported_without_new_output(self):
         self.aggregates.unlink()
         with self.assertRaisesRegex(ValueError, "Missing input"):
