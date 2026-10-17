@@ -89,6 +89,12 @@ The [manual HR QA run on 2026-10-13](https://github.com/federicaiengo/data-analy
 
 [Static workbook 28/28 reconciliation](reports/WORKBOOK_PARITY_2026-10-13.md): an independent read-only check found all 28 source group counts, attritions and displayed rates consistent with the XLSX, with rounding tolerance and recorded provenance. The new Python parity gate and eight mutation-oriented tests **passed in the manually triggered [GitHub Actions run 38411506600](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38411506600)**: **32/32 Python tests PASS**, with **28/28 XLSX groups and seven Dashboard mirrors reconciled**, plus source-provenance checks. An [optional template-based XLSX refresher](python/refresh_workbook_snapshot.py) is now available for separate output paths; its full real-workbook execution and visual fidelity remain unverified.
 
+### Workbook refresh safety (17 October 2026)
+
+The optional [workbook refresh script](python/refresh_workbook_snapshot.py) refuses to overwrite the original workbook, any source CSV or an existing output file. It also rejects unknown templates and symbolic-link output paths. Six fixture-only safety regressions in [test_refresh_workbook_safety.py](tests/test_refresh_workbook_safety.py) **passed locally (6/6)** on exact GitHub-matched source and test blobs. Unrelated aggregation and parity imports were isolated with explicit failing placeholders to exercise only these early input-protection paths.
+
+**Still pending:** importing and regenerating the real committed XLSX, all-source verification in the same run, Microsoft Excel compatibility and visual fidelity. The passing safety tests are not a completed workbook rebuild or a new GitHub Actions CI run.
+
 ## Deliverable inventory
 
 - Original public dataset: **available** in `data/raw/`
