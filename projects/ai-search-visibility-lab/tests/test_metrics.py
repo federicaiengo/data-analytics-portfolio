@@ -68,6 +68,14 @@ class TestMetrics(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "Invalid observation flag"):
                 calculate_metrics([missing])
 
+    def test_invalid_labels_do_not_leak_untrusted_input(self):
+        from src.analyze_visibility import as_bool
+        fabricated_private_marker = "fictional-internal-credential-do-not-log"
+        with self.assertRaisesRegex(ValueError, "Invalid observation flag") as caught:
+            as_bool(fabricated_private_marker)
+        self.assertNotIn(fabricated_private_marker, str(caught.exception))
+        self.assertIn("Yes/No", str(caught.exception))
+
     def test_comparison_identity_must_be_complete(self):
         row = {"platform": "Engine", "model": "m1", "query_id": "q1",
                "query_text": "Question", "target_brand": "Brand",
