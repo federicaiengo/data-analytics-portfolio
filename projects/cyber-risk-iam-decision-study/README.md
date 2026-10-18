@@ -31,6 +31,12 @@ The 2026-10-14 review recorded **51 of 51 Python unittest methods passing**: 11 
 
 **Important:** passing tests validate toy-model logic, *not the security of a real system, real-world tenant isolation, cryptographic identity, evidence provenance or policy enforcement*. No automated test can establish that an imaginary supplier is safe.
 
+## Later regression review (18 October 2026)
+
+A second review of the **fictional document-scope evaluator** found a genuine testable flaw: treating expiration dates as unchecked strings could grant simulated access when dates were malformed, and some invalid values raised exceptions rather than returning DENY. Earlier negative tests also exposed ambiguity from duplicated identity records and malformed approval identifiers.
+
+The toy evaluator now fails closed for invalid or noncanonical calendar dates, duplicated subject records and malformed approval input. The [document-scope test module](test_document_scope.py) passed **31/31 Python unittest methods locally**, using source files verified byte for byte against their committed Git blobs. These are software regression results on fabricated examples, **not evidence of real access-control enforcement**. The 51/51 figure above remains the historical 14 October full-project snapshot; the entire project suite has **not yet been rerun** since these improvements.
+
 ## Decision memorandum
 
 The fictional vendor's status is **HOLD**: permissions, retention/deletion, subcontractors, logging, incident response, and evidence of control operation would need to be independently assessed before any actual business decision. **Residual risk: NOT ASSESSED.** The risk register's 1–5 ordinal scores and multiplication are illustrative local ranking choices; they are not measured incident probabilities or a NIST-specified formula.
