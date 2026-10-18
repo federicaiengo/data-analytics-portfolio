@@ -82,6 +82,23 @@ class DocumentScopeTests(unittest.TestCase):
     def test_same_tenant_approved_category_other_document_denied(self):
         self.assertEqual(decide(doc="A-003", evidence=VENDOR_OK), "DENY")
 
+    def test_unhashable_approval_id_denied(self):
+        self.assertEqual(decide(evidence={**VENDOR_OK, "approval_id": ["not-an-id"]}), "DENY")
+
+    def test_unhashable_document_identifier_denied(self):
+        self.assertEqual(decide(doc=["A-001"]), "DENY")
+
+    def test_duplicate_subject_identity_denied(self):
+        duplicates = identities + [dict(next(i for i in identities if i["id"] == "S01"))]
+        self.assertEqual(
+            policy.evaluate_document("S01", "vendor_processor", "A-001", "read",
+                                     duplicates, evidence=VENDOR_OK),
+            "DENY",
+        )
+
+    def test_non_mapping_evidence_denied(self):
+        self.assertEqual(decide(evidence=["authenticated", "approval_id"]), "DENY")
+
     def test_unknown_approval_id_denied(self):
         self.assertEqual(decide(evidence={**VENDOR_OK, "approval_id": "UNRECOGNIZED"}), "DENY")
 
