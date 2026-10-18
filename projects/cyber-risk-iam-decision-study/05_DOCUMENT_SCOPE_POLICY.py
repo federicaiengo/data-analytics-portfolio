@@ -35,9 +35,20 @@ APPROVALS = {
 def evaluate_document(principal, role, doc_id, action, identities, *, evidence=None,
                       today="2026-10-14"):
     """ALLOW, DENY, or HOLD. HOLD never grants access."""
-    item = next((x for x in identities if x["id"] == principal), None)
+    # A duplicated or malformed identity directory must never select an
+    # arbitrary matching account. Fail closed before consulting scope records.
+    if not all(isinstance(value, str) for value in (principal, role, doc_id, action)):
+        return "DENY"
+    if not isinstance(identities, (list, tuple)):
+        return "DENY"
+    if evidence is not None and not isinstance(evidence, dict):
+        return "DENY"
+    matches = [x for x in identities if isinstance(x, dict) and x.get("id") == principal]
+    if len(matches) != 1:
+        return "DENY"
+    item = matches[0]
     doc = DOCS.get(doc_id)
-    if item is None or doc is None or item["role"] != role:
+    if doc is None or item.get("role") != role:
         return "DENY"
     if item["status"] != "active" or item["expires_on"] <= today:
         return "DENY"
@@ -54,7 +65,10 @@ def evaluate_document(principal, role, doc_id, action, identities, *, evidence=N
         return "DENY"
     if item["kind"] == "service" and e.get("service_verified") is not True:
         return "DENY"
-    approval = APPROVALS.get(e.get("approval_id"))
+    approval_id = e.get("approval_id")
+    if not isinstance(approval_id, str):
+        return "DENY"
+    approval = APPROVALS.get(approval_id)
     if not approval:
         return "DENY"
     if (approval["principal"] != principal or approval["doc_id"] != doc_id
