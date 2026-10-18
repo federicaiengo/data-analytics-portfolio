@@ -99,6 +99,31 @@ class DocumentScopeTests(unittest.TestCase):
     def test_non_mapping_evidence_denied(self):
         self.assertEqual(decide(evidence=["authenticated", "approval_id"]), "DENY")
 
+    def test_invalid_evaluation_date_denied(self):
+        for today in ("2026-10-4", "not-a-date", "2026-02-30", None, ["2026-10-14"]):
+            with self.subTest(today=today):
+                self.assertEqual(decide(today=today), "DENY")
+
+    def test_malformed_identity_expiry_denied(self):
+        for expiry in ("not-a-date", None, "2026-2-14"):
+            with self.subTest(expiry=expiry):
+                entries = [{**i, "expires_on": expiry} if i["id"] == "S01" else i
+                           for i in identities]
+                self.assertEqual(
+                    policy.evaluate_document("S01", "vendor_processor", "A-001", "read",
+                                             entries, evidence=VENDOR_OK), "DENY")
+
+    def test_malformed_approval_expiry_denied(self):
+        from unittest.mock import patch
+        for expiry in ("not-a-date", None, "2026-2-14"):
+            with self.subTest(expiry=expiry):
+                fake_id = "SYNTHETIC-BAD-EXPIRY"
+                bad_approval = {**policy.APPROVALS["SIMULATED-APPROVAL-01"],
+                                "expires_on": expiry}
+                with patch.dict(policy.APPROVALS, {fake_id: bad_approval}):
+                    evidence = {**VENDOR_OK, "approval_id": fake_id}
+                    self.assertEqual(decide(evidence=evidence), "DENY")
+
     def test_unknown_approval_id_denied(self):
         self.assertEqual(decide(evidence={**VENDOR_OK, "approval_id": "UNRECOGNIZED"}), "DENY")
 
