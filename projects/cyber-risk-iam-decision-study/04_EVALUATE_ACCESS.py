@@ -1,5 +1,6 @@
 """Educational IAM policy evaluator for fictional records only. Not a production security gate."""
 import json
+from datetime import date
 from pathlib import Path
 
 FOLDER = Path(__file__).resolve().parent
@@ -19,14 +20,39 @@ DEFAULT_FLAGS = {
 def load_fixture(filename):
     return json.loads((FOLDER / filename).read_text(encoding="utf-8"))
 
+def canonical_day(value):
+    """Accept canonical ISO calendar dates only (not arbitrary strings)."""
+    if not isinstance(value, str):
+        return None
+    try:
+        result = date.fromisoformat(value)
+    except ValueError:
+        return None
+    return result if result.isoformat() == value else None
+
+
 def decide(principal, resource, action, identities, today="2026-10-14", flags=None):
     """Returns ALLOW, DENY, or ESCALATE. Escalation never grants access."""
+    if not all(isinstance(v, str) for v in (principal, resource, action)):
+        return "DENY"
+    if not isinstance(identities, (list, tuple)):
+        return "DENY"
+    if flags is not None and not isinstance(flags, dict):
+        return "DENY"
+    evaluation_day = canonical_day(today)
+    if evaluation_day is None:
+        return "DENY"
+    matches = [item for item in identities
+               if isinstance(item, dict) and item.get("id") == principal]
+    if len(matches) != 1:
+        return "DENY"
+    subject = matches[0]
+    expiry = canonical_day(subject.get("expires_on"))
+    if subject.get("status") != "active" or expiry is None or expiry <= evaluation_day:
+        return "DENY"
+    if subject.get("kind") not in {"human", "service"}:
+        return "DENY"
     flags = {**DEFAULT_FLAGS, **(flags or {})}
-    subject = next((item for item in identities if item["id"] == principal), None)
-    if subject is None or subject["status"] != "active":
-        return "DENY"
-    if subject["expires_on"] <= today:
-        return "DENY"
     if flags["authenticated"] is not True:
         return "DENY"
     kind = subject["kind"]
