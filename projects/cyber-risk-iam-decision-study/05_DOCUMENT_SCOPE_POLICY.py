@@ -1,5 +1,6 @@
 """Fictional tenant/document decision lab. Never use as real authorization middleware."""
 from dataclasses import dataclass
+from datetime import date
 
 @dataclass(frozen=True)
 class Document:
@@ -32,12 +33,26 @@ APPROVALS = {
 }
 
 
+def canonical_day(value):
+    """Strict ISO date for synthetic expiry comparisons; malformed means unknown."""
+    if not isinstance(value, str):
+        return None
+    try:
+        result = date.fromisoformat(value)
+    except ValueError:
+        return None
+    return result if result.isoformat() == value else None
+
+
 def evaluate_document(principal, role, doc_id, action, identities, *, evidence=None,
                       today="2026-10-14"):
     """ALLOW, DENY, or HOLD. HOLD never grants access."""
     # A duplicated or malformed identity directory must never select an
     # arbitrary matching account. Fail closed before consulting scope records.
     if not all(isinstance(value, str) for value in (principal, role, doc_id, action)):
+        return "DENY"
+    evaluation_day = canonical_day(today)
+    if evaluation_day is None:
         return "DENY"
     if not isinstance(identities, (list, tuple)):
         return "DENY"
@@ -50,7 +65,8 @@ def evaluate_document(principal, role, doc_id, action, identities, *, evidence=N
     doc = DOCS.get(doc_id)
     if doc is None or item.get("role") != role:
         return "DENY"
-    if item["status"] != "active" or item["expires_on"] <= today:
+    identity_expiry = canonical_day(item.get("expires_on"))
+    if item.get("status") != "active" or identity_expiry is None or identity_expiry <= evaluation_day:
         return "DENY"
     if action not in ROLE_ACTIONS.get(role, set()):
         return "DENY"
@@ -71,10 +87,12 @@ def evaluate_document(principal, role, doc_id, action, identities, *, evidence=N
     approval = APPROVALS.get(approval_id)
     if not approval:
         return "DENY"
-    if (approval["principal"] != principal or approval["doc_id"] != doc_id
+    approval_expiry = canonical_day(approval.get("expires_on"))
+    if (approval_expiry is None
+            or approval["principal"] != principal or approval["doc_id"] != doc_id
             or approval["tenant_id"] != doc.tenant_id or approval["action"] != action
             or approval["purpose"] != "approved_extraction"
-            or approval["expires_on"] <= today or approval["approved_by"] == principal):
+            or approval_expiry <= evaluation_day or approval["approved_by"] == principal):
         return "DENY"
     if e.get("purpose") != approval["purpose"]:
         return "DENY"
