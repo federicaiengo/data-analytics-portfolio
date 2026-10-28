@@ -124,6 +124,24 @@ class WorkbookRefreshSafetyTests(unittest.TestCase):
                     export_verified_snapshot(object(), output, {}, b"", SpreadsheetFile)
         self.assertFalse(output.exists())
 
+    def test_successful_export_keeps_verified_workbook(self):
+        output = self.output
+
+        class Export:
+            def save(self, path):
+                Path(path).write_bytes(b"synthetic XLSX bytes")
+
+        class SpreadsheetFile:
+            @staticmethod
+            def export_xlsx(_book):
+                return Export()
+
+        with patch("python.refresh_workbook_snapshot.read_cells", return_value={}):
+            with patch("python.refresh_workbook_snapshot.compare_parity", return_value=28):
+                count = export_verified_snapshot(object(), output, {}, b"", SpreadsheetFile)
+        self.assertEqual(count, 28)
+        self.assertEqual(output.read_bytes(), b"synthetic XLSX bytes")
+
     def test_missing_input_is_reported_without_new_output(self):
         self.aggregates.unlink()
         with self.assertRaisesRegex(ValueError, "Missing input"):
