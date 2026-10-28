@@ -89,8 +89,9 @@ def rebuild(template: Path, aggregate: Path, raw: Path, output: Path) -> int:
         [len(records[0]) if records else 0],
     ]
     output.parent.mkdir(parents=True, exist_ok=True)
-    SpreadsheetFile.export_xlsx(workbook).save(str(output))
     try:
+        # A failed exporter may leave a partial XLSX; remove it on any failure.
+        SpreadsheetFile.export_xlsx(workbook).save(str(output))
         checked = compare_parity(read_cells(output), reference, raw_bytes)
         if checked != 28:
             raise ValueError("Fewer than 28 aggregate rows reconciled")
