@@ -38,6 +38,22 @@ class WorkbookRefreshSafetyTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "must not overwrite"):
             rebuild(self.template, self.aggregates, self.raw, self.raw)
 
+    def test_output_must_not_overwrite_aggregate_input(self):
+        original = self.aggregates.read_bytes()
+        with self.assertRaisesRegex(ValueError, "must not overwrite"):
+            rebuild(self.template, self.aggregates, self.raw, self.aggregates)
+        self.assertEqual(self.aggregates.read_bytes(), original)
+
+    def test_output_symlink_to_template_is_rejected(self):
+        try:
+            self.output.symlink_to(self.template)
+        except (OSError, NotImplementedError):
+            self.skipTest("Symlinks unavailable")
+        original = self.template.read_bytes()
+        with self.assertRaisesRegex(ValueError, "must not overwrite|symbolic link"):
+            rebuild(self.template, self.aggregates, self.raw, self.output)
+        self.assertEqual(self.template.read_bytes(), original)
+
     def test_existing_output_is_not_replaced(self):
         self.output.write_bytes(b"retain existing output")
         with self.assertRaisesRegex(ValueError, "already exists"):
