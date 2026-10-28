@@ -42,7 +42,7 @@ Highlights:
 - Published an executive Tableau dashboard
 
 - Independently recalculated selected portfolio and high-value claim aggregates from the **10,000-row source CSV**; [inspect the auditable source check](projects/insurance-claims-analytics/reports/RAW_SOURCE_KPI_SPOT_CHECK_2026-10-09.md)
-- Added a privacy-minimal Python KPI auditor and **8/8 locally passing unit tests** using obviously artificial fixture rows. Original raw-data licensing/identifier provenance remains under review.
+- Added a privacy-minimal Python KPI auditor and **11 Python tests passed locally on 16 October 2026** using synthetic fixture rows. The original three raw CSVs are not distributed on the current public branch while licensing and identifier provenance remain unresolved; historical 10,000-claim results cannot be reproduced from the public branch alone. See the [current reproducibility limits](projects/insurance-claims-analytics/README.md).
 
 [Open the Insurance project](projects/insurance-claims-analytics/)
 
@@ -55,10 +55,12 @@ Highlights:
 - Documented methodology and business findings in Git/GitHub
 
 - Produced a [static Excel evidence workbook](projects/hr-analytics-employee-attrition/excel/HR_Attrition_Evidence_Dashboard.xlsx) and a [28-row grouped metrics CSV](projects/hr-analytics-employee-attrition/excel/hr_dashboard_group_metrics.csv) derived from the original source
-- Added deterministic privacy-minimal aggregate reconstruction code and **9/9 passing local unit tests**; [reproducibility limits and methods](projects/hr-analytics-employee-attrition/reports/DASHBOARD_REPRODUCIBILITY_2026-10-09.md). Excel application QA, workbook regeneration and cleaned-dataset completion are still pending.
+- Added deterministic privacy-minimal aggregate reconstruction code and **9/9 passing local unit tests**; [reproducibility limits and methods](projects/hr-analytics-employee-attrition/reports/DASHBOARD_REPRODUCIBILITY_2026-10-09.md). The cleaned dataset and aggregate CSV were subsequently verified through full-source reconstruction; desktop Excel compatibility and verified real-workbook XLSX regeneration remain pending.
 
 - Audited and published an actual [1,470 × 32 cleaned dataset](projects/hr-analytics-employee-attrition/data/clean/employee_attrition_clean.csv), preserving all source employee records and 237 observed attritions while removing only three constant fields
-- Added a [non-destructive Python cleaning pipeline](projects/hr-analytics-employee-attrition/python/clean_employee_attrition.py), an [executed quality log](projects/hr-analytics-employee-attrition/data/clean/DATA_QUALITY_LOG.md) and **13/13 locally passing cleaning tests**; end-to-end full-source Python regeneration is still pending verification
+- Added a [non-destructive Python cleaning pipeline](projects/hr-analytics-employee-attrition/python/clean_employee_attrition.py), an [executed quality log](projects/hr-analytics-employee-attrition/data/clean/DATA_QUALITY_LOG.md) and **13/13 locally passing cleaning tests**; subsequent [full-source GitHub Actions QA](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38336050248) passed **24/24 tests** and reproduced the tracked cleaned and aggregate CSVs byte for byte
+
+- The [workbook parity gate](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38411506600) passed **32/32 Python tests**, reconciling **28/28 XLSX groups** and seven Dashboard mirrors against source evidence. These checks do not establish desktop Excel visual compatibility or successful full real-workbook regeneration.
 
 [Open the HR project](projects/hr-analytics-employee-attrition/)
 
