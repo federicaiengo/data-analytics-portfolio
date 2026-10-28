@@ -101,6 +101,10 @@ def rebuild(template: Path, aggregate: Path, raw: Path, output: Path) -> int:
         [raw.name], [git_blob_hash(raw_bytes)], [len(records)],
         [len(records[0]) if records else 0],
     ]
+    # Recheck immediately before writing: import/edit operations can take time.
+    # Never knowingly replace a file created by another process in the meantime.
+    if output.is_symlink() or output.exists():
+        raise ValueError("Output path became occupied during workbook rebuild: " + str(output))
     output.parent.mkdir(parents=True, exist_ok=True)
     checked = export_verified_snapshot(workbook, output, reference, raw_bytes, SpreadsheetFile)
     print(f"PASS: New workbook created, 28/28 rows reconciled: {output}")
