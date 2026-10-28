@@ -30,6 +30,19 @@ def write_group(book, sheet_name, row, record):
     sheet.get_range(f"B{row}:D{row}").values = [[count, attritions, attritions / count]]
 
 
+def export_verified_snapshot(workbook, output: Path, reference, raw_bytes: bytes, spreadsheet_file) -> int:
+    """Export to a new path and remove incomplete output on export/parity failure."""
+    try:
+        spreadsheet_file.export_xlsx(workbook).save(str(output))
+        checked = compare_parity(read_cells(output), reference, raw_bytes)
+        if checked != 28:
+            raise ValueError("Fewer than 28 aggregate rows reconciled")
+        return checked
+    except Exception:
+        output.unlink(missing_ok=True)
+        raise
+
+
 def rebuild(template: Path, aggregate: Path, raw: Path, output: Path) -> int:
     for filename in (template, aggregate, raw):
         if not filename.is_file():
@@ -89,15 +102,7 @@ def rebuild(template: Path, aggregate: Path, raw: Path, output: Path) -> int:
         [len(records[0]) if records else 0],
     ]
     output.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        # A failed exporter may leave a partial XLSX; remove it on any failure.
-        SpreadsheetFile.export_xlsx(workbook).save(str(output))
-        checked = compare_parity(read_cells(output), reference, raw_bytes)
-        if checked != 28:
-            raise ValueError("Fewer than 28 aggregate rows reconciled")
-    except Exception:
-        output.unlink(missing_ok=True)
-        raise
+    checked = export_verified_snapshot(workbook, output, reference, raw_bytes, SpreadsheetFile)
     print(f"PASS: New workbook created, 28/28 rows reconciled: {output}")
     print("Warning: desktop Excel rendering and precise design fidelity still require review.")
     return checked
