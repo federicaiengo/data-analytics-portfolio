@@ -6,8 +6,9 @@ or claim desktop Excel/visual QA.
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
-from python.refresh_workbook_snapshot import rebuild
+from python.refresh_workbook_snapshot import rebuild, export_verified_snapshot
 
 
 class WorkbookRefreshSafetyTests(unittest.TestCase):
@@ -69,6 +70,59 @@ class WorkbookRefreshSafetyTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "symbolic link"):
             rebuild(self.template, self.aggregates, self.raw, self.output)
         self.assertFalse(redirected.exists())
+
+    def test_partial_export_is_removed_when_save_raises(self):
+        output = self.output
+
+        class BrokenExport:
+            def save(self, path):
+                Path(path).write_bytes(b"partial XLSX")
+                raise OSError("simulated export failure")
+
+        class BrokenSpreadsheetFile:
+            @staticmethod
+            def export_xlsx(_book):
+                return BrokenExport()
+
+        with self.assertRaisesRegex(OSError, "simulated export failure"):
+            export_verified_snapshot(object(), output, {}, b"", BrokenSpreadsheetFile)
+        self.assertFalse(output.exists())
+
+    def test_failed_parity_removes_exported_workbook(self):
+        output = self.output
+
+        class Export:
+            def save(self, path):
+                Path(path).write_bytes(b"synthetic XLSX bytes")
+
+        class SpreadsheetFile:
+            @staticmethod
+            def export_xlsx(_book):
+                return Export()
+
+        with patch("python.refresh_workbook_snapshot.read_cells", return_value={}):
+            with patch("python.refresh_workbook_snapshot.compare_parity", side_effect=ValueError("parity mismatch")):
+                with self.assertRaisesRegex(ValueError, "parity mismatch"):
+                    export_verified_snapshot(object(), output, {}, b"", SpreadsheetFile)
+        self.assertFalse(output.exists())
+
+    def test_incomplete_reconciliation_removes_exported_workbook(self):
+        output = self.output
+
+        class Export:
+            def save(self, path):
+                Path(path).write_bytes(b"synthetic XLSX bytes")
+
+        class SpreadsheetFile:
+            @staticmethod
+            def export_xlsx(_book):
+                return Export()
+
+        with patch("python.refresh_workbook_snapshot.read_cells", return_value={}):
+            with patch("python.refresh_workbook_snapshot.compare_parity", return_value=27):
+                with self.assertRaisesRegex(ValueError, "Fewer than 28"):
+                    export_verified_snapshot(object(), output, {}, b"", SpreadsheetFile)
+        self.assertFalse(output.exists())
 
     def test_missing_input_is_reported_without_new_output(self):
         self.aggregates.unlink()
