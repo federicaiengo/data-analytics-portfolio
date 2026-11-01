@@ -64,7 +64,7 @@ select
     order_id,
     financial_values_match,
     payment_minus_item_freight_value
-from BENCHMARK_ORDER_FINANCIAL_RECONCILIATION;
+from INT_ORDER_FINANCIAL_RECONCILIATION;
 
 
 -- ------------------------------------------------------------
