@@ -49,3 +49,19 @@ Run from the E-Commerce project directory with DuckDB installed:
 ```
 
 **Limits:** This is an isolated synthetic, in-memory SQL model check. It is **not** execution of original staging transformations, `int_orders_lifecycle`, `fct_orders`, the review models, the full 28-model dbt DAG, Snowflake workloads, actual raw Olist rows, or Snowflake-vs-DuckDB performance. The original 249/249 dbt result remains a separate historical Snowflake-era result. The expired Snowflake access is not required for this validation.
+
+## Original lifecycle SQL SELECT (CI-verified, 3 November 2026)
+
+`check_original_lifecycle.py` exercises the SQL SELECT of the **original** `int_orders_lifecycle.sql` against eight deliberately constructed synthetic orders in DuckDB. To run a full-refresh-style SELECT independently of Snowflake/dbt, the harness explicitly strips the original dbt materialization `config()` and the conditional `is_incremental()` filter, then substitutes one verified `ref('stg_orders')`. Unrecognized Jinja fails closed instead of being silently rewritten. The underlying original dbt SQL file is not modified.
+
+Checks cover order-level uniqueness, normal order lifecycle timings, approval before purchase, carrier before approval, delivery before carrier or purchase, estimated delivery before purchase, missing approval and missing delivery timestamps, and the distinction between an unavailable timestamp and a temporal-sequence anomaly. Negative intervals remain NULL where defined by the original SQL.
+
+**Observed CI:** [run 41546194247](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41546194247) on commit `e7b0a826747be117e1d77b957f13791311adbbbf` completed **SUCCESS**. All **four** workflow steps passed, including the original intermediate reconciliation models, the original monthly mart, and this original lifecycle SELECT. Future modifications to `int_orders_lifecycle.sql` also trigger this workflow.
+
+To run the lifecycle check locally from this project's directory:
+
+```powershell
+& .\\.venv\\Scripts\\python.exe .\\local_validation\\check_original_lifecycle.py
+```
+
+**Not demonstrated:** dbt incremental `MERGE`, watermark/resume behavior, Snowflake SQL execution or warehouse performance, the original staging models, the real Olist dataset, the fact-table join, and a full-project 28-model regression. This harness extends low-cost regression coverage after loss of Snowflake access; it is **not** a complete warehouse migration.
