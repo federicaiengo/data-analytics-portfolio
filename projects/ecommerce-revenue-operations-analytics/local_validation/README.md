@@ -33,3 +33,19 @@ From the repository's E-Commerce project directory (with DuckDB installed in its
 ```
 
 **Verified on GitHub Actions:** [E-Commerce synthetic SQL validation — run 41484382346](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41484382346), completed successfully on **2 November 2026** at source commit `9bdd1cee1156b8de2eef648bac83fd1fe66a4a83`. Both steps passed: `check_monthly_reconciliation.py` and `check_original_mart.py`. The preceding attempt failed before the synthetic fixture columns were aligned; the subsequent commit corrected that fixture and the complete run passed. This is CI execution on a small, synthetic four-order/two-month dataset, **not** a Snowflake query, a full dbt regression, a rerun of the 249-test historical baseline, or a performance benchmark. Upstream `fct_orders` and intermediate models were not executed by this harness. The original mart SQL was not modified.
+
+## Original intermediate SQL validation (CI-verified, 3 November 2026)
+
+`check_original_intermediate_reconciliation.py` loads the **unchanged repository SQL** for the original `int_order_items_summary`, `int_order_payments_summary` and `int_order_financial_reconciliation` models. It substitutes their exact dbt `ref()` dependencies with DuckDB in-memory relations, rejecting unexpected or unresolved templating. It does not implement or silently simplify the SQL transformations.
+
+Seven synthetic order rows test the join grain when one order has **two items and three payments**, the NULL states for missing item/payment summaries, both directions of financial mismatch, exact-cent tolerance (`0.01` matching vs `0.02` mismatching), and exclusion of orphan staging rows. The deliberately naive raw JOIN produces six rows for the many-to-many example; the original aggregate-before-join models retain one row per modeled order.
+
+**Observed CI:** [run 41545865668](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41545865668) on source commit `eecdec7b0b21efac61b6c4df7283d01f33738f2f` completed **SUCCESS**, with all **three** validation steps passing: synthetic monthly counts, original monthly mart, and original intermediate models. The workflow is triggered again when the three original intermediate SQL files, the mart SQL, its harness or the workflow definition change.
+
+Run from the E-Commerce project directory with DuckDB installed:
+
+```powershell
+& .\\.venv\\Scripts\\python.exe .\\local_validation\\check_original_intermediate_reconciliation.py
+```
+
+**Limits:** This is an isolated synthetic, in-memory SQL model check. It is **not** execution of original staging transformations, `int_orders_lifecycle`, `fct_orders`, the review models, the full 28-model dbt DAG, Snowflake workloads, actual raw Olist rows, or Snowflake-vs-DuckDB performance. The original 249/249 dbt result remains a separate historical Snowflake-era result. The expired Snowflake access is not required for this validation.
