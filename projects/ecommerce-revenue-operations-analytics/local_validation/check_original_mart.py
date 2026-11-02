@@ -39,7 +39,7 @@ CREATE TABLE synthetic_fct_orders (
 )
 """)
 con.executemany(
-    "INSERT INTO synthetic_fct_orders VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    "INSERT INTO synthetic_fct_orders VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     [
         ("SYN-001", "2026-01-03 10:00:00", "delivered", 90, 10, 100, 100, False, False, True, 0),
         ("SYN-002", "2026-01-15 10:00:00", "shipped", 40, 5, 45, 50, False, False, False, 5),
