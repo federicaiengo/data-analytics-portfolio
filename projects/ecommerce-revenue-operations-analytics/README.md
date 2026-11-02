@@ -202,7 +202,7 @@ Validation includes:
 - rerun/idempotency validation
 - ingestion-metadata completeness
 
-**Separate synthetic mart QA (2 November 2026):** the [DuckDB validation harness](local_validation/README.md) executed in [GitHub Actions run 41484382346](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41484382346) and passed both scripts, including a check of the repository's original monthly reconciliation mart SQL (with one documented dialect substitution) on four synthetic orders across two months. This checks a narrow mart behavior, not upstream models, real source data, the 249 dbt-test baseline, Snowflake execution or performance.
+**Independent DuckDB regression checks (2–3 November 2026):** the [synthetic local validation harness](local_validation/README.md) passed three checks in [GitHub Actions run 41545865668](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41545865668): monthly aggregates, original monthly reconciliation mart SQL (with one documented dialect substitution) and **three unchanged original dbt intermediate reconciliation models** using exact `ref()` substitutions. The intermediate test exercises seven synthetic orders, many-to-many JOIN multiplication risk, missing summaries and cent-level financial comparison. These checks do **not** rerun the full dbt DAG, the historical 249 tests, Snowflake, or real input data, and do not measure performance.
 
 Benchmark plan (not executed): [Snowflake performance protocol](reports/SNOWFLAKE_PERFORMANCE_BENCHMARK_PROTOCOL.md). No timing or speedup claims are available yet.
 
