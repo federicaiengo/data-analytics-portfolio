@@ -202,6 +202,8 @@ Validation includes:
 - rerun/idempotency validation
 - ingestion-metadata completeness
 
+**Separate synthetic mart QA (2 November 2026):** the [DuckDB validation harness](local_validation/README.md) executed in [GitHub Actions run 41484382346](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41484382346) and passed both scripts, including a check of the repository's original monthly reconciliation mart SQL (with one documented dialect substitution) on four synthetic orders across two months. This checks a narrow mart behavior, not upstream models, real source data, the 249 dbt-test baseline, Snowflake execution or performance.
+
 Benchmark plan (not executed): [Snowflake performance protocol](reports/SNOWFLAKE_PERFORMANCE_BENCHMARK_PROTOCOL.md). No timing or speedup claims are available yet.
 
 ## Technology Stack
