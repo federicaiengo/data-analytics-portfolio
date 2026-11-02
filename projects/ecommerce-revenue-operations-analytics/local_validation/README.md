@@ -21,3 +21,15 @@ These commands require package-download access and install only into this folder
 ## Interpretation
 
 The script tests four deliberately constructed orders across two months, including a mismatch and a non-comparable null. It verifies that the aggregate count and the comparable/mismatching counts agree with independently stated expected values. A PASS establishes only the synthetic local checks. A FAIL requires investigation. Neither result measures Snowflake performance or proves production data quality.
+
+## Original mart SQL validation (prepared, not executed)
+
+`check_original_mart.py` reads the **actual repository SQL** for `mart_revenue_financial_reconciliation`, substitutes its one dbt `ref('fct_orders')` with an in-memory synthetic relation, and adapts only `TO_CHAR(..., 'YYYY-MM')` to DuckDB `STRFTIME`. It asserts counts, delivered orders, missing items, mismatch rate and absolute mismatch metrics across two months.
+
+From the repository's E-Commerce project directory (with DuckDB installed in its existing `.venv`):
+
+```powershell
+& .\.venv\Scripts\python.exe .\local_validation\check_original_mart.py
+```
+
+**Not yet run or independently verified.** This does not test the upstream `fct_orders` or intermediate models. A local PASS is not a Snowflake PASS or performance benchmark. The original model is not modified.
