@@ -1,0 +1,33 @@
+name: E-Commerce synthetic SQL validation
+
+on:
+  push:
+    paths:
+      - 'projects/ecommerce-revenue-operations-analytics/local_validation/**'
+      - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/marts/business/mart_revenue_financial_reconciliation.sql'
+      - '.github/workflows/ecommerce-local-validation.yml'
+  pull_request:
+    paths:
+      - 'projects/ecommerce-revenue-operations-analytics/local_validation/**'
+      - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/marts/business/mart_revenue_financial_reconciliation.sql'
+      - '.github/workflows/ecommerce-local-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-duckdb:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install local test dependency
+        run: python -m pip install 'duckdb==1.4.1'
+      - name: Test synthetic monthly counts
+        run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_monthly_reconciliation.py
+      - name: Test original mart SQL on synthetic data
+        run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_original_mart.py
