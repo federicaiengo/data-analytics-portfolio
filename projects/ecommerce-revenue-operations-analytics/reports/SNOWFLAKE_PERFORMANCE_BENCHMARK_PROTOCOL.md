@@ -7,7 +7,7 @@ This runbook prepares a reproducible measurement on the existing E-Commerce data
 
 Compare on-demand monthly KPIs computed from `FCT_ORDERS` against equivalent stored pre-aggregated KPIs from `MART_REVENUE_FINANCIAL_RECONCILIATION`. This measures the effect of **reading an already materialized business mart**, not a hypothetical SQL optimizer improvement, nor an end-to-end dbt pipeline acceleration. Additional dbt mart-build time/storage must be accounted for before claiming system-level efficiency.
 
-Verify first that both objects exist and reflect the same completed dbt run. The expected Snowflake database/schema is `ECOMMERCE_ANALYTICS.ANALYTICS`; if your actual dbt target differs, use that deployed schema. Run only in an authorized Snowflake account. These queries are read-only except for reversible session settings.
+Verify first that both objects exist and reflect the same completed dbt run. Confirm the mart is actually materialized as a table (not a view): otherwise the proposed comparison is not a stored-preaggregation benchmark. Record the dbt model materialization and relevant object metadata before timing. The expected Snowflake database/schema is `ECOMMERCE_ANALYTICS.ANALYTICS`; if your actual dbt target differs, use that deployed schema. Run only in an authorized Snowflake account. These queries are read-only except for reversible session settings.
 
 ## 1. Reproducible session
 
@@ -53,7 +53,23 @@ WHERE NOT EQUAL_NULL(b.order_count, m.order_count)
    OR NOT EQUAL_NULL(b.mismatching_order_count, m.mismatching_order_count);
 ```
 
-Do not compare elapsed times as interchangeable business outputs if this query returns rows. Resolve stale marts, missing values or semantic differences first.
+Do not compare elapsed times as interchangeable business outputs if this query returns rows. **Also verify that the baseline and mart return the same number of monthly rows**, and that neither has duplicate month keys. The FULL OUTER JOIN comparison alone is not a substitute for an explicit uniqueness check. Resolve stale marts, missing values or semantic differences first.
+
+### Additional uniqueness and row-count gate
+
+```sql
+SELECT 'baseline' AS source_name,
+       COUNT(*) AS monthly_rows,
+       COUNT(DISTINCT DATE_TRUNC('month', order_purchase_timestamp)::DATE) AS distinct_months
+FROM FCT_ORDERS
+UNION ALL
+SELECT 'mart' AS source_name,
+       COUNT(*) AS monthly_rows,
+       COUNT(DISTINCT month_start_date) AS distinct_months
+FROM MART_REVENUE_FINANCIAL_RECONCILIATION;
+```
+
+**Interpretation:** the baseline `COUNT(*)` above counts individual orders, **not monthly rows**. Therefore compare its `distinct_months` with both the mart `monthly_rows` and `distinct_months`. If they differ, stop and investigate. This check assumes non-null month keys; explicitly inspect null dates if present.
 
 ## 3. Run paired timed queries
 
@@ -98,7 +114,16 @@ ORDER BY start_time;
 
 Record three or more **measured** times for each variant, their median and spread, number of rows returned, cold/warm cache notes and all query IDs. Do not turn small-dataset timing noise into a claim of cost reduction. For total cost assessment, the extra dbt materialization work and storage matter.
 
-## 5. Stop conditions / publication policy
+## 5. Restore session defaults
+
+After collecting evidence, clear the benchmark tag and restore result-cache behavior for the session (or close the dedicated session):
+
+```sql
+ALTER SESSION UNSET QUERY_TAG;
+ALTER SESSION UNSET USE_CACHED_RESULT;
+```
+
+## 6. Stop conditions / publication policy
 
 - If result sets do not reconcile: **FAIL**, no benchmark claim.
 - If the Snowflake warehouse cannot be accessed: **NOT EXECUTED**, retain this protocol only.
