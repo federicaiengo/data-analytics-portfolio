@@ -184,7 +184,7 @@ def main():
                 ("RV3", "SYN-003", 2, None, "Late", "2026-01-21 08:00:00", None),
                 ("RV4", "SYN-004", 3, None, None, "2026-02-03 08:00:00", None),
                 ("RV5", "SYN-007", None, None, "Unrated", "2026-02-13 08:00:00", None),
-                ("ORPHAN", "SYN-997", "bad-score", None, None, None, None),
+                ("ORPHAN", "SYN-997", "bad-score", None, None, "bad-timestamp", None),
             ],
         )
         # Execute the FOUR original staging SQL models on raw synthetic text.
@@ -205,6 +205,10 @@ def main():
         ).fetchone()[0] is True
         assert con.execute(
             "SELECT review_score IS NULL FROM stg_order_reviews "
+            "WHERE order_id='SYN-997'"
+        ).fetchone()[0] is True
+        assert con.execute(
+            "SELECT review_creation_date IS NULL FROM stg_order_reviews "
             "WHERE order_id='SYN-997'"
         ).fetchone()[0] is True
 
