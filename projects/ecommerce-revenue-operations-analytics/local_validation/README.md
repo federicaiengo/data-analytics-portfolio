@@ -4,7 +4,7 @@
 
 ## Scope
 
-Use **small, deliberately constructed synthetic datasets** to validate individual original SQL models and a connected **11-model original-SQL subset**, from synthetic RAW strings through four staging views and seven downstream views to the monthly financial mart. The original Snowflake/dbt SQL and its materializations remain unchanged. Never upload local `profiles.yml`, credentials, raw business datasets, query history, or private checkpoints.
+Use **small, deliberately constructed synthetic datasets** to validate individual original SQL models and a connected **12-model original-SQL subset**, from synthetic RAW strings through four staging views and eight downstream views to the monthly financial and customer-review marts. The original Snowflake/dbt SQL and its materializations remain unchanged. Never upload local `profiles.yml`, credentials, raw business datasets, query history, or private checkpoints.
 
 ## Run locally (PowerShell)
 
@@ -113,7 +113,7 @@ Run locally from the E-Commerce project directory with DuckDB installed:
 
 ## Expanded RAW-to-mart 11-model chain (CI-verified, 3 November 2026)
 
-The **current** `check_integrated_financial_pipeline.py` uses four deliberately fabricated RAW text tables to run an **integrated 11-model SQL subset**, consisting of four original staging models plus the seven original models documented above:
+The initial RAW-to-mart version of `check_integrated_financial_pipeline.py` used four deliberately fabricated RAW text tables to run an **integrated 11-model SQL subset**, consisting of four original staging models plus the seven original models documented above:
 
 - `stg_orders`, `stg_order_items`, `stg_order_payments`, `stg_order_reviews` — **actual original staging SQL** using the narrow, fail-closed `original_staging_duckdb.py` bridge.
 - `int_order_items_summary`, `int_order_payments_summary`, `int_order_financial_reconciliation`, `int_order_reviews_summary`, `int_orders_lifecycle`, `fct_orders`, `mart_revenue_financial_reconciliation` — seven downstream original SQL models chained from the staging views.
@@ -193,3 +193,13 @@ An additional **post-MERGE fault-injection test** deliberately raises an excepti
 ```
 
 **Important limitation:** This demonstrates **specific DuckDB transactional behavior** in a controlled, two-connection, single-process fixture. It does **not** establish a concurrency protocol for the original dbt/Snowflake model, a safe production reconciliation scheduler, handling of multiple writers during a full-source comparison, multi-process behavior, distributed database isolation, or recovery from operating-system failures. For real operations, writer serialization/coordination, snapshot policy, source change capture, retry budgets and deletion decisions remain separate design requirements. No preserved Snowflake data or credentials were accessed.
+
+## Expanded 12-model RAW-to-two-marts subset (CI-verified, 3 November 2026)
+
+The current `check_integrated_financial_pipeline.py` extends the verified 11-model graph with the repository's **unchanged original** `mart_customer_experience_reviews.sql`. Both the original financial reconciliation mart and the customer-review mart are now built from the **same eight fictional orders** through four original staging SQL models, their intermediate models and `fct_orders`. Only the original review mart's `TO_CHAR(month_start_date,'YYYY-MM')` expression is explicitly adapted to DuckDB `STRFTIME`, like the financial mart. Source dbt SQL remains unmodified.
+
+Independent assertions check both months' reviewed/unreviewed and scored order counts, total review records, mean review score, low/mid/high/five-star categories, multiple-review flags, title and message coverage, and that both marts preserve the same number of modeled orders. January contains four orders, **two reviewed and two scored**, with three review records and a mean order-level review score of 3.25. February contains four orders, **two reviewed but only one scored**, illustrating why a reviewed order is not necessarily a scored order; two records yield a mean scored-order review of 3.0. These values belong entirely to the synthetic fixture, not to an observed customer dataset.
+
+**CI evidence:** [run 41580353931](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41580353931) completed **SUCCESS** with the expanded customer-review mart assertions; the workflow was subsequently updated to watch changes to the original customer-review mart SQL on both push and pull request. The complete workflow remains **11 Python scripts**, exercising a connected subset of **12 original dbt SQL models**, not 12 separate scripts or a full 28-model run.
+
+**Limitations:** Original Snowflake access and data remain unavailable for execution. No real customer review outcomes, warehouse conversion equivalence, dbt compilation, performance gains or production reliability are established. Other dbt models and source-data validations remain outside this subset.
