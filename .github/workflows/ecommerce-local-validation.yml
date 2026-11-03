@@ -67,3 +67,5 @@ jobs:
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_local_backdated_reconciliation.py
       - name: Test fail-closed reconciliation guards and transaction rollback
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_reconciliation_contract_guards.py
+      - name: Test two-connection synthetic DuckDB snapshot and write conflicts
+        run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_local_concurrent_transactions.py
