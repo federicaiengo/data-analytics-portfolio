@@ -396,6 +396,77 @@ def main():
         for month_id in ("2026-01", "2026-02"):
             assert review_mart[month_id]["order_count"] == mart[month_id]["order_count"]
 
+        # Independently enumerated delivery operations KPI expectations.
+        # Jan delivered: 001 on-time, 003 late, 008 no delivery timestamps.
+        # Jan shipped 002 has approval before purchase: one temporal anomaly.
+        # Feb delivered: 004 on-time, 006 late, 007 before-carrier anomaly.
+        jan_delivery, feb_delivery = delivery_mart["2026-01"], delivery_mart["2026-02"]
+        expected_delivery = {
+            "2026-01": {
+                "order_count": 4,
+                "delivered_order_count": 3,
+                "punctuality_comparable_order_count": 2,
+                "on_time_or_early_order_count": 1,
+                "late_delivery_order_count": 1,
+                "punctuality_not_comparable_order_count": 1,
+                "delivered_missing_approval_count": 2,
+                "delivered_missing_carrier_timestamp_count": 1,
+                "delivered_missing_customer_delivery_count": 1,
+                "temporal_anomaly_order_count": 1,
+                "carrier_before_approval_order_count": 0,
+                "customer_delivery_before_carrier_order_count": 0,
+                "valid_purchase_to_approval_order_count": 1,
+                "valid_approval_to_carrier_order_count": 1,
+                "valid_carrier_to_customer_order_count": 2,
+                "valid_purchase_to_customer_order_count": 2,
+            },
+            "2026-02": {
+                "order_count": 4,
+                "delivered_order_count": 3,
+                "punctuality_comparable_order_count": 3,
+                "on_time_or_early_order_count": 2,
+                "late_delivery_order_count": 1,
+                "punctuality_not_comparable_order_count": 0,
+                "delivered_missing_approval_count": 0,
+                "delivered_missing_carrier_timestamp_count": 0,
+                "delivered_missing_customer_delivery_count": 0,
+                "temporal_anomaly_order_count": 1,
+                "carrier_before_approval_order_count": 0,
+                "customer_delivery_before_carrier_order_count": 1,
+                "valid_purchase_to_approval_order_count": 4,
+                "valid_approval_to_carrier_order_count": 3,
+                "valid_carrier_to_customer_order_count": 2,
+                "valid_purchase_to_customer_order_count": 3,
+            },
+        }
+        for month_id, expected_fields in expected_delivery.items():
+            delivery = delivery_mart[month_id]
+            for field, expected in expected_fields.items():
+                assert delivery[field] == expected, (
+                    f"Delivery {month_id} {field}: {delivery[field]} != {expected}"
+                )
+            assert delivery["order_count"] == mart[month_id]["order_count"]
+            assert delivery["order_count"] == review_mart[month_id]["order_count"]
+        assert math.isclose(float(jan_delivery["late_delivery_rate_pct"]), 50.0)
+        assert math.isclose(float(jan_delivery["on_time_or_early_rate_pct"]), 50.0)
+        assert math.isclose(float(feb_delivery["late_delivery_rate_pct"]), 100 / 3)
+        assert math.isclose(float(feb_delivery["on_time_or_early_rate_pct"]), 200 / 3)
+        assert math.isclose(float(jan_delivery["average_purchase_to_approval_hours"]), 1.0)
+        assert math.isclose(float(jan_delivery["average_approval_to_carrier_hours"]), 1.0)
+        assert math.isclose(float(jan_delivery["average_carrier_to_customer_hours"]), 11.5)
+        assert math.isclose(float(jan_delivery["average_purchase_to_customer_hours"]), 13.5)
+        assert math.isclose(float(feb_delivery["average_purchase_to_approval_hours"]), 1.0)
+        assert math.isclose(float(feb_delivery["average_approval_to_carrier_hours"]), 4 / 3)
+        assert math.isclose(float(feb_delivery["average_carrier_to_customer_hours"]), 13.5)
+        assert math.isclose(float(feb_delivery["average_purchase_to_customer_hours"]), 33.5 / 3)
+        assert lifecycle["SYN-007"]["customer_delivery_before_carrier"] is True
+        assert lifecycle["SYN-007"]["has_temporal_sequence_anomaly"] is True
+        # Original mart still counts 007 as on-time; a data-quality flag is
+        # separate from its punctuality aggregation. This is NOT an audit of
+        # valid operational delivery performance.
+        assert feb_delivery["on_time_or_early_order_count"] == 2
+        assert feb_delivery["temporal_anomaly_order_count"] == 1
+
         naive_count = con.execute("""
             SELECT count(*)
             FROM stg_order_items i
