@@ -1,10 +1,10 @@
-"""Integrated synthetic DuckDB subset of 13 original E-Commerce dbt SQL models.
+"""Integrated synthetic DuckDB subset of 14 original E-Commerce dbt SQL models.
 
 Four original staging SQL models are dialect-adapted (strict source() and
-TRY_TO_* -> TRY_CAST guards) and run on RAW synthetic text fixtures. Nine
+TRY_TO_* -> TRY_CAST guards) and run on RAW synthetic text fixtures. Ten
 further original SQL models are chained: item/payment/review aggregations,
-financial reconciliation, lifecycle full-refresh SELECT, fct_orders, and
-monthly financial, customer-review, and delivery-operations marts.
+financial reconciliation, lifecycle full-refresh SELECT, fct_orders,
+fct_order_items, and three monthly marts (finance, reviews, deliveries).
 
 No Snowflake connection or source-data copy, no dbt compilation, MERGE,
 watermarking, production performance measurement, or 28-model DAG execution.
@@ -24,6 +24,7 @@ from original_staging_duckdb import STAGING_SPEC, render_original_staging
 ROOT = Path(__file__).resolve().parents[1]
 MODELS = ROOT / "dbt/ecommerce_revenue_operations/models"
 FACT = MODELS / "marts/core/fct_orders.sql"
+FACT_ITEMS = MODELS / "marts/core/fct_order_items.sql"
 MART = MODELS / "marts/business/mart_revenue_financial_reconciliation.sql"
 REVIEW_MART = MODELS / "marts/business/mart_customer_experience_reviews.sql"
 DELIVERY_MART = MODELS / "marts/business/mart_delivery_operations.sql"
@@ -282,6 +283,8 @@ def main():
                         "int_order_financial_reconciliation": "int_order_financial_reconciliation",
                         "int_order_reviews_summary": "int_order_reviews_summary",
                     }))
+        create_view(con, "integrated_fct_order_items",
+                    render_exact_refs(FACT_ITEMS, {"stg_order_items": "stg_order_items"}))
         create_view(con, "integrated_monthly_mart", render_mart())
         create_view(con, "integrated_customer_reviews_mart", render_customer_reviews_mart())
         create_view(con, "integrated_delivery_operations_mart", render_delivery_mart())
@@ -293,6 +296,11 @@ def main():
         reviews = records(con, "int_order_reviews_summary", "order_id")
         lifecycle = records(con, "int_orders_lifecycle", "order_id")
         fact = records(con, "integrated_fct_orders", "order_id")
+        item_fact_cursor = con.execute(
+            "SELECT * FROM integrated_fct_order_items ORDER BY order_id, order_item_id"
+        )
+        item_fact_columns = [col[0] for col in item_fact_cursor.description]
+        item_fact = [dict(zip(item_fact_columns, row)) for row in item_fact_cursor.fetchall()]
         mart = records(con, "integrated_monthly_mart", "year_month")
         review_mart = records(con, "integrated_customer_reviews_mart", "year_month")
         delivery_mart = records(con, "integrated_delivery_operations_mart", "year_month")
@@ -302,6 +310,40 @@ def main():
         assert "SYN-997" in reviews
         assert "SYN-998" not in fact and "SYN-999" not in fact and "SYN-997" not in fact
         assert "_loaded_at" not in fact["SYN-001"], "fct_orders leaked ingestion metadata"
+        assert len(item_fact) == 8, "Item fact must preserve all synthetic items"
+        item_keys = [(row["order_id"], row["order_item_id"]) for row in item_fact]
+        assert len(set(item_keys)) == 8, "Item fact duplicated a compound business key"
+        assert con.execute("SELECT COUNT(*) FROM stg_order_items").fetchone()[0] == 8
+        assert con.execute(
+            "SELECT COUNT(*) FROM integrated_fct_order_items"
+        ).fetchone()[0] == con.execute(
+            "SELECT COUNT(*) FROM stg_order_items"
+        ).fetchone()[0]
+        item_by_order = {}
+        for row in item_fact:
+            item_by_order.setdefault(row["order_id"], []).append(row)
+        assert len(item_by_order["SYN-001"]) == 2
+        assert_money(
+            sum((r["item_plus_freight_value"] for r in item_by_order["SYN-001"]),
+                Decimal("0.00")),
+            "150.00"
+        )
+        for key, expected in (
+            ("SYN-002", "45.00"),
+            ("SYN-004", "30.00"),
+            ("SYN-005", "55.00"),
+            ("SYN-006", "10.00"),
+            ("SYN-007", "10.00"),
+        ):
+            assert len(item_by_order[key]) == 1
+            assert_money(item_by_order[key][0]["item_plus_freight_value"], expected)
+        assert item_by_order["SYN-999"][0]["price"] is None
+        assert item_by_order["SYN-999"][0]["item_plus_freight_value"] is None
+        assert len(item_by_order["SYN-999"]) == 1
+        assert "SYN-999" not in fact, (
+            "Orphan item is allowed in the item-grain fact but not the order-grain fact"
+        )
+        assert "_loaded_at" not in item_fact_columns
         assert item["SYN-001"]["order_item_count"] == 2
         assert payments["SYN-001"]["payment_record_count"] == 2
         assert_money(item["SYN-001"]["item_plus_freight_value"], "150.00")
@@ -480,10 +522,11 @@ def main():
         assert records(con, "integrated_customer_reviews_mart", "year_month") == review_mart
         assert records(con, "integrated_delivery_operations_mart", "year_month") == delivery_mart
 
-        print("PASS: 13 original SQL models chained from synthetic RAW to three monthly marts.")
+        print("PASS: 14 original SQL models chained from synthetic RAW through item fact and three monthly marts.")
         print("PASS: 8 orders / 2 months; finance, reviews, lifecycle and all three monthly marts verified.")
+        print("PASS: item-fact compound grain, including allowed orphan row, and original order-fact grain.")
         print("PASS: source double-count trap (2x2=4) excluded by aggregate-before-JOIN grain.")
-        print("Scope: four guarded Snowflake->DuckDB staging cast adaptations and one mart date-format change; no Snowflake, dbt MERGE, or full 28-model run.")
+        print("Scope: guarded Snowflake->DuckDB staging casts and three mart date-format substitutions; no Snowflake, dbt MERGE, or full 28-model run.")
     finally:
         con.close()
 
