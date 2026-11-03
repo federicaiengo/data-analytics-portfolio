@@ -47,7 +47,7 @@ The revised **simulated** evaluator binds sample approvals to a specific subject
 
 ## What a recruiter can inspect
 
-The accompanying [synthetic case-study data, Python examples and tests](./README.md) are published for reproducibility. The reported 51 passing Python unittest methods test internal rules on fictional inputs. They do not prove production safety, compliance, an independent audit or real-world incident reduction.
+The accompanying [synthetic case-study data, Python examples and tests](./README.md) are published for reproducibility. The [final v1.0 regression run](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41565390636) passed the current **58-method Python unittest suite** and a separate 24-case IAM scenario check. The [closure review](CLOSURE_REVIEW_2026-11-03.md) explains what this educational project demonstrates and what it cannot establish. These tests do not prove production safety, compliance, an independent audit or real-world incident reduction.
 
 **Transferable work illustrated:** clarifying a decision, requesting appropriate evidence, identifying unsupported claims, documenting exceptions, tracing assumptions and explaining the outcome to stakeholders.
 
