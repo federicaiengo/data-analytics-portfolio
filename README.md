@@ -16,7 +16,7 @@ Its Python analyzer and regression tests were run locally on source verified aga
 [Open the AI Search Visibility Lab](projects/ai-search-visibility-lab/)
 
 ### E-Commerce Revenue & Operations Analytics
-**Snowflake · dbt · Power BI · Python/pandas · Data Quality**
+**Snowflake (original warehouse) · DuckDB (synthetic validation) · dbt · Power BI · Python/pandas · Data Quality**
 
 End-to-end analytics project built on nine Olist e-commerce datasets.
 
@@ -29,6 +29,7 @@ Highlights:
 - Financial reconciliation across **98,665 comparable orders**, with **303 mismatches (~0.3071%)**
 - **1,382 temporal-sequence anomalies** identified and preserved for investigation
 - Four-page Power BI report covering executive KPIs, reconciliation, operations and customer experience
+- [DuckDB GitHub Actions validation](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41558348936): six synthetic-only CI checks executed, exercising SQL from seven original dbt models in isolation; original Snowflake/dbt results remain historical
 
 [Open the E-Commerce project](projects/ecommerce-revenue-operations-analytics/)
 
@@ -79,6 +80,7 @@ A fictional supplier-access scenario connects 12 hypothetical risks, 12 due-dili
 
 - SQL & PostgreSQL
 - Snowflake & Data Warehousing
+- DuckDB (reproducible synthetic SQL validation)
 - dbt Core / dbt-snowflake
 - Incremental ELT modeling
 - MERGE / upsert workflows
