@@ -209,7 +209,8 @@ Benchmark plan (not executed): [Snowflake performance protocol](reports/SNOWFLAK
 ## Technology Stack
 
 - **SQL**
-- **Snowflake**
+- **Snowflake** (original warehouse; historical execution)
+- **DuckDB** (synthetic, local CI validation of original SQL)
 - **dbt Core / dbt-snowflake**
 - **Power BI**
 - **DAX**
