@@ -4,7 +4,7 @@
 
 ## Scope
 
-Use **small, deliberately constructed synthetic datasets** to validate individual original SQL models and a connected **13-model original-SQL subset**, from synthetic RAW strings through four staging views and nine downstream views to three monthly marts: financial reconciliation, customer reviews and delivery operations. The original Snowflake/dbt SQL and its materializations remain unchanged. Never upload local `profiles.yml`, credentials, raw business datasets, query history, or private checkpoints.
+Use fabricated data to check a connected **14-model original-SQL subset**: four staging views and ten downstream views, including two fact tables at different grains and three monthly marts (financial, reviews and delivery). The original Snowflake/dbt SQL and its materializations remain unchanged. Never upload local `profiles.yml`, credentials, raw business datasets, query history, or private checkpoints.
 
 ## Run locally (PowerShell)
 
@@ -206,7 +206,7 @@ Independent assertions check both months' reviewed/unreviewed and scored order c
 
 ## Expanded 13-model RAW-to-three-marts subset (CI-verified, 3 November 2026)
 
-The **current** connected DuckDB test executes SQL from **13 original dbt models** in dependency order. The new thirteenth model is the unchanged original `mart_delivery_operations.sql` alongside the existing financial and review marts. It consumes the same fabricated source orders via the original staging and intermediate SELECTs; the original dbt SQL files remain unmodified. The single strict dialect accommodation for this additional mart is its `TO_CHAR` month formatter, translated to DuckDB `STRFTIME` under an exact one-occurrence guard.
+The earlier connected DuckDB test executed SQL from **13 original dbt models** in dependency order. The new thirteenth model is the unchanged original `mart_delivery_operations.sql` alongside the existing financial and review marts. It consumes the same fabricated source orders via the original staging and intermediate SELECTs; the original dbt SQL files remain unmodified. The single strict dialect accommodation for this additional mart is its `TO_CHAR` month formatter, translated to DuckDB `STRFTIME` under an exact one-occurrence guard.
 
 The synthetic delivery data now contain explicit on-time and late events, missing milestones, and a customer-delivery-before-carrier event. All **three marts** preserve four orders per month. January contains three orders labelled delivered, two with comparable delivery dates (**one on time, one late**) and one missing delivery timestamps. February contains three delivered orders with comparable dates (**two counted as on time and one late**), plus one deliberately impossible delivery timeline. Assertions cover comparable/noncomparable counts, missing approval/carrier/customer timestamps, chronological anomaly flags, valid duration counts, average stage durations, month-level rates and cross-mart order counts.
 
@@ -215,3 +215,13 @@ The synthetic delivery data now contain explicit on-time and late events, missin
 **CI evidence:** [GitHub Actions run 41593637218](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41593637218) on commit `4358939dc092288fe8b0adb48a7f903ad4e8f134`, **COMPLETED / SUCCESS**, all **11 Python scripts passed**. The workflow now watches original `mart_delivery_operations.sql` on both push and pull request.
 
 **Boundaries:** 13/28 original-model SQL SELECTs exercised in one controlled synthetic DuckDB graph; **not** full dbt compilation, not historical 249-test rerun, not Snowflake data, not production delivery outcomes or warehouse benchmarking. Snowflake connection details and data remain retained by the owner but the warehouse cannot currently be used. This test never connects to it.
+
+## 14-model connected subset: item-grain fact and delivery sensitivity
+
+The connected check also executes the original `fct_order_items.sql` as model 14, using the same fabricated item staging table. On eight synthetic items it verifies unique `(order_id, order_item_id)` keys and checks that two items on one order total 150.00 including freight. It distinguishes the item fact's source orphan row from the order fact's known-order grain; the deliberately malformed orphan item price remains NULL.
+
+A separate comparison illustrates how policy changes a delivery KPI without editing the original models. On the fabricated February orders, the original delivery mart counts 2 on-time deliveries among 3 comparable cases (66.67%), including one case with an impossible event sequence. Excluding that flagged case from both numerator and denominator produces 1 of 2 (50%). January remains 1 of 2 under both policies. The alternative is illustrative and is not implemented as a replacement.
+
+The [GitHub Actions test run 41599836721](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41599836721) completed SUCCESS with **11/11 Python scripts**, including the connected 14-model graph. The workflow monitors the original item-fact SQL file.
+
+This is synthetic SQL validation with explicit dialect adaptations, not a complete 28-model dbt run, a rerun of historical warehouse tests or a real operational KPI.
