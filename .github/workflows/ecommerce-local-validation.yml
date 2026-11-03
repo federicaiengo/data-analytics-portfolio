@@ -10,6 +10,7 @@ on:
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_payments_summary.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_financial_reconciliation.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_orders_lifecycle.sql'
+      - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_reviews_summary.sql'
       - '.github/workflows/ecommerce-local-validation.yml'
   pull_request:
     paths:
@@ -20,6 +21,7 @@ on:
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_payments_summary.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_financial_reconciliation.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_orders_lifecycle.sql'
+      - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_reviews_summary.sql'
       - '.github/workflows/ecommerce-local-validation.yml'
   workflow_dispatch:
 
@@ -47,3 +49,5 @@ jobs:
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_original_lifecycle.py
       - name: Test original fact orders JOIN and grain on synthetic DuckDB
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_original_fact_orders.py
+      - name: Test original review summary aggregates on synthetic DuckDB
+        run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_original_reviews_summary.py
