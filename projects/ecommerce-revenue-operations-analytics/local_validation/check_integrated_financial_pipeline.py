@@ -508,6 +508,58 @@ def main():
         # valid operational delivery performance.
         assert feb_delivery["on_time_or_early_order_count"] == 2
         assert feb_delivery["temporal_anomaly_order_count"] == 1
+        # Alternative data-quality policy experiment: exclude impossible
+        # timeline rows from punctuality's numerator AND denominator.
+        # It does not modify the original delivery mart or historical KPIs.
+        strict_delivery = con.execute("""
+            SELECT
+                strftime(date_trunc('month', order_purchase_timestamp), '%Y-%m')
+                    AS year_month,
+                count(*) FILTER (
+                    WHERE order_status = 'delivered'
+                      AND order_delivered_customer_date IS NOT NULL
+                      AND order_estimated_delivery_date IS NOT NULL
+                ) AS original_comparable,
+                count(*) FILTER (
+                    WHERE order_status = 'delivered'
+                      AND order_delivered_customer_date IS NOT NULL
+                      AND order_estimated_delivery_date IS NOT NULL
+                      AND coalesce(has_temporal_sequence_anomaly, false)
+                ) AS excluded_temporal_anomalies,
+                count(*) FILTER (
+                    WHERE order_status = 'delivered'
+                      AND order_delivered_customer_date IS NOT NULL
+                      AND order_estimated_delivery_date IS NOT NULL
+                      AND NOT coalesce(has_temporal_sequence_anomaly, false)
+                ) AS strict_comparable,
+                count(*) FILTER (
+                    WHERE order_status = 'delivered'
+                      AND order_delivered_customer_date IS NOT NULL
+                      AND order_estimated_delivery_date IS NOT NULL
+                      AND NOT coalesce(has_temporal_sequence_anomaly, false)
+                      AND order_delivered_customer_date
+                          <= order_estimated_delivery_date
+                ) AS strict_on_time
+            FROM integrated_fct_orders
+            GROUP BY 1
+            ORDER BY 1
+        """).fetchall()
+        assert strict_delivery == [
+            ("2026-01", 2, 0, 2, 1),
+            ("2026-02", 3, 1, 2, 1),
+        ], f"Strict delivery policy fixture drift: {strict_delivery!r}"
+        for month_id, original, excluded, valid, timely in strict_delivery:
+            assert original == valid + excluded
+            assert timely <= valid
+            assert original == delivery_mart[month_id]["punctuality_comparable_order_count"]
+            if month_id == "2026-02":
+                assert math.isclose(
+                    float(delivery_mart[month_id]["on_time_or_early_rate_pct"]), 200 / 3
+                )
+                assert math.isclose(timely * 100.0 / valid, 50.0)
+        # February original: on-time 2/3 (66.67%); alternative excluding
+        # one anomalous delivery: 1/2 (50%). Policy choice remains open.
+
 
         naive_count = con.execute("""
             SELECT count(*)
@@ -525,6 +577,7 @@ def main():
         print("PASS: 14 original SQL models chained from synthetic RAW through item fact and three monthly marts.")
         print("PASS: 8 orders / 2 months; finance, reviews, lifecycle and all three monthly marts verified.")
         print("PASS: item-fact compound grain, including allowed orphan row, and original order-fact grain.")
+        print("PASS: original 2/3 vs policy-excluded 1/2 February delivery punctuality distinguished.")
         print("PASS: source double-count trap (2x2=4) excluded by aggregate-before-JOIN grain.")
         print("Scope: guarded Snowflake->DuckDB staging casts and three mart date-format substitutions; no Snowflake, dbt MERGE, or full 28-model run.")
     finally:
