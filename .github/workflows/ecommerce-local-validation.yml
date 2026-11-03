@@ -65,3 +65,5 @@ jobs:
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_local_incremental_semantics.py
       - name: Test backdated order reconciliation and deletion guard
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_local_backdated_reconciliation.py
+      - name: Test fail-closed reconciliation guards and transaction rollback
+        run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_reconciliation_contract_guards.py
