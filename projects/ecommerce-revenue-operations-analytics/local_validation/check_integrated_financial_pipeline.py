@@ -327,6 +327,45 @@ def main():
         assert math.isclose(float(jan["mismatch_rate_pct"]), 50.0, abs_tol=1e-8)
         assert math.isclose(float(feb["mismatch_rate_pct"]), 100 / 3, abs_tol=1e-8)
 
+        # Independent, hand-enumerated customer experience expectations.
+        # Jan: 001 (two scores 4,5) and 003 (score 2) have reviews.
+        # Feb: 004 (score 3) and 007 (NULL score) have reviews.
+        jan_review, feb_review = review_mart["2026-01"], review_mart["2026-02"]
+        for month in (jan_review, feb_review):
+            assert month["order_count"] == 4
+            assert month["reviewed_order_count"] == 2
+            assert month["unreviewed_order_count"] == 2
+            assert math.isclose(float(month["review_coverage_rate_pct"]), 50.0)
+        assert jan_review["scored_order_count"] == 2
+        assert jan_review["review_record_count"] == 3
+        assert math.isclose(float(jan_review["average_review_score"]), 3.25)
+        assert (jan_review["low_score_order_count"],
+                jan_review["mid_score_order_count"],
+                jan_review["high_score_order_count"],
+                jan_review["five_score_order_count"]) == (1, 0, 1, 0)
+        assert jan_review["multiple_review_record_order_count"] == 1
+        assert jan_review["multiple_review_score_order_count"] == 1
+        assert jan_review["review_title_order_count"] == 1
+        assert jan_review["review_message_order_count"] == 2
+        assert math.isclose(float(jan_review["low_score_rate_pct"]), 50.0)
+        assert math.isclose(float(jan_review["high_score_rate_pct"]), 50.0)
+        assert math.isclose(float(jan_review["review_title_rate_pct"]), 50.0)
+        assert math.isclose(float(jan_review["review_message_rate_pct"]), 100.0)
+        assert feb_review["scored_order_count"] == 1
+        assert feb_review["review_record_count"] == 2
+        assert math.isclose(float(feb_review["average_review_score"]), 3.0)
+        assert (feb_review["low_score_order_count"],
+                feb_review["mid_score_order_count"],
+                feb_review["high_score_order_count"],
+                feb_review["five_score_order_count"]) == (0, 1, 0, 0)
+        assert feb_review["multiple_review_record_order_count"] == 0
+        assert feb_review["multiple_review_score_order_count"] == 0
+        assert feb_review["review_title_order_count"] == 0
+        assert feb_review["review_message_order_count"] == 1
+        assert math.isclose(float(feb_review["review_message_rate_pct"]), 50.0)
+        for month_id in ("2026-01", "2026-02"):
+            assert review_mart[month_id]["order_count"] == mart[month_id]["order_count"]
+
         naive_count = con.execute("""
             SELECT count(*)
             FROM stg_order_items i
