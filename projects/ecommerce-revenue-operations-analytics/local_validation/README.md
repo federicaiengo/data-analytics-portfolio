@@ -4,7 +4,7 @@
 
 ## Scope
 
-Use **small, deliberately constructed synthetic datasets** to validate individual original SQL models and a connected seven-model financial subset, from typed synthetic staging inputs to `fct_orders` and the monthly reconciliation mart. The original Snowflake/dbt SQL and its materializations remain unchanged. Never upload local `profiles.yml`, credentials, raw business datasets, query history, or private checkpoints.
+Use **small, deliberately constructed synthetic datasets** to validate individual original SQL models and a connected **11-model original-SQL subset**, from synthetic RAW strings through four staging views and seven downstream views to the monthly financial mart. The original Snowflake/dbt SQL and its materializations remain unchanged. Never upload local `profiles.yml`, credentials, raw business datasets, query history, or private checkpoints.
 
 ## Run locally (PowerShell)
 
@@ -85,9 +85,9 @@ Run from the E-Commerce project directory with DuckDB installed:
 
 **Coverage accounting:** These six scripts exercise SQL from **seven original dbt models in isolated synthetic fixtures** (three financial intermediates, order lifecycle, order reviews, `fct_orders`, and the monthly reconciliation mart). They **do not** compile or execute the connected 28-model dbt project, original Snowflake staging models, any real Snowflake dataset, incremental `MERGE`, or a cross-platform performance benchmark. Snowflake-origin historical results are preserved as historical evidence, not presented as current DuckDB measurements.
 
-## Integrated seven-model original-SQL subset (CI-verified, 3 November 2026)
+## Initial seven-model subset — historical validation (CI-verified, 3 November 2026)
 
-`check_integrated_financial_pipeline.py` now runs a **single connected DuckDB pipeline** using the actual unchanged repository SQL for these seven dbt models:
+The initial version of `check_integrated_financial_pipeline.py` ran a **single connected DuckDB pipeline** using the original repository SQL for these seven dbt models:
 
 1. `int_order_items_summary`
 2. `int_order_payments_summary`
@@ -97,7 +97,7 @@ Run from the E-Commerce project directory with DuckDB installed:
 6. `fct_orders`
 7. `mart_revenue_financial_reconciliation`
 
-All models read the **same four typed, deliberately synthetic staging tables** (`stg_orders`, `stg_order_items`, `stg_order_payments`, `stg_order_reviews`). The script creates the seven views in dependency order, validates the grain at intermediate, fact and monthly levels, and checks independently specified monthly financial figures.
+In this initial stage, the models read the **same four typed, deliberately synthetic staging tables** (`stg_orders`, `stg_order_items`, `stg_order_payments`, `stg_order_reviews`). The script creates the seven views in dependency order, validates the grain at intermediate, fact and monthly levels, and checks independently specified monthly financial figures.
 
 Eight fabricated orders across January–February exercise two-item/two-payment JOIN multiplication, source orphans, missing both finance summaries, missing reviews, score aggregation, event-order anomaly, exact 0.01 vs 0.02 mismatch tolerance, and month-level totals. Verified expected monthly results: January **4 orders, 2 comparable, 1 mismatching, 50% mismatch rate, 195.00 item+freight, 220.00 payments, 5.00 absolute mismatch**; February **4 orders, 3 comparable, 1 mismatching, approximately 33.33% mismatch rate, 105.00 item+freight, 50.03 payments, 0.02 absolute mismatch**. Currency units are not implied by the synthetic amounts.
 
@@ -109,4 +109,23 @@ Run locally from the E-Commerce project directory with DuckDB installed:
 & .\\.venv\\Scripts\\python.exe .\\local_validation\\check_integrated_financial_pipeline.py
 ```
 
-**Exact limits:** This is a connected **seven-model SQL subset**, not the full 28-model dbt project. Its four input tables are **typed synthetic staging fixtures** rather than original staging-model SQL or actual Olist/Snowflake data. The `int_orders_lifecycle` SELECT is executed in **full-refresh style**, with an explicitly guarded removal of its dbt `config()` and `is_incremental()` Jinja block. The original monthly mart requires **one explicit `TO_CHAR` → `STRFTIME` substitution** for DuckDB. Other SQL is reused with strictly verified `ref()` substitutions. No incremental `MERGE` / watermark state, dbt compilation, historical 249-check rerun, production deployment, or Snowflake-vs-DuckDB performance comparison is demonstrated. No Snowflake credentials or stored Snowflake data are read.
+**Initial-stage limits:** This was a connected **seven-model SQL subset**, not the full 28-model dbt project. Its four input tables are **typed synthetic staging fixtures** rather than original staging-model SQL or actual Olist/Snowflake data. The `int_orders_lifecycle` SELECT is executed in **full-refresh style**, with an explicitly guarded removal of its dbt `config()` and `is_incremental()` Jinja block. The original monthly mart requires **one explicit `TO_CHAR` → `STRFTIME` substitution** for DuckDB. Other SQL is reused with strictly verified `ref()` substitutions. No incremental `MERGE` / watermark state, dbt compilation, historical 249-check rerun, production deployment, or Snowflake-vs-DuckDB performance comparison is demonstrated. No Snowflake credentials or stored Snowflake data are read.
+
+## Expanded RAW-to-mart 11-model chain (CI-verified, 3 November 2026)
+
+The **current** `check_integrated_financial_pipeline.py` uses four deliberately fabricated RAW text tables to run an **integrated 11-model SQL subset**, consisting of four original staging models plus the seven original models documented above:
+
+- `stg_orders`, `stg_order_items`, `stg_order_payments`, `stg_order_reviews` — **actual original staging SQL** using the narrow, fail-closed `original_staging_duckdb.py` bridge.
+- `int_order_items_summary`, `int_order_payments_summary`, `int_order_financial_reconciliation`, `int_order_reviews_summary`, `int_orders_lifecycle`, `fct_orders`, `mart_revenue_financial_reconciliation` — seven downstream original SQL models chained from the staging views.
+
+The original Snowflake/dbt SQL source files remain **unchanged**. Four `source('olist_raw', ...)` calls are substituted with explicit local RAW fixture tables; the stage adapter converts only explicitly counted `TRY_TO_TIMESTAMP_NTZ`, `TRY_TO_NUMBER(...,38,0)`, and `TRY_TO_DECIMAL(...,12,2)` expressions into DuckDB `TRY_CAST` expressions. It rejects unrecognized conversions or templating instead of silently relaxing the SQL. This is **dialect adaptation**, not demonstrated equivalence between all Snowflake and DuckDB conversion behavior.
+
+The eight synthetic orders and previously hand-specified January/February financial expectations remain unchanged. Additional negative fixtures exercise conversion of **malformed raw price, payment amount, review score, and review timestamp to NULL** in staging without contaminating fact-level data, because those malformed records are synthetic source orphans. The workflow still checks JOIN grain, source orphan exclusion, financial thresholds, review and lifecycle flags, and exact monthly aggregates.
+
+**Verified CI:** [GitHub Actions run 41561089884](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41561089884) on source commit `bbeea3138a4ef707fb53b47e167ef3793a7f569b` completed **SUCCESS**. **Seven Python validation scripts pass**, including the 11-model connected chain. Four original staging SQL paths are monitored by the workflow on push/PR.
+
+```powershell
+& .\\.venv\\Scripts\\python.exe .\\local_validation\\check_integrated_financial_pipeline.py
+```
+
+**Scope boundary:** This is **11/28 original-model SQL expressions covered by a connected synthetic subset**, with documented Snowflake-to-DuckDB syntax substitutions. It does **not** run the real Olist/Snowflake records, the original Snowflake warehouse, actual dbt compilation, any dbt incremental `MERGE`/watermark, the 17 other dbt models, all 249 historical dbt regression checks, or a representative performance benchmark. Existing Snowflake access details and data are retained by the owner but the warehouse is currently unavailable; this script does not access them.
