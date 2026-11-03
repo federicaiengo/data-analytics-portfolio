@@ -1,10 +1,10 @@
-"""Integrated synthetic DuckDB subset of seven *original* E-Commerce dbt SQL models.
+"""Integrated synthetic DuckDB subset of 11 original E-Commerce dbt SQL models.
 
-Upstream typed staging tables are synthetic inputs (not the original staging
-models). Reuses original SQL in dependency order:
-  item/payments summary -> financial reconciliation
-  reviews summary + lifecycle full-refresh SELECT -> fct_orders
-  -> monthly reconciliation mart
+Four original staging SQL models are dialect-adapted (strict source() and
+TRY_TO_* -> TRY_CAST guards) and run on RAW synthetic text fixtures. Seven
+further original SQL models are chained: item/payment/review aggregations,
+financial reconciliation, lifecycle full-refresh SELECT, fct_orders, and
+monthly financial mart.
 
 No Snowflake connection or source-data copy, no dbt compilation, MERGE,
 watermarking, production performance measurement, or 28-model DAG execution.
@@ -18,6 +18,7 @@ import duckdb
 
 from check_original_intermediate_reconciliation import exact_model_sql
 from check_original_lifecycle import load_full_refresh_sql
+from original_staging_duckdb import STAGING_SPEC, render_original_staging
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -72,40 +73,43 @@ def main():
     con = duckdb.connect(":memory:")
     try:
         con.execute("""
-        CREATE TABLE stg_orders (
+        CREATE TABLE raw_orders (
             order_id VARCHAR PRIMARY KEY,
             customer_id VARCHAR,
             order_status VARCHAR,
-            order_purchase_timestamp TIMESTAMP,
-            order_approved_at TIMESTAMP,
-            order_delivered_carrier_date TIMESTAMP,
-            order_delivered_customer_date TIMESTAMP,
-            order_estimated_delivery_date TIMESTAMP,
+            order_purchase_timestamp VARCHAR,
+            order_approved_at VARCHAR,
+            order_delivered_carrier_date VARCHAR,
+            order_delivered_customer_date VARCHAR,
+            order_estimated_delivery_date VARCHAR,
             _loaded_at TIMESTAMP,
             _source_filename VARCHAR,
             _source_row_number INTEGER
         );
-        CREATE TABLE stg_order_items (
+        CREATE TABLE raw_order_items (
             order_id VARCHAR,
+            order_item_id VARCHAR,
             product_id VARCHAR,
             seller_id VARCHAR,
-            price DECIMAL(12,2),
-            freight_value DECIMAL(12,2)
+            shipping_limit_date VARCHAR,
+            price VARCHAR,
+            freight_value VARCHAR
         );
-        CREATE TABLE stg_order_payments (
+        CREATE TABLE raw_order_payments (
             order_id VARCHAR,
+            payment_sequential VARCHAR,
             payment_type VARCHAR,
-            payment_installments INTEGER,
-            payment_value DECIMAL(12,2)
+            payment_installments VARCHAR,
+            payment_value VARCHAR
         );
-        CREATE TABLE stg_order_reviews (
+        CREATE TABLE raw_order_reviews (
             review_id VARCHAR,
             order_id VARCHAR,
-            review_score INTEGER,
+            review_score VARCHAR,
             review_comment_title VARCHAR,
             review_comment_message VARCHAR,
-            review_creation_date TIMESTAMP,
-            review_answer_timestamp TIMESTAMP
+            review_creation_date VARCHAR,
+            review_answer_timestamp VARCHAR
         );
         """)
         def order(key, status, purchase, *, approved=True, anomaly=False):
@@ -130,50 +134,82 @@ def main():
             order("SYN-008", "delivered", "2026-01-25 08:00:00", approved=False),
         ]
         con.executemany(
-            "INSERT INTO stg_orders VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO raw_orders VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             orders,
         )
         # Order 1 has two items and two payments: a raw join would return 4
         # rows and inflate both revenue and the payment amount.
         con.executemany(
-            "INSERT INTO stg_order_items VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO raw_order_items VALUES (?, ?, ?, ?, ?, ?, ?)",
             [
-                ("SYN-001", "P1", "SELLER1", "90.00", "5.00"),
-                ("SYN-001", "P2", "SELLER1", "50.00", "5.00"),
-                ("SYN-002", "P3", "SELLER2", "40.00", "5.00"),
-                ("SYN-004", "P4", "SELLER3", "25.00", "5.00"),
-                ("SYN-005", "P5", "SELLER4", "50.00", "5.00"),
-                ("SYN-006", "P6", "SELLER5", "10.00", "0.00"),
-                ("SYN-007", "P7", "SELLER6", "10.00", "0.00"),
-                ("SYN-999", "ORPHAN", "OTHER", "777.00", "0.00"),
+                (order_id, str(index), product_id, seller_id,
+                 "2026-03-01 00:00:00", price, freight)
+                for index, (order_id, product_id, seller_id, price, freight)
+                in enumerate([
+                    ("SYN-001", "P1", "SELLER1", "90.00", "5.00"),
+                    ("SYN-001", "P2", "SELLER1", "50.00", "5.00"),
+                    ("SYN-002", "P3", "SELLER2", "40.00", "5.00"),
+                    ("SYN-004", "P4", "SELLER3", "25.00", "5.00"),
+                    ("SYN-005", "P5", "SELLER4", "50.00", "5.00"),
+                    ("SYN-006", "P6", "SELLER5", "10.00", "0.00"),
+                    ("SYN-007", "P7", "SELLER6", "10.00", "0.00"),
+                    # Orphan bad source amount must TRY_CAST to NULL;
+                    # neither source orphan nor invalid value enters fact.
+                    ("SYN-999", "ORPHAN", "OTHER", "bad-price", "0.00"),
+                ], start=1)
             ],
         )
         con.executemany(
-            "INSERT INTO stg_order_payments VALUES (?, ?, ?, ?)",
+            "INSERT INTO raw_order_payments VALUES (?, ?, ?, ?, ?)",
             [
-                ("SYN-001", "credit_card", 3, "100.00"),
-                ("SYN-001", "voucher", 1, "50.00"),
-                ("SYN-002", "credit_card", 1, "50.00"),
-                ("SYN-003", "voucher", 1, "20.00"),
-                ("SYN-004", "credit_card", 1, "30.00"),
-                ("SYN-006", "credit_card", 1, "10.01"),
-                ("SYN-007", "credit_card", 1, "10.02"),
-                ("SYN-998", "voucher", 1, "888.00"),
+                (order_id, str(index), payment_type, str(installments), amount)
+                for index, (order_id, payment_type, installments, amount)
+                in enumerate([
+                    ("SYN-001", "credit_card", 3, "100.00"),
+                    ("SYN-001", "voucher", 1, "50.00"),
+                    ("SYN-002", "credit_card", 1, "50.00"),
+                    ("SYN-003", "voucher", 1, "20.00"),
+                    ("SYN-004", "credit_card", 1, "30.00"),
+                    ("SYN-006", "credit_card", 1, "10.01"),
+                    ("SYN-007", "credit_card", 1, "10.02"),
+                    ("SYN-998", "voucher", 1, "bad-payment"),
+                ], start=1)
             ],
         )
         con.executemany(
-            "INSERT INTO stg_order_reviews VALUES (?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO raw_order_reviews VALUES (?, ?, ?, ?, ?, ?, ?)",
             [
                 ("RV1", "SYN-001", 4, "Good", "OK", "2026-01-11 08:00:00", "2026-01-12 08:00:00"),
                 ("RV2", "SYN-001", 5, None, "Great", "2026-01-13 08:00:00", None),
                 ("RV3", "SYN-003", 2, None, "Late", "2026-01-21 08:00:00", None),
                 ("RV4", "SYN-004", 3, None, None, "2026-02-03 08:00:00", None),
                 ("RV5", "SYN-007", None, None, "Unrated", "2026-02-13 08:00:00", None),
-                ("ORPHAN", "SYN-997", 1, None, None, None, None),
+                ("ORPHAN", "SYN-997", "bad-score", None, None, None, None),
             ],
         )
+        # Execute the FOUR original staging SQL models on raw synthetic text.
+        # The strict bridge allows only explicitly counted TRY_TO_* casts and
+        # source() replacements; original repository SQL remains unchanged.
+        for model_name in STAGING_SPEC:
+            create_view(con, model_name, render_original_staging(model_name))
+        assert con.execute(
+            "SELECT typeof(order_purchase_timestamp) FROM stg_orders "
+            "WHERE order_id='SYN-001'"
+        ).fetchone()[0] == "TIMESTAMP"
+        assert con.execute(
+            "SELECT price IS NULL FROM stg_order_items WHERE order_id='SYN-999'"
+        ).fetchone()[0] is True
+        assert con.execute(
+            "SELECT payment_value IS NULL FROM stg_order_payments "
+            "WHERE order_id='SYN-998'"
+        ).fetchone()[0] is True
+        assert con.execute(
+            "SELECT review_score IS NULL FROM stg_order_reviews "
+            "WHERE order_id='SYN-997'"
+        ).fetchone()[0] is True
+
         # Lifecycle helper replaces exactly one ref('stg_orders') with this
-        # synthetic relation; the financial model reads the SAME staging table.
+        # stage relation; the financial model reads the SAME staging view.
         create_view(con, "synthetic_stg_orders", "SELECT * FROM stg_orders")
 
         create_view(con, "int_order_items_summary",
@@ -284,10 +320,10 @@ def main():
         # Repeat query to ensure determinism without side effects or network.
         assert records(con, "integrated_monthly_mart", "year_month") == mart
 
-        print("PASS: 7 original SQL models chained against the SAME synthetic staging inputs.")
+        print("PASS: 11 original SQL models chained from synthetic RAW to the monthly mart.")
         print("PASS: 8 orders / 2 months; finance, review, lifecycle and mart invariants.")
         print("PASS: source double-count trap (2x2=4) excluded by aggregate-before-JOIN grain.")
-        print("Scope: original SQL on synthetic typed staging only; no Snowflake, dbt MERGE, or full 28-model run.")
+        print("Scope: four guarded Snowflake->DuckDB staging cast adaptations and one mart date-format change; no Snowflake, dbt MERGE, or full 28-model run.")
     finally:
         con.close()
 
