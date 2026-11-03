@@ -154,7 +154,7 @@ Synthetic batch scenarios and expectations include:
 
 `check_local_backdated_reconciliation.py` extends the local synthetic experiment with a **non-destructive comparison against the original full-refresh lifecycle SELECT**. It first demonstrates that the original `>= MAX(_loaded_at)` incremental filter **misses** both an existing order modified without advancing its old ingestion timestamp and a newly discovered order with an old ingestion timestamp. It then computes the exact set of changed complete rows with DuckDB `EXCEPT` (including `NULL` differences) and applies only those rows through a **locally constructed DuckDB MERGE**.
 
-Before any repair, the script checks that both source and target have **unique, non-NULL order keys** and the expected column schema. Source-missing keys in the target cause an explicit **fail-closed exception** rather than guessing whether a deleted source record should imply deletion downstream. A repeat reconciliation returns zero changes and leaves the full target snapshot identical.
+Before any repair, the script checks that both source and target have **unique, non-NULL order keys** and the expected **column names, order and types**. Source-missing keys in the target cause an explicit **fail-closed exception** rather than guessing whether a deleted source record should imply deletion downstream. The entire local comparison, delta MERGE and two-direction row-equality verification now run inside **one DuckDB transaction** with rollback on failure. A repeat reconciliation returns zero changes and leaves the full target snapshot identical.
 
 The eight-script baseline remains unchanged; the workflow now has a **ninth test**.
 
@@ -167,3 +167,17 @@ Run from the E-Commerce project root after installing DuckDB:
 ```
 
 **Design decision / tradeoff:** A reliable primary change feed should assign an appropriate advancing change/version or ingestion timestamp when a source business record is corrected. When such a feed is unavailable, a **governed periodic full-source reconciliation** can act as a safety net for changes outside the watermark window; it necessarily has a potentially large scanning, comparison, and concurrency/snapshot cost. This synthetic test measures **correctness on a tiny fixture only**, not cost, scale, or production transactional consistency. The local fallback is **not automatically applied** to the original dbt/Snowflake pipeline. Source deletes, late-arrival rules, schema evolution, and concurrent writes require separate explicit policies before production use. No Snowflake access or user data is used.
+
+## Reconciliation guard and rollback regression (CI-verified, 3 November 2026)
+
+`check_reconciliation_contract_guards.py` adds an adversarial test suite with **seven independent fail-closed cases**: duplicate source business keys; NULL source key; duplicate target keys; NULL target key; an unexpected target column; a changed target column **type**; and an order present in the target but missing from source when no deletion policy has been established. In every case the operation is refused and the target snapshot remains unchanged.
+
+An additional **post-MERGE fault-injection test** deliberately raises an exception **after the local MERGE has written data but before commit**. The explicit DuckDB transaction rolls back the entire change; a subsequent clean retry succeeds and a further retry is idempotent. The main reconciliation script now verifies source↔target row equality in **both directions**, not just source→target.
+
+**Verified CI:** [GitHub Actions run 41564130138](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41564130138), source commit `72463a1520d8116389795e84d61512453f0ce5dc`, **COMPLETED / SUCCESS**. All **10 Python validation scripts passed**, including the existing 11-original-SQL-model synthetic RAW-to-mart chain and both incremental/recovery experiments.
+
+```powershell
+& .\\.venv\\Scripts\\python.exe .\\local_validation\\check_reconciliation_contract_guards.py
+```
+
+**Scope and remaining risks:** The rollback is verified on one local DuckDB connection with injected errors. **Multi-connection concurrency, transactional snapshot consistency under parallel writers, source-system freshness, production restore/rollback, large data volumes, privacy constraints and deletion policy are not validated.** This change does not modify the original dbt/Snowflake project or apply any repair to retained real source data.
