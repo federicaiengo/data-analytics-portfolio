@@ -4,7 +4,7 @@
 
 ## Scope
 
-Use **small, deliberately constructed synthetic datasets** to validate individual original SQL models and a connected **12-model original-SQL subset**, from synthetic RAW strings through four staging views and eight downstream views to the monthly financial and customer-review marts. The original Snowflake/dbt SQL and its materializations remain unchanged. Never upload local `profiles.yml`, credentials, raw business datasets, query history, or private checkpoints.
+Use **small, deliberately constructed synthetic datasets** to validate individual original SQL models and a connected **13-model original-SQL subset**, from synthetic RAW strings through four staging views and nine downstream views to three monthly marts: financial reconciliation, customer reviews and delivery operations. The original Snowflake/dbt SQL and its materializations remain unchanged. Never upload local `profiles.yml`, credentials, raw business datasets, query history, or private checkpoints.
 
 ## Run locally (PowerShell)
 
@@ -196,10 +196,22 @@ An additional **post-MERGE fault-injection test** deliberately raises an excepti
 
 ## Expanded 12-model RAW-to-two-marts subset (CI-verified, 3 November 2026)
 
-The current `check_integrated_financial_pipeline.py` extends the verified 11-model graph with the repository's **unchanged original** `mart_customer_experience_reviews.sql`. Both the original financial reconciliation mart and the customer-review mart are now built from the **same eight fictional orders** through four original staging SQL models, their intermediate models and `fct_orders`. Only the original review mart's `TO_CHAR(month_start_date,'YYYY-MM')` expression is explicitly adapted to DuckDB `STRFTIME`, like the financial mart. Source dbt SQL remains unmodified.
+The earlier 12-model version of `check_integrated_financial_pipeline.py` extended the verified 11-model graph with the repository's **unchanged original** `mart_customer_experience_reviews.sql`. Both the original financial reconciliation mart and the customer-review mart are now built from the **same eight fictional orders** through four original staging SQL models, their intermediate models and `fct_orders`. Only the original review mart's `TO_CHAR(month_start_date,'YYYY-MM')` expression is explicitly adapted to DuckDB `STRFTIME`, like the financial mart. Source dbt SQL remains unmodified.
 
 Independent assertions check both months' reviewed/unreviewed and scored order counts, total review records, mean review score, low/mid/high/five-star categories, multiple-review flags, title and message coverage, and that both marts preserve the same number of modeled orders. January contains four orders, **two reviewed and two scored**, with three review records and a mean order-level review score of 3.25. February contains four orders, **two reviewed but only one scored**, illustrating why a reviewed order is not necessarily a scored order; two records yield a mean scored-order review of 3.0. These values belong entirely to the synthetic fixture, not to an observed customer dataset.
 
 **CI evidence:** [run 41580353931](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41580353931) completed **SUCCESS** with the expanded customer-review mart assertions; the workflow was subsequently updated to watch changes to the original customer-review mart SQL on both push and pull request. The complete workflow remains **11 Python scripts**, exercising a connected subset of **12 original dbt SQL models**, not 12 separate scripts or a full 28-model run.
 
 **Limitations:** Original Snowflake access and data remain unavailable for execution. No real customer review outcomes, warehouse conversion equivalence, dbt compilation, performance gains or production reliability are established. Other dbt models and source-data validations remain outside this subset.
+
+## Expanded 13-model RAW-to-three-marts subset (CI-verified, 3 November 2026)
+
+The **current** connected DuckDB test executes SQL from **13 original dbt models** in dependency order. The new thirteenth model is the unchanged original `mart_delivery_operations.sql` alongside the existing financial and review marts. It consumes the same fabricated source orders via the original staging and intermediate SELECTs; the original dbt SQL files remain unmodified. The single strict dialect accommodation for this additional mart is its `TO_CHAR` month formatter, translated to DuckDB `STRFTIME` under an exact one-occurrence guard.
+
+The synthetic delivery data now contain explicit on-time and late events, missing milestones, and a customer-delivery-before-carrier event. All **three marts** preserve four orders per month. January contains three orders labelled delivered, two with comparable delivery dates (**one on time, one late**) and one missing delivery timestamps. February contains three delivered orders with comparable dates (**two counted as on time and one late**), plus one deliberately impossible delivery timeline. Assertions cover comparable/noncomparable counts, missing approval/carrier/customer timestamps, chronological anomaly flags, valid duration counts, average stage durations, month-level rates and cross-mart order counts.
+
+**Important source-model limitation demonstrated:** the original delivery mart counts the February anomalous customer-before-carrier row as an on-time order because punctuality and temporal-order integrity are independent conditions in the original SQL. Both the on-time count and temporal anomaly count are preserved and tested; the results must not be interpreted as validated operational punctuality without an additional business decision about anomaly exclusion.
+
+**CI evidence:** [GitHub Actions run 41593637218](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41593637218) on commit `4358939dc092288fe8b0adb48a7f903ad4e8f134`, **COMPLETED / SUCCESS**, all **11 Python scripts passed**. The workflow now watches original `mart_delivery_operations.sql` on both push and pull request.
+
+**Boundaries:** 13/28 original-model SQL SELECTs exercised in one controlled synthetic DuckDB graph; **not** full dbt compilation, not historical 249-test rerun, not Snowflake data, not production delivery outcomes or warehouse benchmarking. Snowflake connection details and data remain retained by the owner but the warehouse cannot currently be used. This test never connects to it.
