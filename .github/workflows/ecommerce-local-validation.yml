@@ -61,3 +61,5 @@ jobs:
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_original_reviews_summary.py
       - name: Test integrated 11-model synthetic RAW-to-mart DuckDB pipeline
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_integrated_financial_pipeline.py
+      - name: Test local incremental watermark and MERGE idempotency semantics
+        run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_local_incremental_semantics.py
