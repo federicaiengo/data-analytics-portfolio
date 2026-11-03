@@ -148,4 +148,22 @@ Synthetic batch scenarios and expectations include:
 & .\\.venv\\Scripts\\python.exe .\\local_validation\\check_local_incremental_semantics.py
 ```
 
-**Boundary:** This verifies a **DuckDB local emulation** of the documented incremental contract. It does **not** compile or execute dbt incremental models, test Snowflake's real `MERGE`, prove end-to-end production idempotence, replay actual source history, or solve the backdated-correction limitation. The retained Snowflake access details and data are neither loaded nor accessed.
+**Boundary:** This verifies a **DuckDB local emulation** of the documented incremental contract. It does **not** compile or execute dbt incremental models, test Snowflake's real `MERGE`, prove end-to-end production idempotence, replay actual source history, or, by itself, recover backdated corrections. The separate full-snapshot reconciliation experiment below demonstrates a local recovery option. The retained Snowflake access details and data are neither loaded nor accessed.
+
+## Backdated source updates: full-snapshot reconciliation (CI-verified, 3 November 2026)
+
+`check_local_backdated_reconciliation.py` extends the local synthetic experiment with a **non-destructive comparison against the original full-refresh lifecycle SELECT**. It first demonstrates that the original `>= MAX(_loaded_at)` incremental filter **misses** both an existing order modified without advancing its old ingestion timestamp and a newly discovered order with an old ingestion timestamp. It then computes the exact set of changed complete rows with DuckDB `EXCEPT` (including `NULL` differences) and applies only those rows through a **locally constructed DuckDB MERGE**.
+
+Before any repair, the script checks that both source and target have **unique, non-NULL order keys** and the expected column schema. Source-missing keys in the target cause an explicit **fail-closed exception** rather than guessing whether a deleted source record should imply deletion downstream. A repeat reconciliation returns zero changes and leaves the full target snapshot identical.
+
+The eight-script baseline remains unchanged; the workflow now has a **ninth test**.
+
+**Observed CI:** [run 41562159649](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41562159649), commit `c5dff12c7243b0f5634bdef756d7207623a9661b`, **COMPLETED / SUCCESS** with **9/9 scripts passing**, including this backdated-correction recovery test and the existing 11-model integrated RAW-to-mart test.
+
+Run from the E-Commerce project root after installing DuckDB:
+
+```powershell
+& .\\.venv\\Scripts\\python.exe .\\local_validation\\check_local_backdated_reconciliation.py
+```
+
+**Design decision / tradeoff:** A reliable primary change feed should assign an appropriate advancing change/version or ingestion timestamp when a source business record is corrected. When such a feed is unavailable, a **governed periodic full-source reconciliation** can act as a safety net for changes outside the watermark window; it necessarily has a potentially large scanning, comparison, and concurrency/snapshot cost. This synthetic test measures **correctness on a tiny fixture only**, not cost, scale, or production transactional consistency. The local fallback is **not automatically applied** to the original dbt/Snowflake pipeline. Source deletes, late-arrival rules, schema evolution, and concurrent writes require separate explicit policies before production use. No Snowflake access or user data is used.
