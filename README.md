@@ -72,7 +72,7 @@ Highlights:
 
 A fictional supplier-access scenario connects 12 hypothetical risks, 12 due-diligence questions, 20 synthetic identities, 24 IAM decisions and tenant/document-scoped authorization examples. After discovering that an initial toy approval rule could accept an unrelated identifier, I added a simulated approval registry and negative regression tests.
 
-**51/51 locally executed Python unittest methods passed.** They check a *fictional model and synthetic fixtures*, not real supplier security, ISO/NIST conformity, a professional audit or production access-control effectiveness.
+**v1.0 case study COMPLETE (3 November 2026).** The current **58-method unittest suite** and all **24 synthetic IAM scenario fixtures** passed in [GitHub Actions run 41565390636](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41565390636). The [closure review](projects/cyber-risk-iam-decision-study/CLOSURE_REVIEW_2026-11-03.md) records acceptance criteria and limits. These checks exercise a *fictional model*, not real supplier security, ISO/NIST conformity, an independent audit or production access-control effectiveness.
 
 [Read the independently documented case study, Python source and tests](projects/cyber-risk-iam-decision-study/)
 
