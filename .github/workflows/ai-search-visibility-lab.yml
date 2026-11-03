@@ -1,0 +1,60 @@
+name: AI Search Visibility Lab — v1 synthetic regression
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ai-search-visibility-lab.yml'
+      - 'projects/ai-search-visibility-lab/src/**'
+      - 'projects/ai-search-visibility-lab/tests/**'
+      - 'projects/ai-search-visibility-lab/data/**'
+      - 'projects/ai-search-visibility-lab/results/demo_metrics.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-visibility-lab-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  synthetic-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    defaults:
+      run:
+        working-directory: projects/ai-search-visibility-lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile source and tests
+        run: python -m compileall -q src tests
+      - name: Execute complete local unittest suite
+        run: python -m unittest discover -s tests -v
+      - name: Run synthetic analyzer CLI
+        run: python src/analyze_visibility.py data/sample_observations.csv
+      - name: Rebuild demo into a temporary path and compare with committed baseline
+        run: |
+          python - <<'PY'
+          import json
+          import tempfile
+          from pathlib import Path
+          from src.generate_report import DEMO_SOURCE, build_report
+
+          baseline = json.loads(Path("results/demo_metrics.json").read_text(encoding="utf-8"))
+          with tempfile.TemporaryDirectory() as temporary:
+              output = Path(temporary) / "generated.json"
+              build_report(str(DEMO_SOURCE), str(output))
+              fresh = json.loads(output.read_text(encoding="utf-8"))
+          assert fresh == baseline, "Demo report differs from committed expected JSON"
+          assert fresh["data_status"] == "synthetic demonstration data"
+          assert fresh["observations"] == 4
+          assert fresh["repeated_query_groups"] == 2
+          assert fresh["mention_rate"] == 0.75
+          assert fresh["citation_rate"] == 0.5
+          assert fresh["retrieval_consistency"] == 0.5
+          assert fresh["share_of_voice"] == 0.375
+          print("PASS: packaged demo reproduced without changing tracked files")
+          PY
