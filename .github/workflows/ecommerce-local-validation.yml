@@ -11,6 +11,10 @@ on:
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_financial_reconciliation.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_orders_lifecycle.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_reviews_summary.sql'
+      - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/staging/stg_orders.sql'
+      - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/staging/stg_order_items.sql'
+      - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/staging/stg_order_payments.sql'
+      - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/staging/stg_order_reviews.sql'
       - '.github/workflows/ecommerce-local-validation.yml'
   pull_request:
     paths:
@@ -22,6 +26,10 @@ on:
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_financial_reconciliation.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_orders_lifecycle.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_reviews_summary.sql'
+      - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/staging/stg_orders.sql'
+      - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/staging/stg_order_items.sql'
+      - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/staging/stg_order_payments.sql'
+      - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/staging/stg_order_reviews.sql'
       - '.github/workflows/ecommerce-local-validation.yml'
   workflow_dispatch:
 
@@ -51,5 +59,5 @@ jobs:
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_original_fact_orders.py
       - name: Test original review summary aggregates on synthetic DuckDB
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_original_reviews_summary.py
-      - name: Test integrated 7-model synthetic DuckDB pipeline
+      - name: Test integrated 11-model synthetic RAW-to-mart DuckDB pipeline
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_integrated_financial_pipeline.py
