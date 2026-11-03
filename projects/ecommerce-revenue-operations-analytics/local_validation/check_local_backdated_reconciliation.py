@@ -6,7 +6,9 @@ relying only on the original >= MAX(_loaded_at) incremental filter.
 
 The repair uses a locally constructed MERGE, NOT dbt-compiled/Snowflake SQL.
 Missing-source keys are a STOP condition: no implicit deletion, no silent
-tombstone inference. Neither actual Snowflake data nor secrets are read.
+tombstone inference. The local repair owns a transaction and rolls back on
+failed contracts; this is NOT a concurrency guarantee for Snowflake/dbt.
+Neither actual Snowflake data nor secrets are read.
 """
 from pathlib import Path
 
@@ -45,14 +47,15 @@ def source_only_keys(con):
 def validate_contract(con):
     src_keys = exact_keys(con, SOURCE)
     target_keys = exact_keys(con, "SELECT * FROM " + TARGET)
-    columns = [
-        r[0] for r in con.execute("DESCRIBE " + TARGET).fetchall()
+    target_schema = [
+        (r[0], r[1]) for r in con.execute("DESCRIBE " + TARGET).fetchall()
     ]
-    src_cols = [
-        r[0] for r in con.execute("DESCRIBE SELECT * FROM (" + SOURCE + ")").fetchall()
+    source_schema = [
+        (r[0], r[1])
+        for r in con.execute("DESCRIBE SELECT * FROM (" + SOURCE + ")").fetchall()
     ]
-    if columns != src_cols:
-        raise ValueError("Unexpected source/target schema drift")
+    if target_schema != source_schema:
+        raise ValueError("Unexpected source/target schema drift (name or type)")
     missing_in_source = sorted(target_keys - src_keys)
     if missing_in_source:
         raise RuntimeError(
@@ -63,27 +66,40 @@ def validate_contract(con):
 
 
 def reconcile_full_snapshot(con):
-    """Return delta keys, applying them only after duplicate/schema/delete guards."""
-    validate_contract(con)
-    con.execute(
-        "CREATE TEMP TABLE reconciliation_delta AS "
-        + SOURCE + " EXCEPT SELECT * FROM " + TARGET
-    )
+    """Run an all-or-nothing DuckDB reconciliation, including all guards.
+
+    Owns the local transaction; callers must not already be in one. This is
+    deliberately NOT a production locking/concurrency protocol.
+    """
+    con.execute("BEGIN TRANSACTION")
     try:
+        validate_contract(con)
+        con.execute(
+            "CREATE TEMP TABLE reconciliation_delta AS "
+            + SOURCE + " EXCEPT SELECT * FROM " + TARGET
+        )
         changed = exact_keys(con, "SELECT * FROM reconciliation_delta")
-        # EXCEPT compares full rows, not a truncated watermark window,
-        # so NULL -> non-NULL and other old-row corrections are detectable.
+        # EXCEPT compares complete rows including NULLs and old timestamps.
         if changed:
             merge_incremental(con, "SELECT * FROM reconciliation_delta")
         exact_keys(con, "SELECT * FROM " + TARGET)
-        verify = con.execute(
+        source_to_target = con.execute(
             "SELECT COUNT(*) FROM (" + SOURCE +
             " EXCEPT SELECT * FROM " + TARGET + ")"
         ).fetchone()[0]
-        assert verify == 0, "Reconciliation left unmatched source rows"
-        return sorted(changed)
-    finally:
+        target_to_source = con.execute(
+            "SELECT COUNT(*) FROM (SELECT * FROM " + TARGET +
+            " EXCEPT " + SOURCE + ")"
+        ).fetchone()[0]
+        assert source_to_target == 0 and target_to_source == 0, (
+            "Full-source reconciliation differs in at least one direction"
+        )
         con.execute("DROP TABLE reconciliation_delta")
+        con.execute("COMMIT")
+        return sorted(changed)
+    except Exception:
+        con.execute("ROLLBACK")
+        raise
 
 
 def main():
