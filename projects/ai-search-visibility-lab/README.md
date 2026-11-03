@@ -1,5 +1,7 @@
 # AI Search Visibility Lab
 
+**Status: v1.0 COMPLETE — 3 November 2026, educational/synthetic portfolio scope only.** [Read the closure review and acceptance criteria](CLOSURE_REVIEW_2026-11-03.md).
+
 **Python · GEO/AEO · AI Search Measurement · Citation Analysis · Evidence Provenance**
 
 A reproducible portfolio project for measuring how brands and sources appear in AI-generated answers.
@@ -25,6 +27,12 @@ The goal is not to claim a secret "AI ranking factor". The lab treats AI visibil
 | Source diversity | Unique cited domains / total cited domains |
 | Retrieval consistency | Share of comparable query/model/target groups with at least two observations that agree; `null` if none qualify |
 | Share of voice | Target mentions / mentions across tracked brands |
+
+## Verified v1.0 result
+
+The complete **21-method Python unittest suite** (10 metric/robustness tests, 7 observation-metadata tests and 4 report-provenance tests) passed in [GitHub Actions run 41688614267](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41688614267) on source commit `a57eb96621df063e52eadf99e51c81326a5ac3a3`. In the same run, Python source and tests compiled, the synthetic analyzer CLI executed, and the **four-row synthetic demo report regenerated in a temporary directory** and matched the committed JSON and fixed metric expectations.
+
+This closes **a testable measurement framework and fictional demonstration**, not an empirical AI search visibility study. No live model responses, actual brand/search outcomes, independently verified citations, ranking changes, real-entity effectiveness or client acquisition were measured. External observations remain a separately scoped future study.
 
 ## Reproducibility rules
 
@@ -91,12 +99,12 @@ The initial query set is designed around complex science/health-tech discovery p
 - **Measurement design:** `methodology/measurement_protocol.md`
 - **Scientific/health-tech reasoning:** `case_studies/scientific_healthtech.md`
 - **Machine-readable output:** `results/demo_metrics.json`
-- **QA:** [manual GitHub Actions validation — 9/9 tests PASS](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38336992176); synthetic demo metrics regenerated and compared with the tracked JSON
+- **QA:** [current automated v1.0 GitHub Actions validation — 21/21 tests PASS](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41688614267), with exact synthetic report parity and [scope-limited closure evidence](CLOSURE_REVIEW_2026-11-03.md)
 
 ## Input validation
 
 Mention and citation labels must be explicit yes/no flags; missing or ambiguous values are rejected instead of silently counted as negatives. Platform, model and query identity must be specified for repeatability analysis. Negative-case and reproducibility tests **passed (9/9)** in [manual QA run 38336992176](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/38336992176) on Python 3.12. This validates the code and synthetic fixture, **not AI-platform outcomes**. The included observations remain synthetic.
 
-## Next milestone
+## Optional v2 research (not required for v1.0 closure)
 
-Add a documented real-world observation set collected under a fixed protocol, then compare repeated runs without overstating causal conclusions.
+Collect an authorized, versioned set of real AI-platform observations under a frozen protocol, with source verification and repeated measurements. Treat that as **new empirical work** requiring separate privacy, provenance, cost and interpretation review. The v1.0 synthetic deliverable is complete.

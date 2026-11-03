@@ -11,7 +11,7 @@ This portfolio contains practical end-to-end projects covering source-data valid
 
 Reproducible framework for measuring brand mentions, citations, source diversity, retrieval consistency and competitor share of voice across AI-generated answers. Built around immutable evidence logging and a strict **correlation ≠ causation** interpretation rule, with a science/health-tech query set.
 
-Its Python analyzer and regression tests were run locally on source verified against GitHub blob hashes: **6/6 passing unit tests** and a reproducible synthetic demo JSON. These are software-quality checks, **not real-world AI search visibility measurements**.
+**v1.0 educational case study COMPLETE (3 November 2026).** The **21-method Python unittest suite** passed in [GitHub Actions run 41688614267](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41688614267), alongside the CLI and independently checked regeneration of the four-row synthetic demo JSON. See the [closure review](projects/ai-search-visibility-lab/CLOSURE_REVIEW_2026-11-03.md). This is a reproducible demonstration of measurement methods, **not real-world AI search visibility results or a ranking improvement**.
 
 [Open the AI Search Visibility Lab](projects/ai-search-visibility-lab/)
 
