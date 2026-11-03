@@ -63,3 +63,5 @@ jobs:
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_integrated_financial_pipeline.py
       - name: Test local incremental watermark and MERGE idempotency semantics
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_local_incremental_semantics.py
+      - name: Test backdated order reconciliation and deletion guard
+        run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_local_backdated_reconciliation.py
