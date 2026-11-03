@@ -129,3 +129,23 @@ The eight synthetic orders and previously hand-specified January/February financ
 ```
 
 **Scope boundary:** This is **11/28 original-model SQL expressions covered by a connected synthetic subset**, with documented Snowflake-to-DuckDB syntax substitutions. It does **not** run the real Olist/Snowflake records, the original Snowflake warehouse, actual dbt compilation, any dbt incremental `MERGE`/watermark, the 17 other dbt models, all 249 historical dbt regression checks, or a representative performance benchmark. Existing Snowflake access details and data are retained by the owner but the warehouse is currently unavailable; this script does not access them.
+
+## Local incremental MERGE semantics experiment (CI-verified, 3 November 2026)
+
+`check_local_incremental_semantics.py` tests the **original** `int_orders_lifecycle.sql` full-refresh and incremental-selection SQL, under guarded removal of the dbt `config()` and conditional Jinja tags. The original **`>= MAX(_loaded_at)` predicate**, `unique_key='order_id'` and `incremental_strategy='merge'` are checked against repository source. A separate **locally constructed DuckDB `MERGE` statement** applies matching updates and nonmatching inserts to a synthetic target table. This statement is **not dbt-compiled SQL** and does not test the Snowflake dbt adapter or its generated MERGE.
+
+Synthetic batch scenarios and expectations include:
+
+- Repeat a batch with no source changes: full row snapshot identical (**idempotent**).
+- Update an existing order with the *same* watermark as the latest batch: the change is merged.
+- Add a new order with a later watermark: it is inserted with no duplicate `order_id`.
+- Repeat the last batch and insert another order **tied to the maximum watermark**: reprocessing remains idempotent and the new key appears.
+- Modify an older source row **without advancing its old `_loaded_at`**: the change is deliberately **not** picked up by the watermark filter. This is a documented limitation of the source design and an important operational risk, **not a passing guarantee that late corrections will be ingested**.
+
+**Verified CI:** [E-Commerce synthetic SQL validation run 41561443051](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41561443051), source commit `24b52035d5d5f72bbf1b81b0739545f6a02ff296`, **COMPLETED / SUCCESS**; **eight Python validation scripts passed**, including the 11-model integrated subset and this separate local incremental experiment.
+
+```powershell
+& .\\.venv\\Scripts\\python.exe .\\local_validation\\check_local_incremental_semantics.py
+```
+
+**Boundary:** This verifies a **DuckDB local emulation** of the documented incremental contract. It does **not** compile or execute dbt incremental models, test Snowflake's real `MERGE`, prove end-to-end production idempotence, replay actual source history, or solve the backdated-correction limitation. The retained Snowflake access details and data are neither loaded nor accessed.
