@@ -1,0 +1,36 @@
+name: Cyber Risk & IAM synthetic case-study QA
+
+on:
+  push:
+    paths:
+      - 'projects/cyber-risk-iam-decision-study/**'
+      - '.github/workflows/cyber-risk-iam-case-study-qa.yml'
+  pull_request:
+    paths:
+      - 'projects/cyber-risk-iam-decision-study/**'
+      - '.github/workflows/cyber-risk-iam-case-study-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-case-study-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: projects/cyber-risk-iam-decision-study
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Check Python source syntax
+        run: python -m compileall -q 04_EVALUATE_ACCESS.py 05_DOCUMENT_SCOPE_POLICY.py validate_risks.py test_risks.py test_iam_access.py test_document_scope.py
+      - name: Validate fictional risk register and proposed controls
+        run: python validate_risks.py
+      - name: Execute full risk, IAM and document scope unittest suite
+        run: python -m unittest -v test_risks test_iam_access test_document_scope
+      - name: Verify all 24 synthetic IAM scenario decisions
+        run: python 04_EVALUATE_ACCESS.py
