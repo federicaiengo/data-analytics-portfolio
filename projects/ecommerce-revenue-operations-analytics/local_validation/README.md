@@ -65,3 +65,22 @@ To run the lifecycle check locally from this project's directory:
 ```
 
 **Not demonstrated:** dbt incremental `MERGE`, watermark/resume behavior, Snowflake SQL execution or warehouse performance, the original staging models, the real Olist dataset, the fact-table join, and a full-project 28-model regression. This harness extends low-cost regression coverage after loss of Snowflake access; it is **not** a complete warehouse migration.
+
+## Original fact and review SQL checks (CI-verified, 3 November 2026)
+
+**Fact-layer test:** `check_original_fact_orders.py` executes the **unchanged original** `fct_orders.sql` using exact substitutions for three upstream `ref()` calls. Its pre-aggregated lifecycle, financial and review relations are **independently constructed synthetic fixtures**; it does not execute those upstream models as one connected dbt DAG. Five synthetic lifecycle orders test order-level grain, preservation of orders with missing finance or review summaries, exact propagation of amounts, reconciliation states, review fields and temporal flags, and exclusion of orphan upstream records.
+
+The test also deliberately duplicates a review-summary row to **demonstrate a limitation**: the fact's left join would multiply rows when an upstream `order_id` is not unique. The source model assumes upstream grain/uniqueness rather than independently enforcing it. A passing test of this adversarial case does **not** mean the fact model itself protects against duplicate keys.
+
+**Review-layer test:** `check_original_reviews_summary.py` executes the **unchanged original** `int_order_reviews_summary.sql`, substituting only its exact staging `ref()` with six fabricated review rows. It checks per-order grouping, total vs distinct review IDs, average/min/max scores, differing and NULL scores, first/last timestamps, and title/message presence.
+
+**Verified CI:** [E-Commerce synthetic SQL validation run 41558348936](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41558348936) on commit `d8060f509299a312e4527bcd1ef8d2e219f10327` completed **SUCCESS** with **six validation scripts passing**, including both new tests. Workflow path filters also cover modifications to the original `fct_orders.sql` and `int_order_reviews_summary.sql`.
+
+Run from the E-Commerce project directory with DuckDB installed:
+
+```powershell
+& .\\.venv\\Scripts\\python.exe .\\local_validation\\check_original_fact_orders.py
+& .\\.venv\\Scripts\\python.exe .\\local_validation\\check_original_reviews_summary.py
+```
+
+**Coverage accounting:** These six scripts exercise SQL from **seven original dbt models in isolated synthetic fixtures** (three financial intermediates, order lifecycle, order reviews, `fct_orders`, and the monthly reconciliation mart). They **do not** compile or execute the connected 28-model dbt project, original Snowflake staging models, any real Snowflake dataset, incremental `MERGE`, or a cross-platform performance benchmark. Snowflake-origin historical results are preserved as historical evidence, not presented as current DuckDB measurements.
