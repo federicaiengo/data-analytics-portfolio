@@ -1,5 +1,7 @@
 # A Valid Login Is Not a Trust Decision
 
+**Status: v1.0 portfolio case study COMPLETE (3 November 2026).** See the [scope-limited closure review](CLOSURE_REVIEW_2026-11-03.md) and its independently rerun CI evidence. This status concerns the fictional educational artifact, not an actual security assessment.
+
 **Independent educational case study · Cybersecurity GRC · IT Risk · IAM governance · Python**
 
 A fictional B2B SaaS company wants a supplier to process a limited set of customer documents. **What evidence would justify access to one specified record, for one tenant, for one purpose—and when should the decision remain on hold?**
@@ -35,7 +37,14 @@ The 2026-10-14 review recorded **51 of 51 Python unittest methods passing**: 11 
 
 A second review of the **fictional document-scope evaluator** found a genuine testable flaw: treating expiration dates as unchecked strings could grant simulated access when dates were malformed, and some invalid values raised exceptions rather than returning DENY. Earlier negative tests also exposed ambiguity from duplicated identity records and malformed approval identifiers.
 
-The toy evaluator now fails closed for invalid or noncanonical calendar dates, duplicated subject records and malformed approval input. The [document-scope test module](test_document_scope.py) passed **31/31 Python unittest methods locally**, using source files verified byte for byte against their committed Git blobs. These are software regression results on fabricated examples, **not evidence of real access-control enforcement**. The 51/51 figure above remains the historical 14 October full-project snapshot; the entire project suite has **not yet been rerun** since these improvements.
+The toy evaluator now fails closed for invalid or noncanonical calendar dates, duplicated subject records and malformed approval input. The [document-scope test module](test_document_scope.py) passed **31/31 Python unittest methods locally**, using source files verified byte for byte against their committed Git blobs. These are software regression results on fabricated examples, **not evidence of real access-control enforcement**. The 51/51 figure above remains a historical snapshot. The entire updated project test suite has since been rerun successfully in GitHub Actions on 3 November 2026 (see below).
+
+
+## Full regression and v1.0 closure — 3 November 2026
+
+[GitHub Actions run 41565390636](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41565390636) completed **SUCCESS** on commit `a99eb36261dea42dcf38251e62f85724a4682608`. The new [automated QA workflow](../../.github/workflows/cyber-risk-iam-case-study-qa.yml) verifies Python syntax, validates the fictional risk register, executes the complete current **58-method unittest suite** (**11 risk/vendor + 16 IAM + 31 document-scope methods**), and separately checks all **24 synthetic IAM scenarios**. These are test method counts and fabricated case fixtures, not numbers of live safeguards verified.
+
+All acceptance criteria for the **defined educational portfolio deliverable** were met, with scope and limitations recorded in the [project closure review](CLOSURE_REVIEW_2026-11-03.md). The final fictional business decision remains **HOLD**. The GitHub Actions workflow will continue checking future source changes; no external audit, real penetration test, implemented IAM system or production security assurance is implied.
 
 ## Decision memorandum
 
