@@ -1,10 +1,10 @@
 # Local SQL validation — DuckDB (optional, no Snowflake account)
 
-**Status: CI-VERIFIED ON SYNTHETIC DATA (2 November 2026).** This is an optional, independent local test harness. It is **not** a Snowflake benchmark, a dbt/Snowflake integration test, or evidence that all 28 models pass on DuckDB.
+**Status: CI-VERIFIED ON SYNTHETIC DATA (2–3 November 2026).** This is an optional, independent local test harness. It is **not** a Snowflake benchmark, a dbt/Snowflake integration test, or evidence that all 28 models pass on DuckDB.
 
 ## Scope
 
-Use a **small synthetic dataset** to test the monthly financial reconciliation logic found in `fct_orders` and `mart_revenue_financial_reconciliation`. The original Snowflake/dbt SQL and its materializations remain unchanged. Never upload local `profiles.yml`, credentials, raw business datasets, query history, or private checkpoints.
+Use **small, deliberately constructed synthetic datasets** to validate individual original SQL models and a connected seven-model financial subset, from typed synthetic staging inputs to `fct_orders` and the monthly reconciliation mart. The original Snowflake/dbt SQL and its materializations remain unchanged. Never upload local `profiles.yml`, credentials, raw business datasets, query history, or private checkpoints.
 
 ## Run locally (PowerShell)
 
@@ -48,7 +48,7 @@ Run from the E-Commerce project directory with DuckDB installed:
 & .\\.venv\\Scripts\\python.exe .\\local_validation\\check_original_intermediate_reconciliation.py
 ```
 
-**Limits:** This is an isolated synthetic, in-memory SQL model check. It is **not** execution of original staging transformations, `int_orders_lifecycle`, `fct_orders`, the review models, the full 28-model dbt DAG, Snowflake workloads, actual raw Olist rows, or Snowflake-vs-DuckDB performance. The original 249/249 dbt result remains a separate historical Snowflake-era result. The expired Snowflake access is not required for this validation.
+**Limits:** This is an isolated synthetic, in-memory SQL model check. It is **not** execution of original staging transformations, `int_orders_lifecycle`, `fct_orders`, the review models, the full 28-model dbt DAG, Snowflake workloads, actual raw Olist rows, or Snowflake-vs-DuckDB performance. The original 249/249 dbt result remains a separate historical Snowflake-era result. No working Snowflake warehouse is required for these tests.
 
 ## Original lifecycle SQL SELECT (CI-verified, 3 November 2026)
 
@@ -64,7 +64,7 @@ To run the lifecycle check locally from this project's directory:
 & .\\.venv\\Scripts\\python.exe .\\local_validation\\check_original_lifecycle.py
 ```
 
-**Not demonstrated:** dbt incremental `MERGE`, watermark/resume behavior, Snowflake SQL execution or warehouse performance, the original staging models, the real Olist dataset, the fact-table join, and a full-project 28-model regression. This harness extends low-cost regression coverage after loss of Snowflake access; it is **not** a complete warehouse migration.
+**Not demonstrated:** dbt incremental `MERGE`, watermark/resume behavior, Snowflake SQL execution or warehouse performance, the original staging models, the real Olist dataset, the fact-table join, and a full-project 28-model regression. This harness extends low-cost regression coverage while Snowflake is unavailable; it is **not** a complete warehouse migration.
 
 ## Original fact and review SQL checks (CI-verified, 3 November 2026)
 
@@ -84,3 +84,29 @@ Run from the E-Commerce project directory with DuckDB installed:
 ```
 
 **Coverage accounting:** These six scripts exercise SQL from **seven original dbt models in isolated synthetic fixtures** (three financial intermediates, order lifecycle, order reviews, `fct_orders`, and the monthly reconciliation mart). They **do not** compile or execute the connected 28-model dbt project, original Snowflake staging models, any real Snowflake dataset, incremental `MERGE`, or a cross-platform performance benchmark. Snowflake-origin historical results are preserved as historical evidence, not presented as current DuckDB measurements.
+
+## Integrated seven-model original-SQL subset (CI-verified, 3 November 2026)
+
+`check_integrated_financial_pipeline.py` now runs a **single connected DuckDB pipeline** using the actual unchanged repository SQL for these seven dbt models:
+
+1. `int_order_items_summary`
+2. `int_order_payments_summary`
+3. `int_order_financial_reconciliation`
+4. `int_order_reviews_summary`
+5. `int_orders_lifecycle`
+6. `fct_orders`
+7. `mart_revenue_financial_reconciliation`
+
+All models read the **same four typed, deliberately synthetic staging tables** (`stg_orders`, `stg_order_items`, `stg_order_payments`, `stg_order_reviews`). The script creates the seven views in dependency order, validates the grain at intermediate, fact and monthly levels, and checks independently specified monthly financial figures.
+
+Eight fabricated orders across January–February exercise two-item/two-payment JOIN multiplication, source orphans, missing both finance summaries, missing reviews, score aggregation, event-order anomaly, exact 0.01 vs 0.02 mismatch tolerance, and month-level totals. Verified expected monthly results: January **4 orders, 2 comparable, 1 mismatching, 50% mismatch rate, 195.00 item+freight, 220.00 payments, 5.00 absolute mismatch**; February **4 orders, 3 comparable, 1 mismatching, approximately 33.33% mismatch rate, 105.00 item+freight, 50.03 payments, 0.02 absolute mismatch**. Currency units are not implied by the synthetic amounts.
+
+**Verified CI:** [GitHub Actions run 41560038307](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41560038307) on source commit `5afcb397673012fb848f64e5bfe51026b977dba4`, **COMPLETED / SUCCESS**: seven validation scripts PASS, including the new integrated chain. The previous six isolated tests remain in the workflow.
+
+Run locally from the E-Commerce project directory with DuckDB installed:
+
+```powershell
+& .\\.venv\\Scripts\\python.exe .\\local_validation\\check_integrated_financial_pipeline.py
+```
+
+**Exact limits:** This is a connected **seven-model SQL subset**, not the full 28-model dbt project. Its four input tables are **typed synthetic staging fixtures** rather than original staging-model SQL or actual Olist/Snowflake data. The `int_orders_lifecycle` SELECT is executed in **full-refresh style**, with an explicitly guarded removal of its dbt `config()` and `is_incremental()` Jinja block. The original monthly mart requires **one explicit `TO_CHAR` → `STRFTIME` substitution** for DuckDB. Other SQL is reused with strictly verified `ref()` substitutions. No incremental `MERGE` / watermark state, dbt compilation, historical 249-check rerun, production deployment, or Snowflake-vs-DuckDB performance comparison is demonstrated. No Snowflake credentials or stored Snowflake data are read.
