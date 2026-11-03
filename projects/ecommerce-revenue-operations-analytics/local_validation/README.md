@@ -181,3 +181,15 @@ An additional **post-MERGE fault-injection test** deliberately raises an excepti
 ```
 
 **Scope and remaining risks:** The rollback is verified on one local DuckDB connection with injected errors. **Multi-connection concurrency, transactional snapshot consistency under parallel writers, source-system freshness, production restore/rollback, large data volumes, privacy constraints and deletion policy are not validated.** This change does not modify the original dbt/Snowflake project or apply any repair to retained real source data.
+
+## Two-connection snapshot and write-conflict experiment (CI-verified, 3 November 2026)
+
+`check_local_concurrent_transactions.py` runs against a **temporary synthetic DuckDB database file** using two independent connections within the same Python process. It checks that a previously started read transaction observes a stable snapshot after another connection commits a change; that an update based on a stale snapshot **conflicts rather than silently overwriting the newer committed row**; that a fresh transaction can retry; and that two simultaneous updates to **different order keys** can both commit without corrupting those rows.
+
+**Verified CI:** [E-Commerce synthetic SQL validation run 41565773421](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41565773421), source commit `8c6d30fcda6b7de913a87c036017e45a1555602f`, **COMPLETED / SUCCESS**, all **11/11 test scripts passing**. The existing 11-original-model RAW-to-mart test and the local reconciliation/rollback tests also passed in this run.
+
+```powershell
+& .\\.venv\\Scripts\\python.exe .\\local_validation\\check_local_concurrent_transactions.py
+```
+
+**Important limitation:** This demonstrates **specific DuckDB transactional behavior** in a controlled, two-connection, single-process fixture. It does **not** establish a concurrency protocol for the original dbt/Snowflake model, a safe production reconciliation scheduler, handling of multiple writers during a full-source comparison, multi-process behavior, distributed database isolation, or recovery from operating-system failures. For real operations, writer serialization/coordination, snapshot policy, source change capture, retry budgets and deletion decisions remain separate design requirements. No preserved Snowflake data or credentials were accessed.
