@@ -51,3 +51,5 @@ jobs:
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_original_fact_orders.py
       - name: Test original review summary aggregates on synthetic DuckDB
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_original_reviews_summary.py
+      - name: Test integrated 7-model synthetic DuckDB pipeline
+        run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_integrated_financial_pipeline.py
