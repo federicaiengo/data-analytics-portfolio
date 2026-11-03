@@ -29,7 +29,7 @@ Highlights:
 - Financial reconciliation across **98,665 comparable orders**, with **303 mismatches (~0.3071%)**
 - **1,382 temporal-sequence anomalies** identified and preserved for investigation
 - Four-page Power BI report covering executive KPIs, reconciliation, operations and customer experience
-- [DuckDB GitHub Actions validation](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41564130138): **10 synthetic-only CI scripts PASS**, including a connected 11-original-SQL-model RAW-to-mart subset, local incremental/late-correction recovery, and adversarial checks for duplicate/NULL keys, schema drift, and transactional rollback after an injected post-MERGE error. These do **not** establish a full dbt migration, multi-writer production safety, a Snowflake run, or a speed benchmark.
+- [DuckDB GitHub Actions validation](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41565773421): **11 synthetic-only CI scripts PASS**, including the connected 11-original-SQL-model RAW-to-mart subset, local incremental and backdated-correction recovery, fail-closed/rollback tests, and a scoped two-connection DuckDB snapshot/write-conflict check. These are not real Snowflake operations, full dbt migration, production concurrency certification, or a benchmark.
 
 [Open the E-Commerce project](projects/ecommerce-revenue-operations-analytics/)
 
