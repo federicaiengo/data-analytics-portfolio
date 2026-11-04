@@ -29,7 +29,7 @@ Highlights:
 - Financial reconciliation across **98,665 comparable orders**, with **303 mismatches (~0.3071%)**
 - **1,382 temporal-sequence anomalies** identified and preserved for investigation
 - Four-page Power BI report covering executive KPIs, reconciliation, operations and customer experience
-- [DuckDB GitHub Actions validation](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41599836721): **11 Python CI scripts PASS**, including a connected **14-original-SQL-model** subset from fabricated RAW inputs through staging, two fact grains (`fct_orders`, `fct_order_items`) and three monthly marts. The synthetic delivery analysis contrasts original February punctuality of 2/3 with 1/2 when an anomalous order is excluded. This alternative is an illustration, not a changed business rule or live Snowflake/dbt validation.
+- [DuckDB GitHub Actions validation](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41926351713): **11 Python CI scripts PASS**, including a connected **15-original-SQL-model** subset from fabricated RAW inputs through staging, two fact grains (`fct_orders`, `fct_order_items`), the calendar dimension `dim_date`, and three monthly marts. The synthetic delivery analysis contrasts original February punctuality of 2/3 with 1/2 when an anomalous order is excluded. This alternative is an illustration, not a changed business rule or live Snowflake/dbt validation.
 
 [Open the E-Commerce project](projects/ecommerce-revenue-operations-analytics/)
 
