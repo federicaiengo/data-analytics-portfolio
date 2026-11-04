@@ -4,7 +4,7 @@
 
 ## Scope
 
-Use fabricated data to check a connected **14-model original-SQL subset**: four staging views and ten downstream views, including two fact tables at different grains and three monthly marts (financial, reviews and delivery). The original Snowflake/dbt SQL and its materializations remain unchanged. Never upload local `profiles.yml`, credentials, raw business datasets, query history, or private checkpoints.
+Use fabricated data to check a connected **15-model original-SQL subset**: four staging views and eleven downstream views, including two fact tables at different grains, one calendar dimension and three monthly marts (financial, reviews and delivery). The original Snowflake/dbt SQL and its materializations remain unchanged. Never upload local `profiles.yml`, credentials, raw business datasets, query history, or private checkpoints.
 
 ## Run locally (PowerShell)
 
@@ -225,3 +225,14 @@ A separate comparison illustrates how policy changes a delivery KPI without edit
 The [GitHub Actions test run 41599836721](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41599836721) completed SUCCESS with **11/11 Python scripts**, including the connected 14-model graph. The workflow monitors the original item-fact SQL file.
 
 This is synthetic SQL validation with explicit dialect adaptations, not a complete 28-model dbt run, a rerun of historical warehouse tests or a real operational KPI.
+
+
+## Connected calendar dimension: original dim_date (4 November 2026)
+
+The integrated synthetic test now executes the **unchanged original `marts/core/dim_date.sql` as model 15**, drawing dates from **both** the connected order-grain `fct_orders` and item-grain `fct_order_items` views. A narrow, assertion-counted Snowflake-to-DuckDB adapter converts date formatting, `LAST_DAY`, `DATEADD`, ISO week/year/weekday, and ordinal date functions without rewriting the source dbt model.
+
+A controlled January–March 2026 fixture checks the **90 consecutive calendar days** from 1 January through 31 March, unique `date_day` and `date_key`, ISO week/year numbering and the correct Monday week-start boundary, weekday/weekend flags, and month/quarter starts. The presence of an anomalous delivery date is preserved, not silently fixed. The same **11 Python scripts** remain in CI; the integrated script covers **15 original SQL models** in one connected, synthetic graph, not 15 scripts or an actual warehouse run.
+
+**Verified:** [GitHub Actions run 41926351713](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41926351713), **COMPLETED SUCCESS**, all **11/11 test steps passed** on 4 November 2026. Earlier attempt 41926181885 failed because an adapter regex matched both `weekiso` and `dayofweekiso`; source commit `a1720d49bcd940a8c561763a783eae1b5e4da9dd` corrected this exact issue. CI also watches the original `dim_date.sql` on push and pull request.
+
+**Not established:** migration of the full 28-model dbt DAG, Snowflake compatibility of the adapted DuckDB SQL, original production data, full datetime boundary coverage, actual customer outcomes, warehouse performance, or a rerun of the historical 249 dbt regression checks.
