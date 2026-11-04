@@ -9,6 +9,7 @@ on:
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/marts/business/mart_delivery_operations.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/marts/core/fct_orders.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/marts/core/fct_order_items.sql'
+      - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/marts/core/dim_date.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_items_summary.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_payments_summary.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_financial_reconciliation.sql'
@@ -27,6 +28,7 @@ on:
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/marts/business/mart_delivery_operations.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/marts/core/fct_orders.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/marts/core/fct_order_items.sql'
+      - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/marts/core/dim_date.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_items_summary.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_payments_summary.sql'
       - 'projects/ecommerce-revenue-operations-analytics/dbt/ecommerce_revenue_operations/models/intermediate/int_order_financial_reconciliation.sql'
@@ -65,7 +67,7 @@ jobs:
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_original_fact_orders.py
       - name: Test original review summary aggregates on synthetic DuckDB
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_original_reviews_summary.py
-      - name: Test integrated 14-model synthetic RAW-to-three-marts DuckDB pipeline
+      - name: Test integrated 15-model synthetic RAW-to-marts-and-calendar DuckDB pipeline
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_integrated_financial_pipeline.py
       - name: Test local incremental watermark and MERGE idempotency semantics
         run: python projects/ecommerce-revenue-operations-analytics/local_validation/check_local_incremental_semantics.py
