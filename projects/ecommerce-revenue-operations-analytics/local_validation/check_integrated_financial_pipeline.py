@@ -1,10 +1,10 @@
-"""Integrated synthetic DuckDB subset of 14 original E-Commerce dbt SQL models.
+"""Integrated synthetic DuckDB subset of 15 original E-Commerce dbt SQL models.
 
 Four original staging SQL models are dialect-adapted (strict source() and
-TRY_TO_* -> TRY_CAST guards) and run on RAW synthetic text fixtures. Ten
+TRY_TO_* -> TRY_CAST guards) and run on RAW synthetic text fixtures. Eleven
 further original SQL models are chained: item/payment/review aggregations,
 financial reconciliation, lifecycle full-refresh SELECT, fct_orders,
-fct_order_items, and three monthly marts (finance, reviews, deliveries).
+fct_order_items, calendar dim_date, and three monthly marts (finance, reviews, deliveries).
 
 No Snowflake connection or source-data copy, no dbt compilation, MERGE,
 watermarking, production performance measurement, or 28-model DAG execution.
@@ -28,6 +28,7 @@ FACT_ITEMS = MODELS / "marts/core/fct_order_items.sql"
 MART = MODELS / "marts/business/mart_revenue_financial_reconciliation.sql"
 REVIEW_MART = MODELS / "marts/business/mart_customer_experience_reviews.sql"
 DELIVERY_MART = MODELS / "marts/business/mart_delivery_operations.sql"
+DIM_DATE = MODELS / "marts/core/dim_date.sql"
 
 
 def render_exact_refs(path, refs):
@@ -73,6 +74,39 @@ def render_delivery_mart():
         sql, flags=re.IGNORECASE,
     )
     assert count == 1, "Delivery mart date-format conversion changed"
+    return sql
+
+
+
+def render_dim_date():
+    """Execute the original calendar SQL with explicit Snowflake -> DuckDB adaptations."""
+    sql = DIM_DATE.read_text(encoding="utf-8")
+    for name, relation, expected in (
+        ("fct_orders", "integrated_fct_orders", 9),
+        ("fct_order_items", "integrated_fct_order_items", 1),
+    ):
+        marker = "{{ ref('" + name + "') }}"
+        assert sql.count(marker) == expected, (
+            f"dim_date: expected {expected} references to {name}"
+        )
+        sql = sql.replace(marker, relation)
+    # Intentionally narrow substitutions, each verified against original SQL.
+    # The Snowflake/dbt model is never edited by this test harness.
+    rewrites = (
+        (r"last_day\(max\(date_value\),\s*'month'\)", "last_day(max(date_value))", 1),
+        (r"dateadd\(day,\s*1,\s*date_day\)", "(date_day + INTERVAL 1 DAY)::date", 1),
+        (r"to_number\(to_char\(date_day,\s*'YYYYMMDD'\)\)",
+         "CAST(strftime(date_day, '%Y%m%d') AS INTEGER)", 1),
+        (r"to_char\(date_day,\s*'YYYY-MM'\)", "strftime(date_day, '%Y-%m')", 1),
+        (r"yearofweekiso\(date_day\)", "date_part('isoyear', date_day)", 1),
+        (r"weekiso\(date_day\)", "date_part('week', date_day)", 1),
+        (r"dayofweekiso\(date_day\)", "date_part('isodow', date_day)", 2),
+        (r"dayofyear\(date_day\)", "date_part('doy', date_day)", 1),
+    )
+    for pattern, replacement, expected in rewrites:
+        sql, count = re.subn(pattern, replacement, sql, flags=re.IGNORECASE)
+        assert count == expected, f"dim_date dialect adaptation drift: {pattern}"
+    assert not any(token in sql for token in ("{{", "}}", "{%", "%}"))
     return sql
 
 
@@ -285,6 +319,7 @@ def main():
                     }))
         create_view(con, "integrated_fct_order_items",
                     render_exact_refs(FACT_ITEMS, {"stg_order_items": "stg_order_items"}))
+        create_view(con, "integrated_dim_date", render_dim_date())
         create_view(con, "integrated_monthly_mart", render_mart())
         create_view(con, "integrated_customer_reviews_mart", render_customer_reviews_mart())
         create_view(con, "integrated_delivery_operations_mart", render_delivery_mart())
@@ -304,6 +339,43 @@ def main():
         mart = records(con, "integrated_monthly_mart", "year_month")
         review_mart = records(con, "integrated_customer_reviews_mart", "year_month")
         delivery_mart = records(con, "integrated_delivery_operations_mart", "year_month")
+
+        # Calendar dimension: original dim_date SQL, connected to both facts.
+        # Expected full daily spine covers Jan 1 through Mar 31, 2026:
+        # the synthetic order timestamps begin in January and estimated
+        # delivery / shipping-limit dates extend to March.
+        date_cursor = con.execute(
+            "SELECT * FROM integrated_dim_date ORDER BY date_day"
+        )
+        date_cols = [column[0] for column in date_cursor.description]
+        date_rows = [dict(zip(date_cols, row)) for row in date_cursor.fetchall()]
+        assert len(date_rows) == 90, "Calendar spine must include all 90 days"
+        assert len({row["date_day"] for row in date_rows}) == 90
+        assert len({row["date_key"] for row in date_rows}) == 90
+        assert str(date_rows[0]["date_day"]) == "2026-01-01"
+        assert str(date_rows[-1]["date_day"]) == "2026-03-31"
+        assert all(row["date_day"] is not None for row in date_rows)
+        assert all(row["date_key"] is not None for row in date_rows)
+        assert date_rows[0]["date_key"] == 20260101
+        assert date_rows[-1]["date_key"] == 20260331
+        jan_four = next(row for row in date_rows if str(row["date_day"]) == "2026-01-04")
+        assert jan_four["iso_week_number"] == 1
+        assert jan_four["iso_week_year"] == 2026
+        assert jan_four["iso_day_of_week"] == 7
+        assert str(jan_four["week_start_date"]) == "2025-12-29"
+        assert jan_four["is_weekend"] is True
+        feb_one = next(row for row in date_rows if str(row["date_day"]) == "2026-02-01")
+        assert feb_one["date_key"] == 20260201
+        assert feb_one["year_month"] == "2026-02"
+        assert feb_one["iso_day_of_week"] == 7
+        assert feb_one["is_weekend"] is True
+        assert str(feb_one["month_start_date"]) == "2026-02-01"
+        assert str(feb_one["quarter_start_date"]) == "2026-01-01"
+        feb_two = next(row for row in date_rows if str(row["date_day"]) == "2026-02-02")
+        assert feb_two["iso_day_of_week"] == 1
+        assert feb_two["is_weekend"] is False
+        assert len(date_cols) == len(set(date_cols))
+
         expected_orders = {f"SYN-{n:03d}" for n in range(1, 9)}
         assert set(financial) == set(lifecycle) == set(fact) == expected_orders
         assert "SYN-998" in payments and "SYN-999" in item
