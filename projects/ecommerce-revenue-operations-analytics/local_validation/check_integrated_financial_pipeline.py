@@ -99,7 +99,7 @@ def render_dim_date():
          "CAST(strftime(date_day, '%Y%m%d') AS INTEGER)", 1),
         (r"to_char\(date_day,\s*'YYYY-MM'\)", "strftime(date_day, '%Y-%m')", 1),
         (r"yearofweekiso\(date_day\)", "date_part('isoyear', date_day)", 1),
-        (r"weekiso\(date_day\)", "date_part('week', date_day)", 1),
+        (r"\bweekiso\(date_day\)", "date_part('week', date_day)", 1),
         (r"dayofweekiso\(date_day\)", "date_part('isodow', date_day)", 2),
         (r"dayofyear\(date_day\)", "date_part('doy', date_day)", 1),
     )
