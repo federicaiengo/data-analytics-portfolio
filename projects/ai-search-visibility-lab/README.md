@@ -47,12 +47,16 @@ ai-search-visibility-lab/
 ├── data/
 │   └── sample_observations.csv
 ├── src/
-│   └── analyze_visibility.py
+│   ├── analyze_visibility.py
+│   ├── generate_report.py
+│   └── validate_observation_evidence.py
 ├── methodology/
 │   ├── measurement_protocol.md
 │   └── query_set.csv
 ├── tests/
-│   └── test_metrics.py
+│   ├── test_metrics.py
+│   ├── test_observation_evidence.py
+│   └── test_report_provenance.py
 ├── case_studies/
 │   └── scientific_healthtech.md
 ├── results/
