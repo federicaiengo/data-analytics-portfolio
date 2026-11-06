@@ -29,6 +29,7 @@ permissions:
 
 jobs:
   synthetic-duckdb:
+    if: github.ref == 'refs/heads/main'
     runs-on: [self-hosted, Windows, X64, federica-home]
     timeout-minutes: 10
     steps:
