@@ -2,6 +2,7 @@ name: AI Search Visibility Lab — v1 synthetic regression
 
 on:
   push:
+    branches: [main]
     paths:
       - '.github/workflows/ai-search-visibility-lab.yml'
       - 'projects/ai-search-visibility-lab/src/**'
@@ -19,10 +20,11 @@ concurrency:
 
 jobs:
   synthetic-regression:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Windows, X64, federica-home]
     timeout-minutes: 6
     defaults:
       run:
+        shell: bash
         working-directory: projects/ai-search-visibility-lab
     steps:
       - uses: actions/checkout@v4
