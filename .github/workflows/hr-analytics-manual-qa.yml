@@ -9,9 +9,10 @@ permissions:
 
 jobs:
   verify-full-source:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Windows, X64, federica-home]
     defaults:
       run:
+        shell: bash
         working-directory: projects/hr-analytics-employee-attrition
     steps:
       - uses: actions/checkout@v4
