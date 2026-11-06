@@ -2,13 +2,11 @@ name: Cyber Risk & IAM synthetic case-study QA
 
 on:
   push:
+    branches: [main]
     paths:
       - 'projects/cyber-risk-iam-decision-study/**'
       - '.github/workflows/cyber-risk-iam-case-study-qa.yml'
-  pull_request:
-    paths:
-      - 'projects/cyber-risk-iam-decision-study/**'
-      - '.github/workflows/cyber-risk-iam-case-study-qa.yml'
+  # Never run untrusted pull requests on a self-hosted runner.
   workflow_dispatch:
 
 permissions:
@@ -16,7 +14,7 @@ permissions:
 
 jobs:
   synthetic-case-study-qa:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Windows, X64, federica-home]
     timeout-minutes: 10
     defaults:
       run:
