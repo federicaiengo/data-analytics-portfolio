@@ -27,12 +27,12 @@ jobs:
           python python/clean_employee_attrition.py \
             --output "$RUNNER_TEMP/employee_attrition_clean.csv" \
             --report "$RUNNER_TEMP/source_quality_report.json"
-          cmp "$RUNNER_TEMP/employee_attrition_clean.csv" data/clean/employee_attrition_clean.csv
+          python -c "import os; from pathlib import Path; a=Path(os.environ['RUNNER_TEMP'])/'employee_attrition_clean.csv'; b=Path('data/clean/employee_attrition_clean.csv'); assert a.read_bytes()==b.read_bytes(), 'Clean HR CSV mismatch'"
       - name: Regenerate grouped HR source outside the repository
         run: |
           python python/build_dashboard_source.py \
             --output "$RUNNER_TEMP/hr_dashboard_group_metrics.csv"
-          cmp "$RUNNER_TEMP/hr_dashboard_group_metrics.csv" excel/hr_dashboard_group_metrics.csv
+          python -c "import os; from pathlib import Path; a=Path(os.environ['RUNNER_TEMP'])/'hr_dashboard_group_metrics.csv'; b=Path('excel/hr_dashboard_group_metrics.csv'); assert a.read_bytes()==b.read_bytes(), 'HR dashboard CSV mismatch'"
       - name: Read-only XLSX package and worksheet integrity QA
         run: python python/verify_workbook_structure.py
       - name: Reconcile all static XLSX figures with CSV and raw provenance
