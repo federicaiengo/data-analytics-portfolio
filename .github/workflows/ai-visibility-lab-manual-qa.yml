@@ -11,9 +11,10 @@ permissions:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Windows, X64, federica-home]
     defaults:
       run:
+        shell: bash
         working-directory: projects/ai-search-visibility-lab
     steps:
       - uses: actions/checkout@v4
@@ -26,5 +27,4 @@ jobs:
         run: python src/analyze_visibility.py data/sample_observations.csv
       - name: Verify checked-in synthetic result remains reproducible
         run: |
-          python src/generate_report.py data/sample_observations.csv /tmp/ai_visibility_demo.json
-          python -c "import json; from pathlib import Path; assert json.loads(Path('/tmp/ai_visibility_demo.json').read_text()) == json.loads(Path('results/demo_metrics.json').read_text()), 'Demo metrics changed'"
+          python -c "import json, tempfile; from pathlib import Path; from src.generate_report import build_report; baseline=json.loads(Path('results/demo_metrics.json').read_text()); output=Path(tempfile.gettempdir()) / 'fi_ai_visibility_demo.json'; build_report('data/sample_observations.csv', str(output)); assert json.loads(output.read_text()) == baseline, 'Demo metrics changed'"
