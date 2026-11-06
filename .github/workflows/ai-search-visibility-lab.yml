@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   synthetic-regression:
+    if: github.ref == 'refs/heads/main'
     runs-on: [self-hosted, Windows, X64, federica-home]
     timeout-minutes: 6
     defaults:
