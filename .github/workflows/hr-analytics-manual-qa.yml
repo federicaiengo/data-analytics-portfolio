@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   verify-full-source:
+    if: github.ref == 'refs/heads/main'
     runs-on: [self-hosted, Windows, X64, federica-home]
     defaults:
       run:
