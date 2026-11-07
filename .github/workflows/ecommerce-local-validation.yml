@@ -32,6 +32,9 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: [self-hosted, Windows, X64, federica-home]
     timeout-minutes: 10
+    # Process-scoped policy inherited by setup-python's child PowerShell; no machine change.
+    env:
+      PSExecutionPolicyPreference: Bypass
     defaults:
       run:
         shell: powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
