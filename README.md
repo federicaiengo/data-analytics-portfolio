@@ -1,6 +1,6 @@
-# Federica Iengo — Data Analytics Portfolio
+# Federica Iengo — Data Engineering & Analytics Portfolio
 
-Data Analyst focused on **SQL, Snowflake, dbt, Power BI, analytics engineering, data quality and business intelligence**.
+Data Engineer focused on **SQL, Python, PostgreSQL, Snowflake, dbt, data quality, ELT and reliable analytics pipelines**.
 
 This portfolio contains practical end-to-end projects covering source-data validation, warehouse loading, dimensional modeling, incremental ELT workflows, automated testing, reconciliation, KPI analysis and stakeholder-oriented reporting.
 
@@ -99,7 +99,7 @@ A fictional supplier-access scenario connects 12 hypothetical risks, 12 due-dili
 
 ## Focus Areas
 
-Data Analytics · Analytics Engineering · Business Intelligence · Data Quality · GEO / AEO · AI Search Visibility · Reconciliation · Data Platform / Operations
+Data Engineering · Analytics Engineering · Data Quality · ELT · SQL & Python · Reconciliation · Business Intelligence · GEO / AEO · AI Search Visibility
 
 ---
 
