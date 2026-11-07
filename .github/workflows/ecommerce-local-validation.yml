@@ -47,9 +47,35 @@ jobs:
           }
           Write-Host 'PASS: verified Federica portfolio home Windows runner'
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
+      - name: Prepare isolated Python environment from an existing local installation
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $venv = Join-Path $env:RUNNER_TEMP 'federica-portfolio-venv'
+          $candidates = @(
+            @{ Executable = 'python'; Prefix = @() },
+            @{ Executable = 'py'; Prefix = @('-3.13') },
+            @{ Executable = 'py'; Prefix = @('-3.12') },
+            @{ Executable = 'py'; Prefix = @('-3.11') }
+          )
+          $ready = $false
+          foreach ($candidate in $candidates) {
+            if (-not (Get-Command $candidate.Executable -ErrorAction SilentlyContinue)) { continue }
+            $probe = @($candidate.Prefix) + @('-c', 'import sys; assert (3, 11) <= sys.version_info[:2] < (3, 14)')
+            & ($candidate.Executable) @probe 2>$null
+            if ($LASTEXITCODE -ne 0) { continue }
+            $create = @($candidate.Prefix) + @('-m', 'venv', $venv)
+            & ($candidate.Executable) @create
+            if ($LASTEXITCODE -eq 0) { $ready = $true; break }
+          }
+          if (-not $ready) {
+            throw 'No working Python 3.11-3.13 is visible to the Federica runner service. Set up a dedicated local Python installation; do not elevate this service or reuse another project runtime.'
+          }
+          $python = Join-Path $venv 'Scripts\python.exe'
+          if (-not (Test-Path -LiteralPath $python)) { throw 'Isolated venv python.exe missing' }
+          & $python -m pip --version
+          if ($LASTEXITCODE -ne 0) { throw 'Isolated pip unavailable' }
+          (Join-Path $venv 'Scripts') | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          Write-Host 'PASS: isolated Federica portfolio Python environment is ready'
       - name: Install local test dependency
         run: python -m pip install 'duckdb==1.4.1'
       - name: Test synthetic monthly counts
