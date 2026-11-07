@@ -32,9 +32,11 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: [self-hosted, Windows, X64, federica-home]
     timeout-minutes: 10
+    defaults:
+      run:
+        shell: powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
     steps:
       - name: Verify dedicated Federica home runner identity
-        shell: powershell
         run: |
           if ($env:RUNNER_OS -ne 'Windows') { throw 'Windows home runner required' }
           if ($env:RUNNER_NAME -ne 'federica-portfolio-pc') {
