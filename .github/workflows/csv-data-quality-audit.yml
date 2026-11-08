@@ -1,0 +1,44 @@
+name: CSV Data Quality Audit — synthetic regression
+
+# Trusted main branch only: never run public PR code on a home PC.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'projects/csv-data-quality-audit/**'
+      - '.github/workflows/csv-data-quality-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  csv-audit:
+    if: github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, Windows, X64, federica-home]
+    timeout-minutes: 8
+    defaults:
+      run:
+        shell: powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ". '{0}'"
+    steps:
+      - name: Verify exact dedicated home runner identity
+        run: |
+          if ($env:RUNNER_OS -ne 'Windows' -or $env:RUNNER_NAME -ne 'federica-portfolio-pc') {
+            throw 'CSV audit must run on the dedicated Federica portfolio Windows runner'
+          }
+          Write-Host 'PASS: dedicated local Federica portfolio runner'
+      - uses: actions/checkout@v4
+      - name: Verify local Python and run regression tests
+        run: |
+          python -c "import sys; assert (3, 11) <= sys.version_info[:2] < (3, 14)"
+          if ($LASTEXITCODE -ne 0) { throw 'Python 3.11–3.13 not available to dedicated runner' }
+          python -m unittest discover -s projects/csv-data-quality-audit/tests -v
+          if ($LASTEXITCODE -ne 0) { throw 'CSV audit unittest regression failed' }
+      - name: Check deterministic aggregate-only synthetic CLI report
+        run: |
+          $out = Join-Path $env:RUNNER_TEMP 'federica-csv-quality-synthetic.json'
+          python projects/csv-data-quality-audit/src/audit_csv.py --input projects/csv-data-quality-audit/demo/synthetic_customers.csv --report $out --key customer_id --required customer_id,email,signup_date --email-column email --date-column signup_date
+          if ($LASTEXITCODE -ne 0) { throw 'CSV audit CLI failed on fictional sample' }
+          python -c "import json,sys; d=json.load(open(sys.argv[1], encoding='utf-8')); s=d['statistics']; assert s['rows_read']==6 and s['rows_analyzed']==5 and s['issue_observations']==8; assert d['source_modified'] is False; assert 'alex@example.test' not in json.dumps(d)" $out
+          if ($LASTEXITCODE -ne 0) { throw 'Synthetic report does not match expected privacy-minimal counts' }
+          Write-Host 'PASS: fictional CSV report checked; no production/customer data accessed'
