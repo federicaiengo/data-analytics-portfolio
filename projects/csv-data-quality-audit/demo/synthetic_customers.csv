@@ -1,0 +1,7 @@
+customer_id,email,signup_date,country
+C-001,alex@example.test,2026-11-01,IT
+ c-001 ,alex@example.test,2026-11-01,IT
+C-002,,2026-02-30,FR
+,invalid@@example.test,2026-10-03,DE
+C-004,marie@example.test,2026-10-04,IT
+C-005,extra@example.test,2026-10-05,IT,extra
