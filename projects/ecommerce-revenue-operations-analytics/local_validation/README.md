@@ -236,3 +236,9 @@ A controlled January–March 2026 fixture checks the **90 consecutive calendar d
 **Verified:** [GitHub Actions run 41926351713](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41926351713), **COMPLETED SUCCESS**, all **11/11 test steps passed** on 4 November 2026. Earlier attempt 41926181885 failed because an adapter regex matched both `weekiso` and `dayofweekiso`; source commit `a1720d49bcd940a8c561763a783eae1b5e4da9dd` corrected this exact issue. CI also watches the original `dim_date.sql` on push and pull request.
 
 **Not established:** migration of the full 28-model dbt DAG, Snowflake compatibility of the adapted DuckDB SQL, original production data, full datetime boundary coverage, actual customer outcomes, warehouse performance, or a rerun of the historical 249 dbt regression checks.
+
+## Home Windows runner verification (7 November 2026)
+
+**Latest independently checked local-runner regression (7 November 2026):** [GitHub Actions run 42410298875](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/42410298875) completed **SUCCESS** on the dedicated Windows self-hosted runner `federica-portfolio-pc`. All **11 Python/DuckDB validation scripts** completed successfully after source checkout and isolated Python environment setup. The workflow uses the machine at home rather than GitHub-hosted compute. This provides refreshed reproducibility evidence for the **synthetic subset**, not a Snowflake/dbt rerun or an independently audited production outcome.
+
+Current CI dispatch is restricted to the trusted `main` branch and the dedicated `federica-portfolio-pc` Windows runner. The workflow refuses execution on a different runner and prepares its own Python virtual environment without requiring administrator access or modifying the Mail Bridge setup. No external Snowflake account or real customer data were used.

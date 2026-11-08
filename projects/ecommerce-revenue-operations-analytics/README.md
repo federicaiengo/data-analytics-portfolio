@@ -206,6 +206,8 @@ Validation includes:
 
 **Extended connected DuckDB validation (4 November 2026):** the integrated script now also executes the original **`dim_date.sql`**, joining the two existing fact grains as a calendar source. This brings the connected synthetic test to **15 of the original 28 dbt SQL models**, still using **11 Python CI scripts**. The new checks verify a 90-day January–March date spine, one row and unique key per day, ISO week/year/day boundaries, and weekday/month/quarter flags. [GitHub Actions run 41926351713](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/41926351713) completed **SUCCESS (11/11 steps)**. The adapter changes only tested dialect expressions in memory; original Snowflake/dbt SQL is preserved. This does not prove full-project execution, real-data results, historical warehouse tests or commercial performance.
 
+**Latest independently checked local-runner regression (7 November 2026):** [GitHub Actions run 42410298875](https://github.com/federicaiengo/data-analytics-portfolio/actions/runs/42410298875) completed **SUCCESS** on the dedicated Windows self-hosted runner `federica-portfolio-pc`. All **11 Python/DuckDB validation scripts** completed successfully after source checkout and isolated Python environment setup. The workflow uses the machine at home rather than GitHub-hosted compute. This provides refreshed reproducibility evidence for the **synthetic subset**, not a Snowflake/dbt rerun or an independently audited production outcome.
+
 Benchmark plan (not executed): [Snowflake performance protocol](reports/SNOWFLAKE_PERFORMANCE_BENCHMARK_PROTOCOL.md). No timing or speedup claims are available yet.
 
 ## Technology Stack
@@ -268,4 +270,4 @@ The repository also contains the dbt transformation project, automated tests, SQ
 ---
 
 **Federica Iengo**  
-Data Analytics · Analytics Engineering · Business Intelligence · Data Quality
+Data Engineering · Analytics Engineering · Data Quality · Business Intelligence
