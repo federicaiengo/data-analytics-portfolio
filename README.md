@@ -6,6 +6,15 @@ This portfolio contains practical end-to-end projects covering source-data valid
 
 ## Featured Projects
 
+### CSV Data Quality Audit — Python mini-project
+**Python standard library · CSV validation · Data Quality · Automated QA · Privacy-minimal reporting**
+
+A small, read-only checker for spreadsheet/CSV exports. The CLI identifies duplicate keys, missing required fields, malformed rows, basic email-format problems, invalid dates and extra whitespace. It produces deterministic **aggregate-only JSON evidence** without changing or exposing input records.
+
+The packaged CSV is **explicitly fictional**, with known defects; regression tests cover failure cases, source immutability and safe output. This is a practical portfolio demonstration, **not work for a paying client**.
+
+[Inspect the CSV audit, invented example and tests](projects/csv-data-quality-audit/)
+
 ### AI Search Visibility Lab
 **Python · GEO/AEO · AI Search Measurement · Citation Analysis · Evidence Provenance**
 
