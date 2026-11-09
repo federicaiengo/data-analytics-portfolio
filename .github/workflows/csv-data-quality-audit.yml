@@ -28,10 +28,33 @@ jobs:
           }
           Write-Host 'PASS: dedicated local Federica portfolio runner'
       - uses: actions/checkout@v4
-      - name: Verify local Python and run regression tests
+      - name: Prepare isolated Python without global changes
         run: |
-          python -c "import sys; assert (3, 11) <= sys.version_info[:2] < (3, 14)"
-          if ($LASTEXITCODE -ne 0) { throw 'Python 3.11–3.13 not available to dedicated runner' }
+          $ErrorActionPreference = 'Stop'
+          $venv = Join-Path $env:RUNNER_TEMP 'federica-csv-audit-venv'
+          $candidates = @(
+            @{ Executable = 'python'; Prefix = @() },
+            @{ Executable = 'py'; Prefix = @('-3.13') },
+            @{ Executable = 'py'; Prefix = @('-3.12') },
+            @{ Executable = 'py'; Prefix = @('-3.11') }
+          )
+          $ready = $false
+          foreach ($candidate in $candidates) {
+            if (-not (Get-Command $candidate.Executable -ErrorAction SilentlyContinue)) { continue }
+            $probe = @($candidate.Prefix) + @('-c', 'import sys; assert (3, 11) <= sys.version_info[:2] < (3, 14)')
+            & ($candidate.Executable) @probe 2>$null
+            if ($LASTEXITCODE -ne 0) { continue }
+            $create = @($candidate.Prefix) + @('-m', 'venv', $venv)
+            & ($candidate.Executable) @create
+            if ($LASTEXITCODE -eq 0) { $ready = $true; break }
+          }
+          if (-not $ready) { throw 'Python 3.11–3.13 unavailable to this runner; no global installation attempted' }
+          $python = Join-Path $venv 'Scripts\\python.exe'
+          if (-not (Test-Path -LiteralPath $python)) { throw 'Python venv executable missing' }
+          (Join-Path $venv 'Scripts') | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          Write-Host 'PASS: isolated Python environment ready'
+      - name: Run regression tests
+        run: |
           python -m unittest discover -s projects/csv-data-quality-audit/tests -v
           if ($LASTEXITCODE -ne 0) { throw 'CSV audit unittest regression failed' }
       - name: Check deterministic aggregate-only synthetic CLI report
