@@ -23,6 +23,36 @@ class AuditError(ValueError):
     """Expected input/schema validation failure with no row-level disclosure."""
 
 
+def _validated_csv_lines(lines):
+    """Reject bare quotes in unquoted fields before csv.reader parses a line.
+
+    Python's ``csv.reader(strict=True)`` still accepts ``ab"cd`` in an
+    unquoted field. Scan physical lines lazily so normal quoted commas,
+    escaped double quotes and multiline fields remain supported.
+    """
+    state = "start"  # start, unquoted, quoted, after_quote
+    for line in lines:
+        for char in line:
+            if char == '"':
+                if state in ("start", "after_quote"):
+                    state = "quoted"
+                elif state == "quoted":
+                    state = "after_quote"
+                else:
+                    raise AuditError("Invalid CSV encoding or quoting")
+            elif char == "," and state != "quoted":
+                state = "start"
+            elif char in "\r\n" and state != "quoted":
+                state = "start"
+            elif state == "after_quote":
+                raise AuditError("Invalid CSV encoding or quoting")
+            elif state == "start":
+                state = "unquoted"
+        yield line
+    if state == "quoted":
+        raise AuditError("Invalid CSV encoding or quoting")
+
+
 def audit_csv(
     input_path: Path,
     *,
@@ -54,7 +84,7 @@ def audit_csv(
 
     try:
         with handle:
-            reader = csv.reader(handle, strict=True)
+            reader = csv.reader(_validated_csv_lines(handle), strict=True)
             try:
                 headers = next(reader)
             except StopIteration as exc:
