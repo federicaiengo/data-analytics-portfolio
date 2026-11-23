@@ -133,6 +133,33 @@ class DataQualityAuditTests(unittest.TestCase):
         with self.assertRaisesRegex(AuditError, "Invalid CSV"):
             self.scan(source)
 
+    def test_unquoted_embedded_quote_is_rejected_without_value_disclosure(self):
+        source = self.make_csv(
+            'customer_id,email,signup_date,country\n'
+            'C-1,abc"def@example.test,2026-11-01,IT\n'
+        )
+        with self.assertRaisesRegex(AuditError, "Invalid CSV encoding or quoting") as caught:
+            self.scan(source)
+        self.assertNotIn("abc", str(caught.exception))
+
+    def test_bare_quote_in_unquoted_header_is_rejected(self):
+        source = self.make_csv(
+            'customer_id,email,signup_date,coun"try\n'
+            'C-1,a@example.test,2026-11-01,IT\n'
+        )
+        with self.assertRaisesRegex(AuditError, "Invalid CSV encoding or quoting"):
+            self.scan(source)
+
+    def test_escaped_quotes_and_multiline_quoted_field_remain_valid(self):
+        source = self.make_csv(
+            'customer_id,email,signup_date,country\n'
+            'C-1,a@example.test,2026-11-01,"I""T"\n'
+            'C-2,b@example.test,2026-11-02,"multi\nline"\n'
+        )
+        result = self.scan(source)
+        self.assertEqual(result["statistics"]["rows_read"], 2)
+        self.assertFalse(result["statistics"]["has_issues"])
+
     def test_report_write_is_deterministic_and_atomic(self):
         report = self.scan(self.make_csv())
         target = self.root / "report.json"
