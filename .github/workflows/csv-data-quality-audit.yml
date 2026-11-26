@@ -59,9 +59,22 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'CSV audit unittest regression failed' }
       - name: Check deterministic aggregate-only synthetic CLI report
         run: |
+          $ErrorActionPreference = 'Stop'
+          $source = 'projects/csv-data-quality-audit/demo/synthetic_customers.csv'
           $out = Join-Path $env:RUNNER_TEMP 'federica-csv-quality-synthetic.json'
-          python projects/csv-data-quality-audit/src/audit_csv.py --input projects/csv-data-quality-audit/demo/synthetic_customers.csv --report $out --key customer_id --required customer_id,email,signup_date --email-column email --date-column signup_date
-          if ($LASTEXITCODE -ne 0) { throw 'CSV audit CLI failed on fictional sample' }
+          $outRepeat = Join-Path $env:RUNNER_TEMP 'federica-csv-quality-synthetic-repeat.json'
+          $sourceBefore = (Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash
+          foreach ($target in @($out, $outRepeat)) {
+            python projects/csv-data-quality-audit/src/audit_csv.py --input $source --report $target --key customer_id --required customer_id,email,signup_date --email-column email --date-column signup_date
+            if ($LASTEXITCODE -ne 0) { throw 'CSV audit CLI failed on fictional sample' }
+            if ((Get-FileHash -LiteralPath $source -Algorithm SHA256).Hash -ne $sourceBefore) {
+              throw 'Source CSV bytes changed during audit'
+            }
+          }
+          if ((Get-FileHash -LiteralPath $out -Algorithm SHA256).Hash -ne (Get-FileHash -LiteralPath $outRepeat -Algorithm SHA256).Hash) {
+            throw 'Repeated CLI reports are not byte-identical'
+          }
+          Write-Host 'PASS: both CLI executions preserved source SHA-256 and produced identical report SHA-256'
           python -c "import json,sys; d=json.load(open(sys.argv[1], encoding='utf-8')); s=d['statistics']; assert s['rows_read']==6 and s['rows_analyzed']==5 and s['issue_observations']==8; assert d['source_modified'] is False; assert 'alex@example.test' not in json.dumps(d)" $out
           if ($LASTEXITCODE -ne 0) { throw 'Synthetic report does not match expected privacy-minimal counts' }
           Write-Host 'PASS: fictional CSV report checked; no production/customer data accessed'
