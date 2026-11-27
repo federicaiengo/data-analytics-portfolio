@@ -133,6 +133,59 @@ class DataQualityAuditTests(unittest.TestCase):
         with self.assertRaisesRegex(AuditError, "Invalid CSV"):
             self.scan(source)
 
+    def test_unquoted_embedded_quote_is_rejected_without_value_disclosure(self):
+        source = self.make_csv(
+            'customer_id,email,signup_date,country\n'
+            'C-1,abc"def@example.test,2026-11-01,IT\n'
+        )
+        with self.assertRaisesRegex(AuditError, "Invalid CSV encoding or quoting") as caught:
+            self.scan(source)
+        self.assertNotIn("abc", str(caught.exception))
+
+    def test_bare_quote_in_unquoted_header_is_rejected(self):
+        source = self.make_csv(
+            'customer_id,email,signup_date,coun"try\n'
+            'C-1,a@example.test,2026-11-01,IT\n'
+        )
+        with self.assertRaisesRegex(AuditError, "Invalid CSV encoding or quoting"):
+            self.scan(source)
+
+    def test_escaped_quotes_and_multiline_quoted_field_remain_valid(self):
+        source = self.make_csv(
+            'customer_id,email,signup_date,country\n'
+            'C-1,a@example.test,2026-11-01,"I""T"\n'
+            'C-2,b@example.test,2026-11-02,"multi\nline"\n'
+        )
+        result = self.scan(source)
+        self.assertEqual(result["statistics"]["rows_read"], 2)
+        self.assertFalse(result["statistics"]["has_issues"])
+
+    def test_crlf_quoted_commas_multiline_and_final_record_without_newline(self):
+        source = self.root / "customers.csv"
+        source.write_bytes(
+            b'customer_id,email,signup_date,country\r\n'
+            b'C-1,a@example.test,2026-11-01,"I,T"\r\n'
+            b'C-2,b@example.test,2026-11-02,"multi\r\nline"\r\n'
+            b'C-3,c@example.test,2026-11-03,"I""T"'
+        )
+        before = source.read_bytes()
+        result = self.scan(source)
+        self.assertEqual(result["statistics"]["rows_read"], 3)
+        self.assertEqual(result["statistics"]["rows_analyzed"], 3)
+        self.assertFalse(result["statistics"]["has_issues"])
+        self.assertEqual(source.read_bytes(), before)
+
+    def test_characters_after_closing_quote_fail_closed(self):
+        for suffix in ('"secret"x', '"secret" ', '"secret""'):
+            with self.subTest(suffix=suffix):
+                source = self.make_csv(
+                    'customer_id,email,signup_date,country\n'
+                    'C-1,a@example.test,2026-11-01,' + suffix
+                )
+                with self.assertRaisesRegex(AuditError, "^Invalid CSV encoding or quoting$") as caught:
+                    self.scan(source)
+                self.assertNotIn("secret", str(caught.exception))
+
     def test_report_write_is_deterministic_and_atomic(self):
         report = self.scan(self.make_csv())
         target = self.root / "report.json"
